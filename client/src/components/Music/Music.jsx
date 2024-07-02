@@ -2,7 +2,12 @@ import React, { useState, useRef } from "react";
 import MusicPlayer from "./SubComponents/MusicPlayer";
 import MusicList from "./SubComponents/MusicList";
 import { useNavigate } from "react-router-dom";
-export default function Music({ setMusicIndex, musicIndex, musicData }) {
+export default function Music({
+  setMusicIndex,
+  musicIndex,
+  musicData,
+  userRole,
+}) {
   const navigate = useNavigate();
   const [isPlaying, setIsPlaying] = useState(false);
   const [lyrics, setLyrics] = useState("");
@@ -33,6 +38,7 @@ export default function Music({ setMusicIndex, musicIndex, musicData }) {
         isPlaying={isPlaying}
         setIsPlaying={setIsPlaying}
         showList={showList}
+        userRole={userRole}
       />
 
       <MusicList

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import styles from "../../styles/LandingPage.module.css";
 
-export default function Navigation({ btnText, goToLocation }) {
+export default function Navigation({ btnText, goToLocation, userUUID }) {
   const menuBtnRef = useRef();
   const navLinksRef = useRef();
   const menuBtnIconRef = useRef();
@@ -56,7 +56,9 @@ export default function Navigation({ btnText, goToLocation }) {
         </div>
       </div>
       <ul className={styles["nav__links"]} id="nav-links" ref={navLinksRef}>
-        <Link to={"/musicplayer"} className={styles["nav__link"]}>
+        <Link
+          to={userUUID ? `/musicplayer/${userUUID}` : "/sign-in"}
+          className={styles["nav__link"]}>
           Music Player
         </Link>
         <Link to="/information/aboutus" className={styles["nav__link"]}>

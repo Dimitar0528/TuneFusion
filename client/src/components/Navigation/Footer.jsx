@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import styles from "../../styles/LandingPage.module.css";
 
-export default function Footer() {
+export default function Footer({ userUUID }) {
   return (
     <footer className={styles["footer"]}>
       <div
@@ -14,7 +14,7 @@ export default function Footer() {
           </li>
           <li>
             <NavLink
-              to={"/musicplayer"}
+              to={userUUID ? `/musicplayer/${userUUID}` : "/sign-in"}
               className={styles["nav__link"]}>
               Music Player
             </NavLink>

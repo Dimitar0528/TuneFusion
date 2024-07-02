@@ -135,6 +135,102 @@ app.put('/api/songs/updatesong/:name', async (req, res) => {
     }
 });
 
+app.post('/api/users/register', async (req, res) => {
+    const { username, email, password } = req.body;
+
+    try {
+        // Check if a user with the same username already exists
+        const existingUser = await User.findOne({ where: { username } });
+
+        if (existingUser) {
+            return res.status(400).json({ error: 'Username already taken!' });
+        }
+
+        // Check if an admin user already exists
+        const adminUser = await User.findOne({ where: { role: 'admin' } });
+
+        if (username.toLowerCase().includes('admin') && adminUser) {
+            return res.status(403).json({ error: 'Request denied! You cannot create administrator accounts!' });
+        }
+
+        // Hash the password before storing it in the database
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const role = username.toLowerCase().includes('admin') ? 'admin' : 'user';
+
+        // Create a new user in the database
+        const newUser = await User.create({
+            uuid: crypto.randomUUID(),
+            username,
+            email_address: email,
+            password: hashedPassword,
+            role,
+        });
+
+        return res.status(200).json(newUser);
+    } catch (error) {
+        console.error('Error creating user:', error);
+        return res.status(500).json({ error: error.message });
+    }
+});
+app.post('/api/users/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const user = await User.findOne({ where: { username } });
+
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials! Please check them again.' });
+        }
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Invalid password! Please check your password again.' });
+        }
+
+        const token = jwt.sign({ userUUID: user.uuid, userRole: user.role }, secretKey, {
+            expiresIn: '24h',
+        });
+
+        const cookieOptions = {
+            httpOnly: true,
+            secure: true,
+            maxAge: 86400000,
+            sameSite: 'Strict',
+            path: '/',
+        };
+
+        res.cookie('_token', token, cookieOptions);
+
+        const responseData = {
+            user_uuid: user.uuid,
+        };
+
+        return res.status(200).json(responseData);
+    } catch (error) {
+        console.error('Error authenticating user:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.get('/api/users/getToken', (req, res) => {
+    const tokenCookie = req.headers.cookie;
+    if (!tokenCookie) return null;
+
+    const token = tokenCookie.split('=')[1].trim(); // Extract the token
+
+    try {
+        const decodedUserToken = jwt.verify(token, secretKey);
+        const { userUUID, userRole } = decodedUserToken;
+
+        return res.status(200).json({ id: userUUID, role: userRole });
+    } catch (error) {
+        console.error('Error verifying token:', error);
+        return res.status(401).json({ error: error.message });
+    }
+});
+
+
 app.get('/', async (req, res) => {
     // const artists = await searchArtists('Симона');
 

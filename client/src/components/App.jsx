@@ -1,10 +1,12 @@
 import LandingPage from "./LandingPage/LandingPage";
 import AboutUs from "./Navigation/Information/AboutUs";
+import SignInSignUp from "./Account/SignUp";
 import { Route, Routes, Navigate } from "react-router-dom";
 import Faq from "./Navigation/Information/Faq";
 import Music from "./Music/Music";
 import { useEffect, useState } from "react";
 import SongForm from "./SongForm";
+import ProtectedRoute from "./Routes/ProtectedRoute";
 import ContactUs from "./Navigation/Information/ContactUs";
 import Navigation from "./Navigation/Navigation";
 import Footer from "./Navigation/Footer";
@@ -16,7 +18,29 @@ export default function App() {
     () => JSON.parse(localStorage.getItem("songIndex")) || 0
   );
   const [songs, setSongs] = useState([]);
+  const [userUUID, setUserUUID] = useState("");
+  const [role, setRole] = useState("");
+
   useEffect(() => {
+    async function getUserToken() {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/api/users/getToken",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        const token = await response.json();
+        setUserUUID(token.id.slice(0, 6));
+        setRole(token.role);
+      } catch (error) {
+        console.error("Error fetching user token:", error);
+      }
+    }
+    getUserToken();
+
     const fetchSongs = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/songs");
@@ -36,18 +60,28 @@ export default function App() {
     <div className="App">
       <header className="App-header">
         <ToastContainer />
-        <Navigation btnText={"Sign up"} goToLocation={"/sign-in"} />
+        <Navigation
+          userUUID={userUUID}
+          btnText={userUUID ? "My Account" : "Sign up"}
+          goToLocation={userUUID ? `/account/${userUUID}` : "/sign-in"}
+        />
 
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage userUUID={userUUID} />} />
           <Route
-            path={`/musicplayer/`}
+            path={`/musicplayer/${userUUID}`}
             element={
-              <Music
-                setMusicIndex={setMusicIndex}
-                musicIndex={musicIndex}
-                musicData={songs}
-              />
+              userUUID ? (
+                <Music
+                  setMusicIndex={setMusicIndex}
+                  musicIndex={musicIndex}
+                  musicData={songs}
+                  userUUID={userUUID}
+                  userRole={role}
+                />
+              ) : (
+                <Navigate to="/sign-in" replace />
+              )
             }
           />
           <Route path="/information">
@@ -55,14 +89,20 @@ export default function App() {
             <Route path="contactus" element={<ContactUs />} />
             <Route path="faq" element={<Faq />} />
           </Route>
+          <Route
+            path="/sign-in"
+            element={userUUID ? <Navigate to="/" replace /> : <SignInSignUp />}
+          />
           {songs.length > 0 && (
             <Route
               path={`/updatesong/:name`}
               element={
+                <ProtectedRoute role={role}>
                   <SongForm
                     action={"updatesong"}
                     name={songs[musicIndex].name}
                   />
+                </ProtectedRoute>
               }
             />
           )}
@@ -70,14 +110,16 @@ export default function App() {
             <Route
               path="/addsong/newsong"
               element={
+                <ProtectedRoute role={role}>
                   <SongForm action={"addsong"} name={"newsong"} />
+                </ProtectedRoute>
               }
             />
           )}
           <Route path="*" element={<NotFound />} />
         </Routes>
 
-        <Footer />
+        <Footer userUUID={userUUID} />
       </header>
     </div>
   );

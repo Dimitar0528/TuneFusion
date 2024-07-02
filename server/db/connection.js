@@ -1,14 +1,13 @@
 import { Sequelize } from 'sequelize';
 
 // Create a Sequelize instance with MySQL connection
-export const sequelizeInstance = new Sequelize("musicplayer", 'root', 'MD05at06', {
-    host: 'localhost',
-    port: '',
+export const sequelizeInstance = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
     dialect: "mysql",
     logging: false
 });
 
-// Function to gracefully close the database connection
 const closeDatabaseConnection = async () => {
     try {
         await sequelizeInstance.close();

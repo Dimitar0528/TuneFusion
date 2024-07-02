@@ -6,7 +6,9 @@ export default function GenreCard({ imageUrl, genreName, userUUID }) {
       <div className={styles["genre__image"]}>
         <img src={imageUrl} alt="genre" />
         <div className={styles["genre__link"]}>
-          <Link className={styles.link} to={"/musicplayer"}>
+          <Link
+            className={styles.link}
+            to={userUUID ? `/musicplayer/${userUUID}` : "/sign-in"}>
             <i className="ri-arrow-right-up-line"></i>
           </Link>
         </div>

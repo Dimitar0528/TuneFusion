@@ -6,7 +6,7 @@ import GenreCard from "./SubComponents/GenreCard";
 import FeatureCard from "./SubComponents/FeatureCard";
 import ClientCard from "./SubComponents/ClientCard";
 import { useNavigate } from "react-router-dom";
-export default function LandingPage() {
+export default function LandingPage({ userUUID }) {
   const navigate = useNavigate();
   useEffect(() => {
     const scrollRevealOption = {
@@ -87,7 +87,9 @@ export default function LandingPage() {
               <button
                 className={styles["btn"]}
                 onClick={() => {
-                  navigate("/musicplayer");
+                  userUUID
+                    ? navigate(`/musicplayer/${userUUID}`)
+                    : navigate("/sign-in");
                 }}>
                 {" "}
                 Get Started
@@ -129,18 +131,22 @@ export default function LandingPage() {
         </div>
         <div className={styles["genre__grid"]}>
           <GenreCard
+            userUUID={userUUID}
             imageUrl="https://hips.hearstapps.com/hmg-prod/images/usher-raymond-at-the-2023-vanity-fair-oscar-party-held-at-news-photo-1695676021.jpg"
             genreName="R&B"
           />
           <GenreCard
+            userUUID={userUUID}
             imageUrl="https://media.vogue.co.uk/photos/666022c9f41aa8be428d7eea/2:3/w_2560%2Cc_limit/2150388270"
             genreName="POP"
           />
           <GenreCard
+            userUUID={userUUID}
             imageUrl="https://hips.hearstapps.com/hmg-prod/images/aap-rocky-from-the-film-monster-poses-for-a-portrait-in-the-youtube-x-getty-images-portrait-studio-at-2018-sundance-film-festival-on-january-22-2018-in-park-city-utah-photo-by-robby-klein_getty-images.jpg?resize=980:*"
             genreName="HIP HOP"
           />
           <GenreCard
+            userUUID={userUUID}
             imageUrl="https://pbs.twimg.com/media/DUjJ38cW4AAPBy2.jpg"
             genreName="EDM"
           />

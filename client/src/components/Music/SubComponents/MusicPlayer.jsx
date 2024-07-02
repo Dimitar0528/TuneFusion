@@ -15,6 +15,7 @@ export default function MusicPlayer({
   isPlaying,
   setIsPlaying,
   showList,
+  userRole,
 }) {
   const navigate = useNavigate();
   const [shuffle, setShuffle] = useState(false);
@@ -137,12 +138,14 @@ export default function MusicPlayer({
   return (
     <div className={`wrapper ${isCollapsed && "collapsed"}`}>
       <div className="top-section">
+        {userRole === "admin" && (
           <i
             className="fa-solid fa-pen-to-square"
             title="Update Song"
             onClick={() => {
               navigate(`/updatesong/${musicData[musicIndex].name}`);
             }}></i>
+        )}
         <h2>{isPlaying ? "Now Playing" : "TuneFusion"}</h2>
         <i
           className={`fa-solid ${
