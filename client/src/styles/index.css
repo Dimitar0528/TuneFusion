@@ -1,0 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+:root {
+    --primary-clr: hsl(295, 22%, 54%);
+    --primary-clr-dark: hsl(213, 14%, 12%);
+    --navigation-clr: hsl(213, 14%, 2%);
+    --secondary-clr: hsl(339, 100%, 73%);
+    --text-dark-clr: hsl(213, 14%, 12%);
+    --text-light-clr: hsl(0, 0%, 95%);
+    --white: #ffffff;
+    --bg: linear-gradient(var(--secondary-clr) 5%, var(--primary-clr) 95%);
+    --gradient-1: linear-gradient(to bottom, var(--primary-clr), #1d2127);
+
+    --card-clr: hsl(0, 0%, 100%);
+    --darkwhite: hsl(0, 4%, 80%);
+    --card-text-clr: hsl(0, 0%, 10%);
+    --card-text-light-clr: hsl(0, 0%, 30%);
+
+    --max-width: 1200px;
+}
