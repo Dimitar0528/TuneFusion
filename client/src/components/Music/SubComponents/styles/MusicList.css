@@ -1,14 +1,23 @@
 .music-list {
     isolation: isolate;
     z-index: 9;
-  width: max-content;
-  max-height: 85vh;
+    width: max-content;
+    max-height: clamp(250px, 35vw, 85vh);
     background-color: var(--card-clr);
     box-shadow: 0 -5px 10px rgba(0, 0, 0, .1);
     padding: 0 .5rem;
     opacity: 1;
     overflow-y: auto;
     transition: .2s;
+}
+
+.header {
+    padding-inline: .5rem;
+    position: sticky;
+    top: 0;
+    background-color: var(--primary-clr-dark);
+    color: var(--white);
+    margin-bottom: 1rem;
 }
 
 .music-list span {
@@ -24,9 +33,11 @@
     opacity: 1;
     pointer-events: auto;
 }
-ul{
-        padding: 0;
+
+ul {
+    padding: 0;
 }
+
 .music-list li {
     font-size: clamp(1rem, 1.15vw, 1.2rem);
     cursor: pointer;

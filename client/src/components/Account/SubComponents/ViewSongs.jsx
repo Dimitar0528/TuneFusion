@@ -34,8 +34,9 @@ export default function ViewSongs({ songs }) {
   return (
     <Table
       data={songs}
-      columns={["Image", "UUID", "Title", "Artist", "Audio Source", "Actions"]}
+      columns={["Image", "UUID", "Name", "Artist", "Audio Source", "Actions"]}
       title="Songs"
+      hasDbSearch={true}
       itemsPerPage={songsPerPage}
       onAddClick={() => navigate("/addsong/newsong")}
       renderRow={(song) => (

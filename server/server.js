@@ -8,6 +8,7 @@ import Song from './db/models/Song.js';
 import User from './db/models/User.js';
 import crypto from 'crypto';
 import { Sequelize, Op } from 'sequelize';
+import gis from 'async-g-i-s';
 import {
     searchMusics,
     searchAlbums,
@@ -141,31 +142,31 @@ app.put('/api/users/resetPassword/:user_email_address', async (req, res) => {
 });
 
 app.post('/api/users/register', async (req, res) => {
-    const { username, email, password } = req.body;
+    const { name, email, password } = req.body;
 
     try {
-        // Check if a user with the same username already exists
-        const existingUser = await User.findOne({ where: { username } });
+        // Check if a user with the same name already exists
+        const existingUser = await User.findOne({ where: { name } });
 
         if (existingUser) {
-            return res.status(400).json({ error: 'Username already taken!' });
+            return res.status(400).json({ error: 'name already taken!' });
         }
 
         // Check if an admin user already exists
         const adminUser = await User.findOne({ where: { role: 'admin' } });
 
-        if (username.toLowerCase().includes('admin') && adminUser) {
+        if (name.toLowerCase().includes('admin') && adminUser) {
             return res.status(403).json({ error: 'Request denied! You cannot create administrator accounts!' });
         }
 
         // Hash the password before storing it in the database
         const hashedPassword = await bcrypt.hash(password, 10);
-        const role = username.toLowerCase().includes('admin') ? 'admin' : 'user';
+        const role = name.toLowerCase().includes('admin') ? 'admin' : 'user';
 
         // Create a new user in the database
         const newUser = await User.create({
             uuid: crypto.randomUUID(),
-            username,
+            name,
             email_address: email,
             password: hashedPassword,
             role,
@@ -178,13 +179,13 @@ app.post('/api/users/register', async (req, res) => {
     }
 });
 app.post('/api/users/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { name, password } = req.body;
 
     try {
-        const user = await User.findOne({ where: { username } });
+        const user = await User.findOne({ where: { name } });
 
         if (!user) {
-            return res.status(401).json({ error: 'Invalid username! Please check your username again.' });
+            return res.status(401).json({ error: 'Invalid name! Please check your name again.' });
         }
 
         const passwordMatch = await bcrypt.compare(password, user.password);
@@ -273,7 +274,7 @@ app.get('/api/users/:userid', async (req, res) => {
 app.put('/api/users/editAccount/:userid', async (req, res) => {
     const userUUID = req.params.userid
     try {
-        const { username, first_name, last_name, email_address, phone_number, gender } = req.body;
+        const { name, first_name, last_name, email_address, phone_number, gender } = req.body;
 
         const user = await User.findOne({ where: { uuid: userUUID } });
 
@@ -281,21 +282,21 @@ app.put('/api/users/editAccount/:userid', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Check if the new username is already taken by another user
-        const existingUserWithUsername = await User.findOne({ where: { username } });
-        if (existingUserWithUsername && existingUserWithUsername.uuid !== user.uuid) {
-            return res.status(401).json({ error: 'Username is already taken! Please enter a new one!' });
+        // Check if the new name is already taken by another user
+        const existingUserWithname = await User.findOne({ where: { name } });
+        if (existingUserWithname && existingUserWithname.uuid !== user.uuid) {
+            return res.status(401).json({ error: 'name is already taken! Please enter a new one!' });
         }
 
         // Check if an admin user already exists
         const adminUser = await User.findOne({ where: { role: 'admin' } });
-        if (username.toLowerCase().includes('admin') && adminUser && adminUser.uuid !== user.uuid) {
-            return res.status(403).json({ error: 'Request denied! Your username should not include the word admin!' });
+        if (name.toLowerCase().includes('admin') && adminUser && adminUser.uuid !== user.uuid) {
+            return res.status(403).json({ error: 'Request denied! Your name should not include the word admin!' });
         }
 
         // Update user data
         await User.update({
-            username,
+            name,
             first_name,
             last_name,
             email_address,
@@ -368,7 +369,27 @@ app.put('/api/songs/updatesong/:name', async (req, res) => {
     }
 });
 
+app.get('/api/song/search/:artist', async (req, res) => {
+    try {
+        const artist = req.params.artist;
+        const songs = await searchMusics(artist);
 
+        const songList = await Promise.all(songs.map(async song => {
+            const { title: name, artists, youtubeId: id } = song;
+            const artistName = artists[0].name;
+            const searchTerm = artistName + name
+            const imgs = await gis(searchTerm);
+            const img_src = imgs[0]?.url;
+            const audio_src = `https://www.youtube.com/watch?v=${id}`;
+            return { name, artist: artistName, img_src, audio_src };
+        }));
+
+        res.json(songList);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 app.get('/', async (req, res) => {
     res.send("HI")
 })

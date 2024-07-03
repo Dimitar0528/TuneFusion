@@ -4,10 +4,10 @@ import showToast from "../../showToast";
 const SignUp = () => {
   const [signUpMode, setSignUpMode] = useState(false);
   const [errors, setErrors] = useState({});
-  const signUpUsername = useRef();
+  const signUpname = useRef();
   const signUpEmail = useRef();
   const signPassword = useRef();
-  const signInUsername = useRef();
+  const signInname = useRef();
   const signInPassword = useRef();
 
   const handleSignUpClick = () => {
@@ -20,12 +20,12 @@ const SignUp = () => {
 
   const validateSignUp = () => {
     const newErrors = {};
-    const username = signUpUsername.current.value.trim();
+    const name = signUpname.current.value.trim();
     const email = signUpEmail.current.value.trim();
     const password = signPassword.current.value.trim();
 
-    if (!username) {
-      newErrors.username = "Username is required.";
+    if (!name) {
+      newErrors.name = "name is required.";
     }
 
     if (!email) {
@@ -49,11 +49,11 @@ const SignUp = () => {
 
   const validateSignIn = () => {
     const newErrors = {};
-    const username = signInUsername.current.value.trim();
+    const name = signInname.current.value.trim();
     const password = signInPassword.current.value.trim();
 
-    if (!username) {
-      newErrors.username = "Username is required.";
+    if (!name) {
+      newErrors.name = "name is required.";
     }
 
     if (!password) {
@@ -67,11 +67,11 @@ const SignUp = () => {
     e.preventDefault();
     const validationErrors = validateSignUp();
     if (Object.keys(validationErrors).length === 0) {
-      const username = signUpUsername.current.value.trim();
+      const name = signUpname.current.value.trim();
       const email = signUpEmail.current.value.trim();
       const password = signPassword.current.value.trim();
       const user = {
-        username,
+        name,
         password,
         email,
       };
@@ -99,10 +99,10 @@ const SignUp = () => {
     const validationErrors = validateSignIn();
     if (Object.keys(validationErrors).length === 0) {
       // Proceed with sign-in logic
-      const username = signInUsername.current.value.trim();
+      const name = signInname.current.value.trim();
       const password = signInPassword.current.value.trim();
       const requestBody = {
-        username,
+        name,
         password,
       };
       const response = await fetch(`http://localhost:3000/api/users/login`, {
@@ -141,16 +141,14 @@ const SignUp = () => {
             <h2 className={styles.title}>Sign in</h2>
             <div className={styles["input-field"]}>
               <i className="fas fa-user"></i>
-              <input type="text" placeholder="Username" ref={signInUsername} />
+              <input type="text" placeholder="John Doe" ref={signInname} />
             </div>
-            {errors.username && (
-              <p className={styles.error}>{errors.username}</p>
-            )}
+            {errors.name && <p className={styles.error}>{errors.name}</p>}
             <div className={styles["input-field"]}>
               <i className="fas fa-lock"></i>
               <input
                 type="password"
-                placeholder="Password"
+                placeholder="Secure1234"
                 ref={signInPassword}
               />
             </div>
@@ -187,21 +185,23 @@ const SignUp = () => {
             <h2 className={styles.title}>Sign up</h2>
             <div className={styles["input-field"]}>
               <i className="fas fa-user"></i>
-              <input type="text" placeholder="Username" ref={signUpUsername} />
+              <input type="text" placeholder="John Doe" ref={signUpname} />
             </div>
-            {errors.username && (
-              <p className={styles.error}>{errors.username}</p>
-            )}
+            {errors.name && <p className={styles.error}>{errors.name}</p>}
             <div className={styles["input-field"]}>
               <i className="fas fa-envelope"></i>
-              <input type="email" placeholder="Email" ref={signUpEmail} />
+              <input
+                type="email"
+                placeholder="john_doe@hotmail.com"
+                ref={signUpEmail}
+              />
             </div>
             {errors.email && <p className={styles.error}>{errors.email}</p>}
             <div className={styles["input-field"]}>
               <i className="fas fa-lock"></i>
               <input
                 type="password"
-                placeholder="Password"
+                placeholder="Secure1234"
                 ref={signPassword}
               />
             </div>

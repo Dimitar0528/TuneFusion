@@ -4,6 +4,7 @@ import "./styles/Account.css";
 import ViewSongs from "./SubComponents/ViewSongs";
 import EditAccount from "./SubComponents/EditAccount";
 import ViewUsers from "./SubComponents/ViewUsers";
+import SongSuggestion from "./SubComponents/SongSuggestion"; // Import the new component
 
 export default function Account({ songs, userUUID }) {
   const [activeTab, setActiveTab] = useState("Account");
@@ -12,7 +13,7 @@ export default function Account({ songs, userUUID }) {
   const contentsRef = useRef([]);
   const [user, setUser] = useState({});
 
-  const tabs = ["Songs", "Account", "PlayLists", "Users"];
+  const tabs = ["Song Suggestions", "Songs", "Account", "PlayLists", "Users"]; // Add new tab
 
   useEffect(() => {
     updateUnderline();
@@ -98,6 +99,8 @@ export default function Account({ songs, userUUID }) {
         );
       case "Users":
         return user.role === "admin" && <ViewUsers />;
+      case "Song Suggestions":
+        return user.role === "admin" && <SongSuggestion />;
       default:
         return (
           <div>
@@ -116,7 +119,7 @@ export default function Account({ songs, userUUID }) {
             (tab) =>
               !(
                 user.role === "user" &&
-                ["Songs", "Users",].includes(tab)
+                ["Songs", "Users", "Song Suggestions"].includes(tab)
               )
           )
           .map((tab, index) => (

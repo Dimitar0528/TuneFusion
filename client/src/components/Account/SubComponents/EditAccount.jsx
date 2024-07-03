@@ -5,7 +5,7 @@ import showToast from "../../../showToast";
 export default function EditAccount({ user }) {
   const {
     uuid,
-    username,
+    name,
     first_name,
     last_name,
     email_address,
@@ -14,7 +14,7 @@ export default function EditAccount({ user }) {
   } = user;
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: username ?? "",
+    name: name ?? "",
     first_name: first_name ?? "",
     last_name: last_name ?? "",
     email_address: email_address ?? "",
@@ -29,22 +29,14 @@ export default function EditAccount({ user }) {
   useEffect(() => {
     // Populate initial form data
     setFormData({
-      username: username ?? "",
+      name: name ?? "",
       first_name: first_name ?? "",
       last_name: last_name ?? "",
       email_address: email_address ?? "",
       phone_number: phone_number ?? "",
       gender: gender ?? "",
     });
-  }, [
-    uuid,
-    username,
-    first_name,
-    last_name,
-    email_address,
-    phone_number,
-    gender,
-  ]);
+  }, [uuid, name, first_name, last_name, email_address, phone_number, gender]);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -54,7 +46,7 @@ export default function EditAccount({ user }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
-      formData.username === username &&
+      formData.name === name &&
       formData.first_name === first_name &&
       formData.last_name === last_name &&
       formData.email_address === email_address &&
@@ -197,12 +189,12 @@ export default function EditAccount({ user }) {
         <h1 className="edit-title">Edit my account</h1>
         <div className="grid">
           <div className="form-group a">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="name">Username</label>
             <input
-              id="username"
+              id="name"
               type="text"
-              placeholder="Enter your username..."
-              value={formData.username}
+              placeholder="example"
+              value={formData.name}
               onChange={handleInputChange}
               required
             />
@@ -212,7 +204,7 @@ export default function EditAccount({ user }) {
             <input
               id="first_name"
               type="text"
-              placeholder="Enter your first name..."
+              placeholder="John"
               value={formData.first_name}
               onChange={handleInputChange}
               required
@@ -223,7 +215,7 @@ export default function EditAccount({ user }) {
             <input
               id="last_name"
               type="text"
-              placeholder="Enter your last name..."
+              placeholder="Doe"
               value={formData.last_name}
               onChange={handleInputChange}
               required
@@ -234,7 +226,7 @@ export default function EditAccount({ user }) {
             <input
               id="email_address"
               type="text"
-              placeholder="Enter your email address..."
+              placeholder="john_doe@hotmail.com"
               value={formData.email_address}
               onChange={handleInputChange}
               required
@@ -245,7 +237,7 @@ export default function EditAccount({ user }) {
             <input
               id="phone_number"
               type="tel"
-              placeholder="Enter your phone number..."
+              placeholder="0877696969"
               value={formData.phone_number}
               onChange={handleInputChange}
               required

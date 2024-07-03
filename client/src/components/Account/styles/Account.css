@@ -2,13 +2,13 @@
 
 .account-body {
     font-family: 'Montserrat', sans-serif;
-background: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.45);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.18);
-   
-    max-width: 90vw;
+
+    max-width: 95vw;
     margin-inline: auto;
     margin-bottom: 2rem;
 }
@@ -23,11 +23,15 @@ background: rgba(255, 255, 255, 0.45);
     position: relative;
     max-width: 800px;
     margin-inline: auto;
+    @media (width < 520px){
+    flex-direction: column;
+    align-items: center;
+    }
 }
 
 .navtab {
     margin: 0 10px;
-    padding: 10px 0 ;
+    padding: 10px 0;
     cursor: pointer;
     color: #333;
     transition: color 0.3s;
@@ -52,7 +56,7 @@ background: rgba(255, 255, 255, 0.45);
 
 .content {
     display: none;
-    padding:  20px 20px;
+    padding: 20px 20px;
     text-align: center;
 }
 
@@ -60,5 +64,22 @@ background: rgba(255, 255, 255, 0.45);
     display: block;
 }
 
+.artist-input {
+    padding: 0.7rem 1rem;
+    border: transparent;
+    width: clamp(11rem, 25vw, 30rem);
+    border-radius: 2rem 0 0 2rem;
+    caret-color: var(--primary-clr);
+    outline: transparent;
+}
 
-    
+.description {
+    max-width: 75ch;
+    margin-inline: auto;
+    background-color: var(--card-clr);
+    padding: .25rem .5rem;
+
+    & h2 {
+        margin-block: .5rem;
+    }
+}

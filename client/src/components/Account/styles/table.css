@@ -171,17 +171,16 @@
     letter-spacing: 3px;
     transition: all .2s ease-in-out;
 
-    &:hover {
+    &:where(:hover, :focus-visible) {
         background: var(--primary-clr);
         border: 1px solid var(--primary-clr);
         color: #fefefe;
-        border-radius: 30px;
+        border-radius: 0 2rem 2rem 0;
     }
 }
-
 .addbtn {
     background-color: var(--primary-clr-dark);
-    color: var(--white);
+    color:var(--white);
     cursor: pointer;
     padding: 10px 20px;
     text-decoration: none;

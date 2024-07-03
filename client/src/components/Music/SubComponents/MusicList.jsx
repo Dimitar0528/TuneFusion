@@ -35,7 +35,7 @@ export default function MusicList({
               <span>{music.name}</span>
               <p>{music.artist}</p>
             </div>
-            <button>Add to playlist</button>
+            {/* <button>Add to playlist</button> */}
           </li>
         ))}
       </ul>

@@ -35,7 +35,6 @@ label {
     background-color: var(--card-clr);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     padding: .25rem 1.5em;
-    margin-inline: .5rem;
     border-radius: 1rem;
 }
 

@@ -76,7 +76,7 @@ export default function LandingPage({ userUUID }) {
           <h1>Stream Music Anywhere</h1>
           <div className={styles["header__content"]}>
             <h1>
-              <i>AT NO COST</i>
+              <i>AT NO COST, WITHOUT ADS</i>
             </h1>
             <p className={styles["section__description"]}>
               Dive into a world where every note, melody, and rhythm is at your
