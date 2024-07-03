@@ -11,6 +11,7 @@ import ContactUs from "./Navigation/Information/ContactUs";
 import Navigation from "./Navigation/Navigation";
 import Footer from "./Navigation/Footer";
 import NotFound from "./NotFound";
+import Account from "./Account/Account";
 import { ToastContainer } from "react-toastify";
 
 export default function App() {
@@ -116,6 +117,10 @@ export default function App() {
               }
             />
           )}
+          <Route
+            path={`/account/${userUUID}`}
+            element={<Account userUUID={userUUID} songs={songs} />}
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
 
