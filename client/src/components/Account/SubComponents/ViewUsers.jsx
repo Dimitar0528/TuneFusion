@@ -23,7 +23,7 @@ export default function ViewUsers() {
   return (
     <Table
       data={users}
-      columns={["UUID", "name", "Email Address", "Phone Number", "Actions"]}
+      columns={["UUID", "Name", "Email Address", "Phone Number", "Actions"]}
       title="Users"
       hasDbSearch={true}
       itemsPerPage={usersPerPage}

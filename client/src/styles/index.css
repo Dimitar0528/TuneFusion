@@ -5,6 +5,7 @@
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
 }
+
 :root {
     --primary-clr: hsl(295, 22%, 54%);
     --primary-clr-dark: hsl(213, 14%, 12%);
@@ -22,4 +23,55 @@
     --card-text-light-clr: hsl(0, 0%, 30%);
 
     --max-width: 1200px;
+}
+
+::-webkit-scrollbar {
+    width: 0.7em;
+    transition: 0.25s;
+}
+
+::-webkit-scrollbar-track {
+    background-color: deeppink;
+    border-radius: 100vw;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: hsl(350, 100%, 88%);
+    border-radius: 100vw;
+}
+
+::-webkit-scrollbar-thumb:where(:hover, :focus-visible) {
+    background-color: hsl(350, 100%, 82%);
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+
+
+}
+
+img {
+    display: block;
+    width: 100%;
+}
+
+a {
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+ul {
+    list-style: none;
+}
+
+html,
+body {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--bg)
 }

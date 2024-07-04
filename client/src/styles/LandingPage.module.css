@@ -1,22 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-::-webkit-scrollbar {
-  width: 0.7em;
-  transition: 0.25s;
-}
-
-::-webkit-scrollbar-track {
-  background-color: deeppink;
-  border-radius: 100vw;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: hsl(350, 100%, 88%);
-  border-radius: 100vw;
-}
-
-::-webkit-scrollbar-thumb:where(:hover, :focus-visible) {
-  background-color: hsl(350, 100%, 82%);
-}
 
 .more {
   font-size: 3rem;
@@ -26,16 +8,7 @@
 .genre,
 .client {
   padding-block: .75rem;
-  background-color: var(--primary-clr-dark);
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  
-}
+  background-color: hsl(from var(--primary-clr-dark) h s l / .85);}
 
 .section__container {
   max-width: var(--max-width);
@@ -70,7 +43,7 @@
   cursor: pointer;
 
   &:where(:where(:hover, :focus-visible), :focus-visible) {
-    background-color: hsl(339, 100%, 83%);
+    background-color: hsl(from var(--secondary-clr) h s 80%)
     ;
   }
 }
@@ -81,35 +54,13 @@
   color: var(--white);
 }
 
-img {
-  display: flex;
-  width: 100%;
-}
-
-a {
-  text-decoration: none;
-  transition: 0.3s;
-}
-
-ul {
-  list-style: none;
-}
-
-html,
-body {
-  scroll-behavior: smooth;
-}
-
-body {
-  background: var(--bg)
-}
 
 nav {
   margin-bottom: 1rem;
   border-radius: 1rem;
   background-color: var(--navigation-clr);
-    position: sticky;
-      top: 0;
+  position: sticky;
+  top: 0;
   isolation: isolate;
   width: 97vw;
   max-width: var(--max-width);
@@ -130,9 +81,7 @@ nav {
   color: var(--white);
   cursor: pointer;
 }
-/* .nav__link:last-child{
-  margin-left: auto;
-} */
+
 .nav__links {
   position: absolute;
   top: 64px;
@@ -314,8 +263,10 @@ nav {
   color: var(--text-dark-clr);
   background-color: var(--secondary-clr);
   border-radius: 100%;
-  &:where(:where(:hover, :focus-visible), :focus-visible){
-    background-color: hsl(339, 100%, 83%);;
+
+  &:where(:where(:hover, :focus-visible), :focus-visible) {
+    background-color: hsl(from var(--secondary-clr) h s 80%)
+    ;
   }
 }
 
@@ -405,10 +356,11 @@ nav {
 }
 
 .swiper-slide {
-  max-width: 100%;}
+  max-width: 100%;
+}
 
 .client__card {
- margin-top: 2rem;
+  margin-top: 2rem;
   padding: 1.5rem;
   max-width: 100%;
   background-image: var(--gradient-1);

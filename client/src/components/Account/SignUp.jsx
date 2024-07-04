@@ -75,7 +75,7 @@ const SignUp = () => {
         password,
         email,
       };
-      const response = await fetch(`http://localhost:3000/api/users/register`, {
+      const response = await fetch(`http://localhost:3000/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -105,7 +105,7 @@ const SignUp = () => {
         name,
         password,
       };
-      const response = await fetch(`http://localhost:3000/api/users/login`, {
+      const response = await fetch(`http://localhost:3000/api/auth/login`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -121,7 +121,7 @@ const SignUp = () => {
       }
       const data = await response.json();
       let { user_uuid } = data;
-      location.href = `/${user_uuid.slice(0, 6)}/musicplayer`;
+      location.href = `/musicplayer/${user_uuid.slice(0, 6)}`;
     } else {
       setErrors(validationErrors);
     }

@@ -75,8 +75,8 @@ export default function TableWithPagination({
       <table className="rwd-table">
         <tbody>
           <tr>
-            {columns.map((column, index) => (
-              <th key={index}>{column}</th>
+            {columns.map((column) => (
+              <th key={column}>{column}</th>
             ))}
           </tr>
           {currentItems.length === 0 ? (

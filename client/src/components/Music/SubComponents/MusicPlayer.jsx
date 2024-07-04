@@ -7,7 +7,7 @@ import ProgressArea from "./ProgressArea";
 import { useNavigate } from "react-router-dom";
 import showToast from "../../../showToast.js";
 export default function MusicPlayer({
-  musicData,
+  songs,
   musicIndex,
   setMusicIndex,
   lyrics,
@@ -32,16 +32,18 @@ export default function MusicPlayer({
   const nameRef = useRef();
   const imageRef = useRef();
   const playerRef = useRef();
+  const currentRef = useRef();
+  const durationRef = useRef();
 
   useEffect(() => {
     localStorage.setItem("songIndex", JSON.stringify(musicIndex));
-    if (musicData.length > 0) {
+    if (songs.length > 0) {
       loadMusic(musicIndex);
     }
-  }, [musicData, musicIndex]);
+  }, [songs, musicIndex]);
 
   const loadMusic = async (index) => {
-    const music = musicData[index];
+    const music = songs[index];
     songRef.current.textContent = music.name;
     nameRef.current.textContent = music.artist;
     imageRef.current.src = music.img_src;
@@ -57,7 +59,7 @@ export default function MusicPlayer({
     setIsLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3000/api/songs/${musicData[musicIndex].artist}/${musicData[musicIndex].name}`
+        `http://localhost:3000/api/songs/${songs[musicIndex].artist}/${songs[musicIndex].name}`
       );
       const lyrics = await response.json();
       if (lyrics.error) return setLyrics(lyrics.error);
@@ -77,13 +79,13 @@ export default function MusicPlayer({
     if (shuffle) {
       let randomIndex;
       do {
-        randomIndex = Math.floor(Math.random() * musicData.length);
+        randomIndex = Math.floor(Math.random() * songs.length);
       } while (randomIndex === musicIndex);
       setMusicIndex(randomIndex);
       setIsPlaying(true);
       lyrics && setLyrics("");
     } else {
-      setMusicIndex((prevIndex) => (prevIndex + 1) % musicData.length);
+      setMusicIndex((prevIndex) => (prevIndex + 1) % songs.length);
       setIsPlaying(true);
       lyrics && setLyrics("");
     }
@@ -100,9 +102,7 @@ export default function MusicPlayer({
   };
 
   const handlePrev = () => {
-    setMusicIndex(
-      (prevIndex) => (prevIndex - 1 + musicData.length) % musicData.length
-    );
+    setMusicIndex((prevIndex) => (prevIndex - 1 + songs.length) % songs.length);
     setIsPlaying(true);
     lyrics && setLyrics("");
   };
@@ -129,10 +129,7 @@ export default function MusicPlayer({
   };
 
   const handleDuration = (duration) => {
-    const durationElement = document.querySelector(".duration");
-    if (durationElement) {
-      durationElement.textContent = getSongTimeStamps(duration);
-    }
+    durationRef.current.textContent = getSongTimeStamps(duration);
   };
 
   return (
@@ -143,7 +140,7 @@ export default function MusicPlayer({
             className="fa-solid fa-pen-to-square"
             title="Update Song"
             onClick={() => {
-              navigate(`/updatesong/${musicData[musicIndex].name}`);
+              navigate(`/updatesong/${songs[musicIndex].name}`);
             }}></i>
         )}
         <h2>{isPlaying ? "Now Playing" : "TuneFusion"}</h2>
@@ -162,26 +159,28 @@ export default function MusicPlayer({
         songRef={songRef}
         nameRef={nameRef}
         imageRef={imageRef}
-        musicData={musicData}
+        songs={songs}
         musicIndex={musicIndex}
       />
 
-      {musicData.length > 0 && musicIndex >= 0 && (
+      {songs.length > 0 && musicIndex >= 0 && (
         <ProgressArea
           progressAreaRef={progressAreaRef}
           progressBarRef={progressBarRef}
           playerRef={playerRef}
           handleProgressClick={handleProgressClick}
           handleDuration={handleDuration}
-          url={musicData[musicIndex].audio_src}
+          url={songs[musicIndex].audio_src}
           isPlaying={isPlaying}
           volume={volume}
           handleNext={handleNext}
+          currentRef={currentRef}
+          durationRef={durationRef}
         />
       )}
 
       <PlayerControls
-        musicData={musicData}
+        songs={songs}
         musicIndex={musicIndex}
         isPlaying={isPlaying}
         handlePlayPause={handlePlayPause}

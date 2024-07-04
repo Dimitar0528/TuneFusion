@@ -6,7 +6,7 @@ export default function SongDetails({
   songRef,
   nameRef,
   imageRef,
-  musicData,
+  songs,
   musicIndex,
 }) {
   return (
@@ -23,7 +23,7 @@ export default function SongDetails({
           <img
             ref={imageRef}
             className="image"
-            src={musicData[musicIndex]?.img_src}
+            src={songs[musicIndex]?.img_src}
             alt="Song Cover Art"
             width={440}
           />

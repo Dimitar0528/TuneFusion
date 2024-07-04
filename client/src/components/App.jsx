@@ -26,7 +26,7 @@ export default function App() {
     async function getUserToken() {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/users/getToken",
+          "http://localhost:3000/api/auth/getToken",
           {
             method: "GET",
             credentials: "include",
@@ -76,7 +76,7 @@ export default function App() {
                 <Music
                   setMusicIndex={setMusicIndex}
                   musicIndex={musicIndex}
-                  musicData={songs}
+                  songs={songs}
                   userUUID={userUUID}
                   userRole={role}
                 />

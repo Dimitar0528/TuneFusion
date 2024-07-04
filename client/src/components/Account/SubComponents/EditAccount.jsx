@@ -121,7 +121,7 @@ export default function EditAccount({ user }) {
       return;
 
     try {
-      const response = await fetch("http://localhost:3000/api/users/logout", {
+      const response = await fetch("http://localhost:3000/api/auth/logout", {
         method: "GET",
         credentials: "include",
         headers: {

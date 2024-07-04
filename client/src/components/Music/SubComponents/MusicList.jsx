@@ -2,7 +2,7 @@ import React from "react";
 import "./styles/MusicList.css";
 
 export default function MusicList({
-  musicData,
+  songs,
   musicIndex,
   handleCurrent,
   hideList,
@@ -21,9 +21,9 @@ export default function MusicList({
         <i id="close" className="fa-solid fa-close" onClick={hideList}></i>
       </div>
       <ul>
-        {musicData.map((music, index) => (
+        {songs.map((song, index) => (
           <li
-            key={index}
+            key={song.uuid}
             id={index + 1}
             onClick={() => {
               handleCurrent(index);
@@ -32,8 +32,8 @@ export default function MusicList({
             }}
             className={index === musicIndex ? "playing" : ""}>
             <div className="row">
-              <span>{music.name}</span>
-              <p>{music.artist}</p>
+              <span>{song.name}</span>
+              <p>{song.artist}</p>
             </div>
             {/* <button>Add to playlist</button> */}
           </li>

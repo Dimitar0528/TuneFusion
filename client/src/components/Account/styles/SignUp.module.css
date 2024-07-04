@@ -10,9 +10,11 @@ body,
 input {
     font-family: "Poppins", sans-serif;
 }
-.error{
+
+.error {
     color: red;
 }
+
 .container {
     position: relative;
     width: 100%;
@@ -41,7 +43,8 @@ input {
     z-index: 5;
 }
 
-.sign-in-form, .sign-up-form {
+.sign-in-form,
+.sign-up-form {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -129,14 +132,14 @@ form.sign-in-form {
     transition: 0.3s;
 }
 
-.social-icon:hover {
-    color: hsl(339, 100%, 73%);;
-    border-color: hsl(339, 100%, 73%);;
+.social-icon:where(:hover, :focus-visible) {
+    color: var(--secondary-clr);
+    border-color: var(--secondary-clr);
 }
 
 .btn {
     width: 150px;
-    background-color: hsl(339, 100%, 73%);
+    background-color: var(--secondary-clr);
     border: none;
     outline: none;
     height: 49px;
@@ -149,7 +152,7 @@ form.sign-in-form {
     transition: 0.5s;
 }
 
-.btn:hover {
+.btn:where(:hover, :focus-visible) {
     background-color: hsl(339, 100%, 53%);
 }
 
@@ -404,4 +407,3 @@ form.sign-in-form {
         left: 50%;
     }
 }
-

@@ -11,6 +11,8 @@ export default function ProgressArea({
   isPlaying,
   volume,
   handleNext,
+  currentRef,
+  durationRef
 }) {
   return (
     <div
@@ -19,8 +21,10 @@ export default function ProgressArea({
       onClick={handleProgressClick}>
       <div className="progress-bar" ref={progressBarRef}></div>
       <div className="timer">
-        <span className="current">0:00</span>
-        <span className="duration"> 0:00</span>
+        <span className="current" ref={currentRef}>
+          0:00
+        </span>
+        <span className="duration" ref={durationRef}> 0:00</span>
       </div>
       <ReactPlayer
         ref={playerRef}
@@ -32,10 +36,7 @@ export default function ProgressArea({
         onProgress={(state) => {
           const { playedSeconds, played } = state;
           progressBarRef.current.style.width = `${played * 100}%`;
-          const currentTimeElement = document.querySelector(".current");
-          if (currentTimeElement) {
-            currentTimeElement.textContent = getSongTimeStamps(playedSeconds);
-          }
+            currentRef.current.textContent = getSongTimeStamps(playedSeconds);
         }}
         onEnded={handleNext}
         onDuration={handleDuration}

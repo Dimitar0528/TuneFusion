@@ -21,7 +21,7 @@ export default function SongSuggestion() {
     setSongs([]);
     try {
       const response = await fetch(
-        `http://localhost:3000/api/song/search/${artist}`
+        `http://localhost:3000/api/songs/search/${artist}`
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -72,7 +72,7 @@ export default function SongSuggestion() {
         style={{ display: "flex", justifyContent: "center" }}
         onSubmit={handleFormSubmit}>
         <input
-          type="text"
+          type="search"
           className="artist-input"
           value={artist}
           onChange={handleInputChange}
