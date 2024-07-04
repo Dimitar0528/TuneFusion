@@ -1,6 +1,6 @@
-import styles from "../../../styles/LandingPage.module.css";
+import styles from "../styles/LandingPage.module.css";
 
-export default function FeatureCard ({ number, title, description }) {
+export default function FeatureCard({ number, title, description }) {
   return (
     <li>
       <div className={styles["feature__card"]}>
@@ -12,5 +12,4 @@ export default function FeatureCard ({ number, title, description }) {
       </div>
     </li>
   );
-};
-
+}

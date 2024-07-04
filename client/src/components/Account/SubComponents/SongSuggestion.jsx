@@ -1,9 +1,9 @@
-// SongSuggestion.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import showToast from "../../../showToast";
 import Table from "../Table";
-import "../styles/Account.css";
+import styles from "../styles/Account.module.css"; // Import the CSS module
+import "../styles/table.css";
 export default function SongSuggestion() {
   const [artist, setArtist] = useState("");
   const [songs, setSongs] = useState([]);
@@ -59,8 +59,8 @@ export default function SongSuggestion() {
   };
 
   return (
-    <div className="songs-container">
-      <div className="description">
+    <div className={styles.songsContainer}>
+      <div className={styles.description}>
         <h2>Song Suggestions</h2>
         <p>
           Use this feature to search for songs by artist. Enter the artist's
@@ -73,20 +73,20 @@ export default function SongSuggestion() {
         onSubmit={handleFormSubmit}>
         <input
           type="search"
-          className="artist-input"
+          className={styles["artist-input"]}
           value={artist}
           onChange={handleInputChange}
           placeholder="Enter artist name"
           required
         />
-        <button className="addbtn | btn6" type="submit" disabled={loading}>
+        <button className="addbtn btn6" type="submit" disabled={loading}>
           {loading ? "Searching..." : "Search"}
         </button>
       </form>
       {loading && (
         <i
-          style={{ fontSize: "10rem" }}
-          className="fa-solid fa-spinner fa-spin"></i>
+          style={{ fontSize: "11rem", color: "white", marginBlock: "1rem" }}
+          className="fas fa-spinner fa-spin"></i>
       )}
       {songs.length > 0 && (
         <Table

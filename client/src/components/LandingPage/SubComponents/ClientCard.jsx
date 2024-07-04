@@ -1,6 +1,12 @@
-import styles from "../../../styles/LandingPage.module.css";
+import styles from "../styles/LandingPage.module.css";
 
-export default function ClientCard ({ rating, content, imageUrl, name, occupation }) {
+export default function ClientCard({
+  rating,
+  content,
+  imageUrl,
+  name,
+  occupation,
+}) {
   const maxStars = 5; // Total number of stars
   const activeStars = Math.min(rating, maxStars); // Number of active stars (limited to maxStars)
 
@@ -28,5 +34,4 @@ export default function ClientCard ({ rating, content, imageUrl, name, occupatio
       </div>
     </div>
   );
-};
-
+}

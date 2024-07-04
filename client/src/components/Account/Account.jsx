@@ -1,10 +1,9 @@
-// Account.js
 import React, { useState, useRef, useEffect } from "react";
-import "./styles/Account.css";
+import styles from "./styles/Account.module.css";
 import ViewSongs from "./SubComponents/ViewSongs";
 import EditAccount from "./SubComponents/EditAccount";
 import ViewUsers from "./SubComponents/ViewUsers";
-import SongSuggestion from "./SubComponents/SongSuggestion"; // Import the new component
+import SongSuggestion from "./SubComponents/SongSuggestion";
 
 export default function Account({ songs, userUUID }) {
   const [activeTab, setActiveTab] = useState("Account");
@@ -34,7 +33,7 @@ export default function Account({ songs, userUUID }) {
       setUser(data);
     }
     getUser();
-  }, []);
+  }, [userUUID]);
 
   useEffect(() => {
     const handleHover = (e) => {
@@ -112,8 +111,8 @@ export default function Account({ songs, userUUID }) {
   };
 
   return (
-    <div className="account-body">
-      <div className="navtabs">
+    <div className={styles.accountBody}>
+      <div className={styles.navtabs}>
         {tabs
           .filter(
             (tab) =>
@@ -126,7 +125,9 @@ export default function Account({ songs, userUUID }) {
             <div
               key={tab}
               tabIndex={0}
-              className={`navtab ${activeTab === tab ? "active" : ""}`}
+              className={`${styles.navtab} ${
+                activeTab === tab ? styles.active : ""
+              }`}
               data-target={tab}
               onClick={() => setActiveTab(tab)}
               ref={(el) => (tabsRef.current[index] = el)}>
@@ -134,14 +135,16 @@ export default function Account({ songs, userUUID }) {
             </div>
           ))}
 
-        <div className="underline" ref={underlineRef}></div>
+        <div className={styles.underline} ref={underlineRef}></div>
       </div>
-      <div className="content-wrapper">
+      <div className={styles.contentWrapper}>
         {tabs.map((tab) => (
           <div
             key={tab}
             id={tab}
-            className={`content ${activeTab === tab ? "active" : ""}`}
+            className={`${styles.content} ${
+              activeTab === tab ? styles.active : ""
+            }`}
             ref={(el) => (contentsRef.current[tab] = el)}>
             {renderTabContent(tab)}
           </div>

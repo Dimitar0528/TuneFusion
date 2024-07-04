@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "./styles/EditAccount.css";
+import styles from "./styles/EditAccount.module.css"; // Import CSS module
 import { useNavigate } from "react-router-dom";
 import showToast from "../../../showToast";
+
 export default function EditAccount({ user }) {
   const {
     uuid,
@@ -12,6 +13,7 @@ export default function EditAccount({ user }) {
     phone_number,
     gender,
   } = user;
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: name ?? "",
@@ -184,11 +186,14 @@ export default function EditAccount({ user }) {
   };
 
   return (
-    <div className="edit-account">
-      <form name="edit-form" className="edit-container" onSubmit={handleSubmit}>
-        <h1 className="edit-title">Edit my account</h1>
-        <div className="grid">
-          <div className="form-group a">
+    <div className={styles.editAccount}>
+      <form
+        name="edit-form"
+        className={styles.editContainer}
+        onSubmit={handleSubmit}>
+        <h1 className={styles.editTitle}>Edit my account</h1>
+        <div className={styles.grid}>
+          <div className={`${styles.formGroup} ${styles.a}`}>
             <label htmlFor="name">Username</label>
             <input
               id="name"
@@ -199,7 +204,7 @@ export default function EditAccount({ user }) {
               required
             />
           </div>
-          <div className="form-group b">
+          <div className={`${styles.formGroup} ${styles.b}`}>
             <label htmlFor="first_name">First Name</label>
             <input
               id="first_name"
@@ -210,7 +215,7 @@ export default function EditAccount({ user }) {
               required
             />
           </div>
-          <div className="form-group c">
+          <div className={`${styles.formGroup} ${styles.c}`}>
             <label htmlFor="last_name">Last Name</label>
             <input
               id="last_name"
@@ -221,7 +226,7 @@ export default function EditAccount({ user }) {
               required
             />
           </div>
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="email_address">Email Address</label>
             <input
               id="email_address"
@@ -232,7 +237,7 @@ export default function EditAccount({ user }) {
               required
             />
           </div>
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="phone_number">Phone Number</label>
             <input
               id="phone_number"
@@ -243,9 +248,9 @@ export default function EditAccount({ user }) {
               required
             />
           </div>
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="gender">
-              Gender <span className="not-required">(Optional)</span>
+              Gender <span className={styles.notRequired}>(Optional)</span>
             </label>
             <select
               name="gender"
@@ -259,42 +264,44 @@ export default function EditAccount({ user }) {
             </select>
           </div>
         </div>
-        <div className="button-container">
+        <div className={styles.buttonContainer}>
           <button
             type="button"
-            className="button delete-btn"
+            className={`${styles.button} ${styles.deleteBtn}`}
             onClick={handleDeleteAccount}>
             Delete Account
           </button>
           <button
             type="button"
-            className="button log-out"
+            className={`${styles.button} ${styles.logOut}`}
             onClick={handleLogout}>
             Log Out
           </button>
           <button
             type="button"
-            className="button edit-password"
+            className={`${styles.button} ${styles.editPassword}`}
             onClick={() => setPasswordModalOpen(true)}>
             Reset Password
           </button>
           <input
             type="submit"
             value="Save changes"
-            className="button submit-btn"
+            className={`${styles.button} ${styles.submitBtn}`}
           />
         </div>
       </form>
 
       {passwordModalOpen && (
-        <dialog open className="password-modal">
-          <div className="modal-content">
+        <dialog open className={styles.passwordModal}>
+          <div className={styles.modalContent}>
             <h2>Reset Password</h2>
             <p>
               The same rules apply for new password: To be at least 8 characters
               long and to have at least one capitalized letter and number
             </p>
-            <form className="reset-password" onSubmit={handleResetPassword}>
+            <form
+              className={styles.resetPassword}
+              onSubmit={handleResetPassword}>
               <label htmlFor="newPassword">New Password:</label>
               <input
                 type="password"
@@ -318,12 +325,12 @@ export default function EditAccount({ user }) {
               <input
                 type="submit"
                 value="Save New Password"
-                className="button"
+                className={styles.button}
               />
             </form>
             <button
               type="button"
-              className="button close-btn"
+              className={`${styles.button} ${styles.closeBtn}`}
               onClick={() => setPasswordModalOpen(false)}>
               Cancel
             </button>

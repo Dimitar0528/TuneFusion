@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
-
-import "../styles/songForm.css";
+import styles from "../styles/songForm.module.css"; // Import CSS module
 import { useParams } from "react-router-dom";
 import showToast from "../showToast";
+
 export default function SongForm({ action }) {
   const { name } = useParams();
 
@@ -118,31 +118,37 @@ export default function SongForm({ action }) {
 
   return (
     <>
-      <h1 className="h1">
+      <h1 className={styles.h1}>
         {action === "updatesong" ? "Update song" : "Add a new song"}
       </h1>
-      <form className="song-form" onSubmit={handleSubmit}>
-        <div className="form-group">
+      <form className={styles.songForm} onSubmit={handleSubmit}>
+        <div className={styles.formGroup}>
           <label>Song Name:</label>
           <input type="text" name="name" ref={nameRef} />
-          {errors.name && <span className="error">{errors.name}</span>}
+          {errors.name && <span className={styles.error}>{errors.name}</span>}
         </div>
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label>Artist:</label>
           <input type="text" name="artist" ref={artistRef} />
-          {errors.artist && <span className="error">{errors.artist}</span>}
+          {errors.artist && (
+            <span className={styles.error}>{errors.artist}</span>
+          )}
         </div>
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label>Image URL:</label>
           <input type="text" name="imageUrl" ref={imageUrlRef} />
-          {errors.imageUrl && <span className="error">{errors.imageUrl}</span>}
+          {errors.imageUrl && (
+            <span className={styles.error}>{errors.imageUrl}</span>
+          )}
         </div>
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label>Audio URL:</label>
           <input type="text" name="audioSrc" ref={audioSrcRef} />
-          {errors.audioSrc && <span className="error">{errors.audioSrc}</span>}
+          {errors.audioSrc && (
+            <span className={styles.error}>{errors.audioSrc}</span>
+          )}
         </div>
-        <button className="submit-button" type="submit">
+        <button className={styles.submitButton} type="submit">
           {action === "updatesong" ? "Update" : "Add"} Song
         </button>
       </form>

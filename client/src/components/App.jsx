@@ -1,6 +1,6 @@
 import LandingPage from "./LandingPage/LandingPage";
 import AboutUs from "./Navigation/Information/AboutUs";
-import SignInSignUp from "./Account/SignUp";
+import SignInSignUp from "./Login/SignUp";
 import { Route, Routes, Navigate } from "react-router-dom";
 import Faq from "./Navigation/Information/Faq";
 import Music from "./Music/Music";

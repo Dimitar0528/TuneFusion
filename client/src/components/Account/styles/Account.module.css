@@ -23,9 +23,10 @@
     position: relative;
     max-width: 800px;
     margin-inline: auto;
-    @media (width < 520px){
-    flex-direction: column;
-    align-items: center;
+
+    @media (width < 520px) {
+        flex-direction: column;
+        align-items: center;
     }
 }
 

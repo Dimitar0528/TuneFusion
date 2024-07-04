@@ -1,4 +1,6 @@
-.song-form {
+/* songForm.module.css */
+
+.songForm {
     max-width: 500px;
     margin: 2rem auto;
     padding: 20px;
@@ -15,17 +17,17 @@
     padding-inline: .5rem;
 }
 
-.form-group {
+.formGroup {
     margin-bottom: 15px;
 }
 
-.form-group label {
+.formGroup label {
     display: block;
     font-weight: bold;
     margin-bottom: 5px;
 }
 
-.form-group input {
+.formGroup input {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -40,7 +42,7 @@
     font-size: 1.4rem;
 }
 
-.submit-button {
+.submitButton {
     width: 100%;
     padding: 10px 0;
     background-color: #4CAF50;
@@ -51,6 +53,6 @@
     cursor: pointer;
 }
 
-.submit-button:hover {
+.submitButton:hover {
     background-color: #45a049;
 }
