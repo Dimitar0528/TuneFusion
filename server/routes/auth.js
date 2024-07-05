@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from '../db/models/User.js';
+import sgMail from '@sendgrid/mail';
 
 const router = express.Router();
 const secretKey = process.env.JWT_SECRET_KEY;
@@ -106,6 +107,35 @@ router.get('/getToken', (req, res) => {
     } catch (error) {
         console.error('Error verifying token:', error);
         return res.status(401).json({ error: error.message });
+    }
+});
+
+function generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+router.post('/sendOTP', async (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    const otp = generateOTP();
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+    const msg = {
+        to: email,
+        from: process.env.SENDER_EMAIL,
+        subject: 'OTP Verification',
+        html: `<p>Your OTP for verification is: <strong>${otp}</strong></p>`,
+    };
+
+    try {
+        await sgMail.send(msg);
+        return res.status(200).json({ otp });
+    } catch (error) {
+        console.error('Error sending OTP:', error);
+        return res.status(500).json({ error: 'Failed to send OTP' });
     }
 });
 

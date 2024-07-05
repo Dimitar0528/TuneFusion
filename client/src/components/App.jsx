@@ -12,6 +12,7 @@ import Navigation from "./Navigation/Navigation";
 import Footer from "./Navigation/Footer";
 import NotFound from "./NotFound";
 import Account from "./Account/Account";
+import TFAVerification from "./Login/TFA";
 import { ToastContainer } from "react-toastify";
 
 export default function App() {
@@ -93,6 +94,12 @@ export default function App() {
           <Route
             path="/sign-in"
             element={userUUID ? <Navigate to="/" replace /> : <SignInSignUp />}
+          />
+          <Route
+            path="/otp"
+            element={
+              userUUID ? <Navigate to="/" replace /> : <TFAVerification />
+            }
           />
           {songs.length > 0 && (
             <Route
