@@ -14,7 +14,7 @@ import NotFound from "./NotFound";
 import Account from "./Account/Account";
 import TFAVerification from "./Login/TFA";
 import { ToastContainer } from "react-toastify";
-
+import ScrollToTopButton from './ScrollToTopButton'
 export default function App() {
   const [musicIndex, setMusicIndex] = useState(
     () => JSON.parse(localStorage.getItem("songIndex")) || 0
@@ -67,6 +67,8 @@ export default function App() {
           btnText={userUUID ? "My Account" : "Sign up"}
           goToLocation={userUUID ? `/account/${userUUID}` : "/sign-in"}
         />
+
+        <ScrollToTopButton />
 
         <Routes>
           <Route path="/" element={<LandingPage userUUID={userUUID} />} />

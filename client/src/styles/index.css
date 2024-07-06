@@ -75,3 +75,36 @@ body {
 body {
     background: var(--bg)
 }
+/* index.css */
+
+.scrollToTop {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 1000;
+}
+
+.scrollButton {
+    background-color: var(--card-clr);
+    border: none;
+    border-radius: 50%;
+    padding: 10px 15px;
+    color: var(--primary-clr-dark);
+    font-size: 20px;
+    cursor: pointer;
+    transition: .3s;
+    opacity: 0;
+    transform: translateY(100px);
+    visibility: hidden;
+}
+
+.scrollButton.show {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+}
+
+.scrollButton:hover {
+    background-color: var(--card-text-light-clr);
+    color: var(--white);
+}

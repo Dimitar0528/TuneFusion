@@ -132,6 +132,12 @@ export default function MusicPlayer({
     durationRef.current.textContent = getSongTimeStamps(duration);
   };
 
+  const handleKeyPress = (event, action) => {
+    if (event.key === "Enter") {
+      action();
+    }
+  };
+  
   return (
     <div className={`wrapper ${isCollapsed && "collapsed"}`}>
       <div className="top-section">
@@ -141,7 +147,13 @@ export default function MusicPlayer({
             title="Update Song"
             onClick={() => {
               navigate(`/updatesong/${songs[musicIndex].name}`);
-            }}></i>
+            }}
+            tabIndex={0}
+            onKeyDown={(event) =>
+              handleKeyPress(event, () =>
+                navigate(`/updatesong/${songs[musicIndex].name}`)
+              )
+            }></i>
         )}
         <h2>{isPlaying ? "Now Playing" : "TuneFusion"}</h2>
         <i
@@ -149,7 +161,11 @@ export default function MusicPlayer({
             !isCollapsed ? " fa-arrow-down" : " fa-arrow-up"
           }`}
           onClick={handleCollapseToggle}
-          title={`${!isCollapsed ? "Collapse" : "Full View"}`}></i>
+          title={`${!isCollapsed ? "Collapse" : "Full View"}`}
+          tabIndex={0}
+          onKeyDown={(event) =>
+            handleKeyPress(event, handleCollapseToggle)
+          }></i>
       </div>
 
       <SongDetails

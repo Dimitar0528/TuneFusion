@@ -185,8 +185,9 @@ label {
     -webkit-text-fill-color: transparent;
     transition: .5s;
 
-    &:where(:hover) {
-        outline: transparent;
+    &:where(:hover, :focus-visible) {
+        outline: 1px solid var(--card-text-light-clr);
+        outline-offset: 3px;
         background: linear-gradient(var(--secondary-clr) 100%, var(--primary-clr) 0%);
         background-clip: text;
         -webkit-background-clip: text;
@@ -217,10 +218,6 @@ label {
     aspect-ratio: 1;
     border-radius: inherit;
     background: var(--bg);
-}
-
-.play-pause:where(:hover, :focus-visible) {
-    outline: 1px solid var(--primary-clr);
 }
 
 .play-pause i {
