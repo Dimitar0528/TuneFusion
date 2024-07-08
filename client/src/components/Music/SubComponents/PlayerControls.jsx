@@ -1,23 +1,26 @@
 import React from "react";
+import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 
-export default function PlayerControls({
-  isPlaying,
-  handlePlayPause,
-  handleNext,
-  handlePrev,
-  shuffle,
-  toggleShufflePlayList,
-  lyrics,
-  fetchLyrics,
-  volume,
-  handleVolumeChange,
-  showList,
-}) {
+export default function PlayerControls({ showList }) {
+  const {
+    isPlaying,
+    handlePlayPause,
+    handleNext,
+    handlePrev,
+    shuffle,
+    toggleShufflePlayList,
+    lyrics,
+    fetchLyrics,
+    volume,
+    handleVolumeChange,
+  } = useMusicPlayer();
+
   const handleKeyPress = (e, action) => {
     if (e.key === "Enter") {
       action();
     }
   };
+
   const handleVolumeKeyDown = (e) => {
     if (e.key === "ArrowUp" || e.key === "ArrowRight") {
       e.preventDefault();
@@ -31,6 +34,7 @@ export default function PlayerControls({
       });
     }
   };
+
   return (
     <div className="controls">
       <i

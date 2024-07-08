@@ -1,14 +1,8 @@
 import React from "react";
-
-export default function SongDetails({
-  isLoading,
-  lyrics,
-  songRef,
-  nameRef,
-  imageRef,
-  songs,
-  musicIndex,
-}) {
+import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
+export default function SongDetails() {
+  const { isLoading, lyrics, songRef, nameRef, imageRef, songs, musicIndex } =
+    useMusicPlayer();
   return (
     <>
       <div className="img-area text-center">

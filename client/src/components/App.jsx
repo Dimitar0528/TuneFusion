@@ -1,10 +1,11 @@
+import React, { useEffect, useState } from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import LandingPage from "./LandingPage/LandingPage";
 import AboutUs from "./Navigation/Information/AboutUs";
 import SignInSignUp from "./Login/SignUp";
-import { Route, Routes, Navigate } from "react-router-dom";
 import Faq from "./Navigation/Information/Faq";
 import Music from "./Music/Music";
-import { useEffect, useState } from "react";
 import SongForm from "./SongForm";
 import ProtectedRoute from "./Routes/ProtectedRoute";
 import ContactUs from "./Navigation/Information/ContactUs";
@@ -12,16 +13,14 @@ import Navigation from "./Navigation/Navigation";
 import Footer from "./Navigation/Footer";
 import NotFound from "./NotFound";
 import Account from "./Account/Account";
+import { useMusicPlayer } from "../contexts/MusicPlayerContext";
 import TFAVerification from "./Login/TFA";
-import { ToastContainer } from "react-toastify";
-import ScrollToTopButton from './ScrollToTopButton'
+import ScrollToTopButton from "./ScrollToTopButton";
+
 export default function App() {
-  const [musicIndex, setMusicIndex] = useState(
-    () => JSON.parse(localStorage.getItem("songIndex")) || 0
-  );
-  const [songs, setSongs] = useState([]);
   const [userUUID, setUserUUID] = useState("");
   const [role, setRole] = useState("");
+  const { setSongs, setMusicIndex, songs } = useMusicPlayer();
 
   useEffect(() => {
     async function getUserToken() {
@@ -51,6 +50,7 @@ export default function App() {
         }
         const data = await response.json();
         setSongs(data);
+        setMusicIndex(JSON.parse(localStorage.getItem("songIndex")) || 0);
       } catch (error) {
         console.error("Error fetching songs:", error);
       }
@@ -58,6 +58,7 @@ export default function App() {
 
     fetchSongs();
   }, []);
+
   return (
     <div className="App">
       <header className="App-header">
@@ -72,17 +73,12 @@ export default function App() {
 
         <Routes>
           <Route path="/" element={<LandingPage userUUID={userUUID} />} />
+
           <Route
             path={`/musicplayer/${userUUID}`}
             element={
               userUUID ? (
-                <Music
-                  setMusicIndex={setMusicIndex}
-                  musicIndex={musicIndex}
-                  songs={songs}
-                  userUUID={userUUID}
-                  userRole={role}
-                />
+                <Music userUUID={userUUID} userRole={role} />
               ) : (
                 <Navigate to="/sign-in" replace />
               )
@@ -103,34 +99,27 @@ export default function App() {
               userUUID ? <Navigate to="/" replace /> : <TFAVerification />
             }
           />
-          {songs.length > 0 && (
-            <Route
-              path={`/updatesong/:name`}
-              element={
-                <ProtectedRoute role={role}>
-                  <SongForm
-                    action={"updatesong"}
-                    name={songs[musicIndex].name}
-                  />
-                </ProtectedRoute>
-              }
-            />
-          )}
-          {songs.length > 0 && (
-            <Route
-              path="/addsong/newsong"
-              element={
-                <ProtectedRoute role={role}>
-                  <SongForm action={"addsong"} name={"newsong"} />
-                </ProtectedRoute>
-              }
-            />
-          )}
+          <Route
+            path={`/updatesong/:name`}
+            element={
+              <ProtectedRoute role={role}>
+                <SongForm action={"updatesong"} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/addsong/newsong"
+            element={
+              <ProtectedRoute role={role}>
+                <SongForm action={"addsong"} name={"newsong"} />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<NotFound />} />
           <Route
             path={`/account/${userUUID}`}
             element={<Account userUUID={userUUID} songs={songs} />}
           />
-          <Route path="*" element={<NotFound />} />
         </Routes>
 
         <Footer userUUID={userUUID} />

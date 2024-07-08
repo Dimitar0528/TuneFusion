@@ -1,16 +1,15 @@
 import React from "react";
 import "./styles/MusicList.css";
+import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 
-export default function MusicList({
-  songs,
-  musicIndex,
-  handleCurrent,
-  hideList,
-  lyrics,
-  setLyrics,
-  setIsPlaying,
-  musicListRef,
-}) {
+export default function MusicList({ handleCurrent, musicListRef }) {
+  const { songs, musicIndex, lyrics, setLyrics, setIsPlaying } =
+    useMusicPlayer();
+
+  const hideList = () => {
+    musicListRef.current.style.opacity = "0";
+    musicListRef.current.style.pointerEvents = "none";
+  };
   return (
     <div ref={musicListRef} className={`music-list`}>
       <div className="header">
