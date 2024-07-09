@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import ReactPlayer from "react-player";
+import ReactPlayer from "react-player/lazy";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 
 export default function ProgressArea() {
@@ -15,6 +15,7 @@ export default function ProgressArea() {
     currentTime,
     setCurrentTime,
     handleNext,
+    getSongTimeStamps,
   } = useMusicPlayer();
 
   const durationRef = useRef();
@@ -92,7 +93,7 @@ export default function ProgressArea() {
           0:00
         </span>
         <span className="duration" ref={durationRef}>
-          {getSongTimeStamps(songs[musicIndex]?.duration || 0)}
+          0:00
         </span>
       </div>
       <ReactPlayer
@@ -108,14 +109,8 @@ export default function ProgressArea() {
         height="0"
         progressInterval={100}
         playsinline={true}
+      
       />
     </div>
   );
 }
-
-const getSongTimeStamps = (time) => {
-  const min = Math.floor(time / 60);
-  let sec = Math.floor(time % 60);
-  if (sec < 10) sec = `0${sec}`;
-  return `${min}:${sec}`;
-};

@@ -6,7 +6,7 @@ import Table from "../Table";
 
 export default function ViewSongs({ songs }) {
   const navigate = useNavigate();
-  const songsPerPage = 8;
+  const songsPerPage = 10;
 
   const deleteSong = async (uuid) => {
     if (!window.confirm("Are you sure you want to delete this song?")) return;

@@ -1,9 +1,8 @@
 .music-list {
-    width: 380px;
     max-height: clamp(270px, 35vw, 80vh);
     isolation: isolate;
     z-index: 9;
-    background-color: var(--card-clr);
+    background-color: var(--accent-clr-light);
     box-shadow: 0 -5px 10px rgba(0, 0, 0, .1);
     padding: 0 .5rem;
     opacity: 1;
@@ -16,11 +15,11 @@
     position: sticky;
     top: 0;
     background-color: var(--primary-clr-dark);
-    color: var(--white);
+    color: var(--accent-clr-light);
     margin-bottom: 1rem;
 
     & span {
-        color: var(--white);
+        color: var(--accent-clr-light);
     }
 }
 
@@ -38,23 +37,32 @@
     pointer-events: auto;
 }
 
-ul {
-    padding: 0;
-}
-
-.music-list li {
-    font-size: clamp(1rem, 1.15vw, 1.2rem);
+tr {
     cursor: pointer;
-    list-style: none;
-    padding-bottom: .75rem;
-    border-bottom: 1px solid #e5e5e5;
-    color: var(--card-text-light-clr)
+    transition: .2s;
+
+    &:where(:hover, :focus-visible) {
+        background-color: var(--primary-clr-dark);
+        color: var(--accent-clr-light);
+    }
 }
 
-li:last-child {
-    border-bottom: none;
+.music-table {
+    border-collapse: collapse;
 }
 
-ul li.playing {
-    color: var(--primary-clr);
+.music-table th,
+.music-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #dddddd;
+}
+
+.music-table tr.playing {
+    color: var(--accent-clr-light);
+    background-color: var(--primary-clr)
+}
+
+.music-table img {
+    border-radius: .5rem;
 }

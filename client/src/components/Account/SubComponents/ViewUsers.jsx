@@ -6,7 +6,7 @@ import Table from "../Table";
 export default function ViewUsers() {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
-  const usersPerPage = 8;
+  const usersPerPage = 10;
 
   useEffect(() => {
     async function getUsers() {

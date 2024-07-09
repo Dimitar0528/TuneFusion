@@ -29,8 +29,6 @@ Song.init(
     },
   },
   {
-    createdAt: false,
-    updatedAt: false,
     sequelize: sequelizeInstance,
     modelName: "Song",
     tableName: "songs",

@@ -9,15 +9,14 @@
 :root {
     --primary-clr: hsl(295, 22%, 54%);
     --primary-clr-dark: hsl(213, 14%, 12%);
-    --navigation-clr: hsl(213, 14%, 2%);
     --secondary-clr: hsl(339, 100%, 73%);
     --text-dark-clr: hsl(213, 14%, 12%);
     --text-light-clr: hsl(0, 0%, 95%);
-    --white: #ffffff;
-    --bg: linear-gradient(var(--secondary-clr) 5%, var(--primary-clr) 95%);
+    --accent-clr-dark: hsl(213, 14%, 2%);
+    --accent-clr-light: hsl(0, 0%, 100%);
+    --bg: linear-gradient(var(--secondary-clr) 5%, var(--primary-clr) 90%);
     --gradient-1: linear-gradient(to bottom, var(--primary-clr), #1d2127);
 
-    --card-clr: hsl(0, 0%, 100%);
     --darkwhite: hsl(0, 4%, 80%);
     --card-text-clr: hsl(0, 0%, 10%);
     --card-text-light-clr: hsl(0, 0%, 30%);
@@ -40,7 +39,7 @@
     border-radius: 100vw;
 }
 
-::-webkit-scrollbar-thumb:where(:hover, :focus-visible) {
+::-webkit-scrollbar-thumb:hover {
     background-color: hsl(350, 100%, 82%);
 }
 
@@ -49,13 +48,11 @@
     padding: 0;
     margin: 0;
     font-family: 'Poppins', sans-serif;
-
-
 }
 
 img {
     display: block;
-    width: 100%;
+    max-width: 100%;
 }
 
 a {
@@ -75,6 +72,9 @@ body {
 body {
     background: var(--bg)
 }
+
+/* index.css */
+
 .scrollToTop {
     position: fixed;
     bottom: 2rem;
@@ -87,7 +87,7 @@ body {
     border: none;
     border-radius: 50%;
     padding: 10px;
-    color: var(--white);
+    color: var(--accent-clr-light);
     cursor: pointer;
     transition: .3s;
     opacity: 0;
@@ -103,5 +103,5 @@ body {
 
 .scrollButton:hover {
     background-color: var(--card-text-light-clr);
-    color: var(--white);
+    color: var(--accent-clr-light);
 }

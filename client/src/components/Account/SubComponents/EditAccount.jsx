@@ -292,15 +292,14 @@ export default function EditAccount({ user }) {
       </form>
 
       {passwordModalOpen && (
-        <dialog open className={styles.passwordModal}>
-          <div className={styles.modalContent}>
+        <dialog open className={styles["password-modal"]}>
+          <div className={styles["modal-content"]}>
             <h2>Reset Password</h2>
             <p>
               The same rules apply for new password: To be at least 8 characters
               long and to have at least one capitalized letter and number
             </p>
             <form
-              className={styles.resetPassword}
               onSubmit={handleResetPassword}>
               <label htmlFor="newPassword">New Password:</label>
               <input

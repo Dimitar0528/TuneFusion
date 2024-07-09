@@ -10,7 +10,7 @@ const Client = new Genius.Client();
 router.get('/', async (req, res) => {
     try {
         const songs = await Song.findAll({
-            order: [["name", "ASC"]],
+            order: [["createdAt", "DESC"]],
         });
 
         if (!songs) {
@@ -48,7 +48,7 @@ router.post('/addsong', async (req, res) => {
             where: { name: name }
         });
         if (song) {
-            return res.status(400).json({ error: 'The song is already in the database!' });
+            return res.status(400).json({ error: 'The song has already been added to the database!' });
 
         }
         await Song.create({

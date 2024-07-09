@@ -22,6 +22,7 @@
     border: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
     background-color: #fff;
+    color: inherit;
 }
 
 .rwd-table th {
@@ -156,7 +157,7 @@
 
 .pagination li a:hover {
     background-color: var(--primary-clr-dark);
-    color: var(--white);
+    color: var(--accent-clr-light);
     border-color: #ddd;
 }
 
@@ -182,7 +183,7 @@
 
 .addbtn {
     background-color: var(--primary-clr-dark);
-    color: var(--white);
+    color: var(--accent-clr-light);
     cursor: pointer;
     padding: 10px 20px;
     text-decoration: none;

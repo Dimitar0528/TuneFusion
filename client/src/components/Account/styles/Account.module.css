@@ -77,7 +77,7 @@
 .description {
     max-width: 75ch;
     margin-inline: auto;
-    background-color: var(--card-clr);
+    background-color: var(--accent-clr-light);
     padding: .25rem .5rem;
 
     & h2 {
