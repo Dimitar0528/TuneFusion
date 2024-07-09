@@ -6,8 +6,8 @@ import SongDetails from "./SongDetails";
 import ProgressArea from "./ProgressArea";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-
-export default function MusicPlayer({ showList, userRole }) {
+import showToast from "../../../showToast";
+export default function MusicPlayer({ showList, userRole,userUUID }) {
   const {
     songs,
     musicIndex,
@@ -28,6 +28,18 @@ export default function MusicPlayer({ showList, userRole }) {
   const handleKeyPress = (event, action) => {
     if (event.key === "Enter") {
       action();
+    }
+  };
+
+  const desiredUrls = [`/musicplayer/${userUUID}`];
+  const handleCollapseAndRedirect = () => {
+    if (desiredUrls.every((url) => url !== location.pathname)) {
+      return showToast(
+        "To view the full version of the music player, please enter the Music Player section!",
+        "warning"
+      );
+    } else {
+      handleCollapseToggle();
     }
   };
 
@@ -53,11 +65,15 @@ export default function MusicPlayer({ showList, userRole }) {
           className={`fa-solid ${
             !isCollapsed ? " fa-arrow-down" : " fa-arrow-up"
           }`}
-          onClick={handleCollapseToggle}
+          onClick={() => {
+            isCollapsed === true
+              ? handleCollapseAndRedirect()
+              : handleCollapseToggle();
+          }}
           title={`${!isCollapsed ? "Collapse" : "Full View"}`}
           tabIndex={0}
           onKeyDown={(event) =>
-            handleKeyPress(event, handleCollapseToggle)
+            handleKeyPress(event, handleCollapseAndRedirect)
           }></i>
       </div>
 

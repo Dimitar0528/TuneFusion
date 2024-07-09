@@ -1,17 +1,11 @@
 import React, { useEffect, useRef } from "react";
-import MusicPlayer from "./SubComponents/MusicPlayer";
 import MusicList from "./SubComponents/MusicList";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
-export default function Music({ userRole }) {
-  const { setMusicIndex, handlePlayPause } = useMusicPlayer();
-  const musicListRef = useRef();
+export default function Music() {
+  const { setMusicIndex, handlePlayPause, musicListRef } = useMusicPlayer();
 
   const handleCurrent = (index) => {
     setMusicIndex(index);
-  };
-  const showList = () => {
-    musicListRef.current.style.opacity = "1";
-    musicListRef.current.style.pointerEvents = "auto";
   };
 
   useEffect(() => {
@@ -30,9 +24,8 @@ export default function Music({ userRole }) {
 
   return (
     <div className="body">
-      <MusicPlayer showList={showList} userRole={userRole} />
 
-      <MusicList musicListRef={musicListRef} handleCurrent={handleCurrent} />
+      <MusicList handleCurrent={handleCurrent} />
     </div>
   );
 }

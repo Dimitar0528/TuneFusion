@@ -1,8 +1,8 @@
 .music-list {
+    width: 380px;
+    max-height: clamp(270px, 35vw, 80vh);
     isolation: isolate;
     z-index: 9;
-    width: max-content;
-    max-height: clamp(250px, 35vw, 85vh);
     background-color: var(--card-clr);
     box-shadow: 0 -5px 10px rgba(0, 0, 0, .1);
     padding: 0 .5rem;
@@ -18,6 +18,10 @@
     background-color: var(--primary-clr-dark);
     color: var(--white);
     margin-bottom: 1rem;
+
+    & span {
+        color: var(--white);
+    }
 }
 
 .music-list span {

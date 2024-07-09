@@ -7,11 +7,12 @@
 }
 
 .body {
-    color: black;
-    align-items: end;
-    min-height: 100dvh;
-    line-height: 1.5;
+    min-height: 90dvh;
     background: var(--bg);
+    display: flex;
+    justify-content: space-between;
+    margin-inline: .5rem;
+    align-items: start;
 }
 
 .text-center {
@@ -23,41 +24,78 @@ label {
 }
 
 .wrapper {
-    width: max(320px, 33vw);
+    width: max(350px, 40vw);
     transition-duration: .6s;
     transition-property: display opacity;
     max-height: 655px;
     overflow: hidden;
-    position: absolute;
-    bottom: 0;
+    position: fixed;
+    bottom: .5rem;
     left: 50%;
     translate: -50%;
     background-color: var(--card-clr);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     padding: .25rem 1.5em;
     border-radius: 1rem;
+    z-index: 99;
 }
 
 .wrapper.collapsed {
-    width: max(330px, 40vw);
-    max-height: 175px;
-    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-content: space-evenly;
+    align-items: center;
+    width: max(330px, 90vw);
+    max-height: 75px;
 
-    & .controls {
-        margin-top: .7rem;
+    .controls {
+        gap: 1rem;
+        margin: 0;
     }
 
-    & #volume {
+    .progress-area {
+        width: clamp(100px, 15vw, 100%);
+    }
+
+    #volume {
         width: 75%;
     }
 
-    & #volume-button {
-        margin-top: .5rem;
+    #volume-button {
+        position: relative;
     }
 
-    & .range {
-        bottom: 4.7rem;
-        right: -2.8rem;
+    .range {
+        width: 100px;
+        top: 1.1rem;
+        rotate: 0deg;
+    }
+
+    @media (max-width: 850px) {
+        display: grid;
+        grid-template-columns: 1fr;
+        max-height: 170px;
+
+
+        .controls {
+            justify-content: center;
+            gap: 1.1rem;
+            margin-top: 0.7rem;
+        }
+
+        #volume {
+            width: 75%;
+        }
+
+        .progress-area {
+            width: 100%;
+        }
+
+        .range {
+            rotate: -90deg;
+            right: -2.2rem;
+            top: -3rem;
+        }
     }
 }
 
@@ -72,6 +110,8 @@ label {
     margin-block: 1rem;
 
 }
+
+.volume-control {}
 
 .wrapper.collapsed .img-area {
     display: none;
@@ -111,7 +151,6 @@ label {
     max-width: 100%;
     height: 100%;
     border-radius: 2rem;
-    margin-inline: auto;
     object-fit: cover;
 }
 
@@ -232,14 +271,15 @@ label {
     -webkit-text-fill-color: transparent;
 }
 
-.range {
+.wrapper .range {
+    rotate: -90deg;
     display: none;
     opacity: 0;
     transition-property: display opacity;
     transition-duration: .5s;
     transition-behavior: allow-discrete;
-    bottom: 5.6rem;
-    right: -2.4rem;
+    bottom: 5.9rem;
+    right: -2.2rem;
     position: absolute;
 
 }
@@ -251,6 +291,13 @@ label {
 
     opacity: 1;
     display: block;
+
+    & #volume {}
+}
+
+#volume-button:where(:focus-visible) #volume {
+    outline: 2px solid var(--primary-clr-dark);
+
 }
 
 #volume {
@@ -260,7 +307,7 @@ label {
 }
 
 #volume::-webkit-slider-runnable-track {
-    background: var(--secondary-clr);
+    background: var(--bg);
     border-radius: 100vw;
 }
 

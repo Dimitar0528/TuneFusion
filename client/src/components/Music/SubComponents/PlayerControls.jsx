@@ -22,12 +22,12 @@ export default function PlayerControls({ showList }) {
   };
 
   const handleVolumeKeyDown = (e) => {
-    if (e.key === "ArrowUp" || e.key === "ArrowRight") {
+    if (e.key === "ArrowRight") {
       e.preventDefault();
       handleVolumeChange({
         target: { value: Math.min(volume + 0.01, 1) },
       });
-    } else if (e.key === "ArrowDown" || e.key === "ArrowLeft") {
+    } else if (e.key === "ArrowLeft") {
       e.preventDefault();
       handleVolumeChange({
         target: { value: Math.max(volume - 0.01, 0) },
@@ -100,6 +100,7 @@ export default function PlayerControls({ showList }) {
           <div className="range">
             &nbsp;
             <input
+              tabIndex={0}
               type="range"
               id="volume"
               min="0"
@@ -107,7 +108,6 @@ export default function PlayerControls({ showList }) {
               step="0.01"
               value={volume}
               onChange={handleVolumeChange}
-              style={{ transform: "rotate(-90deg)" }}
             />
           </div>
         </i>

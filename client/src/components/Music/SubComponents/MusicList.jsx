@@ -2,8 +2,8 @@ import React from "react";
 import "./styles/MusicList.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 
-export default function MusicList({ handleCurrent, musicListRef }) {
-  const { songs, musicIndex, lyrics, setLyrics, setIsPlaying } =
+export default function MusicList({ handleCurrent }) {
+  const { songs, musicIndex, lyrics, setLyrics, setIsPlaying, musicListRef } =
     useMusicPlayer();
 
   const hideList = () => {
@@ -31,7 +31,9 @@ export default function MusicList({ handleCurrent, musicListRef }) {
             }}
             className={index === musicIndex ? "playing" : ""}>
             <div className="row">
-              <span>{song.name}</span>
+              <span>
+                <strong>{song.name}</strong> |{" "}
+              </span>
               <p>{song.artist}</p>
             </div>
             {/* <button>Add to playlist</button> */}

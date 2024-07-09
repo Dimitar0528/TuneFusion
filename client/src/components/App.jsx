@@ -16,11 +16,11 @@ import Account from "./Account/Account";
 import { useMusicPlayer } from "../contexts/MusicPlayerContext";
 import TFAVerification from "./Login/TFA";
 import ScrollToTopButton from "./ScrollToTopButton";
-
+import MusicPlayer from "./Music/SubComponents/MusicPlayer";
 export default function App() {
   const [userUUID, setUserUUID] = useState("");
   const [role, setRole] = useState("");
-  const { setSongs, setMusicIndex, songs } = useMusicPlayer();
+  const { musicListRef, songs } = useMusicPlayer();
 
   useEffect(() => {
     async function getUserToken() {
@@ -41,23 +41,12 @@ export default function App() {
       }
     }
     getUserToken();
-
-    const fetchSongs = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/songs");
-        if (!response.ok) {
-          throw new Error("Failed to fetch songs");
-        }
-        const data = await response.json();
-        setSongs(data);
-        setMusicIndex(JSON.parse(localStorage.getItem("songIndex")) || 0);
-      } catch (error) {
-        console.error("Error fetching songs:", error);
-      }
-    };
-
-    fetchSongs();
   }, []);
+
+    const showList = () => {
+      musicListRef.current.style.opacity = "1";
+      musicListRef.current.style.pointerEvents = "auto";
+    };
 
   return (
     <div className="App">
@@ -69,10 +58,12 @@ export default function App() {
           goToLocation={userUUID ? `/account/${userUUID}` : "/sign-in"}
         />
 
+          {userUUID && <MusicPlayer showList={showList} userUUID={userUUID} userRole={role} />}
         <ScrollToTopButton />
 
         <Routes>
           <Route path="/" element={<LandingPage userUUID={userUUID} />} />
+
 
           <Route
             path={`/musicplayer/${userUUID}`}

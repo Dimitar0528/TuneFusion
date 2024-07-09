@@ -8,8 +8,7 @@ export default function SongSuggestion() {
   const [artist, setArtist] = useState("");
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const songsPerPage = 8;
+  const songsPerPage = 10;
 
   const handleInputChange = (e) => {
     setArtist(e.target.value);

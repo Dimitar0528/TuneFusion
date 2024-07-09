@@ -34,6 +34,25 @@ export function MusicPlayerProvider({ children }) {
   const nameRef = useRef();
   const imageRef = useRef();
   const playerRef = useRef();
+  const musicListRef = useRef();
+
+  useEffect(() => {
+    const fetchSongs = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/songs");
+        if (!response.ok) {
+          throw new Error("Failed to fetch songs");
+        }
+        const data = await response.json();
+        setSongs(data);
+        setMusicIndex(JSON.parse(localStorage.getItem("songIndex")) || 0);
+      } catch (error) {
+        console.error("Error fetching songs:", error);
+      }
+    };
+
+    fetchSongs();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("songIndex", JSON.stringify(musicIndex));
@@ -160,6 +179,7 @@ export function MusicPlayerProvider({ children }) {
     nameRef,
     imageRef,
     playerRef,
+    musicListRef,
     loadMusic,
     fetchLyrics,
     handlePlayPause,
