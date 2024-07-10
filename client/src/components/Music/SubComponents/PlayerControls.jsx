@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 
 export default function PlayerControls({ showList }) {
@@ -12,16 +12,18 @@ export default function PlayerControls({ showList }) {
     lyrics,
     fetchLyrics,
     volume,
+    setVolume,
     handleVolumeChange,
   } = useMusicPlayer();
+  const [previousVolume, setPreviousVolume] = useState(volume);
 
-  const handleKeyPress = (e, action) => {
+  const handleEnterKeyPress = (e, action) => {
     if (e.key === "Enter") {
       action();
     }
   };
 
-  const handleVolumeKeyDown = (e) => {
+  const handleVolumeChangeClick = (e) => {
     if (e.key === "ArrowRight") {
       e.preventDefault();
       handleVolumeChange({
@@ -34,6 +36,35 @@ export default function PlayerControls({ showList }) {
       });
     }
   };
+
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      const targetTagName = e.target.tagName.toLowerCase();
+      const isInputFocused = ["input", "select"].includes(targetTagName);
+
+      if (isInputFocused) return;
+
+      if (e.key === "m") {
+        e.preventDefault();
+        if (volume > 0) {
+          setPreviousVolume(volume);
+          setVolume(0);
+        } else {
+          setVolume(previousVolume);
+        }
+      }
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        handlePlayPause();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [volume, previousVolume, setVolume, setPreviousVolume, handlePlayPause]);
 
   return (
     <div className="controls">
@@ -50,20 +81,20 @@ export default function PlayerControls({ showList }) {
         title={`${shuffle ? "Disable" : "Enable"} Shuffle`}
         onClick={toggleShufflePlayList}
         tabIndex={0}
-        onKeyDown={(e) => handleKeyPress(e, toggleShufflePlayList)}></i>
+        onKeyDown={(e) => handleEnterKeyPress(e, toggleShufflePlayList)}></i>
       <i
         id="prev"
         className="fa-solid fa-backward"
         title="Previous"
         onClick={handlePrev}
         tabIndex={0}
-        onKeyDown={(e) => handleKeyPress(e, handlePrev)}></i>
+        onKeyDown={(e) => handleEnterKeyPress(e, handlePrev)}></i>
       <div
         className="play-pause text-center"
-        title={isPlaying ? "Pause" : "Play"}
+        title={isPlaying ? "Pause (space)" : "Play (space)"}
         onClick={handlePlayPause}
         tabIndex={0}
-        onKeyDown={(e) => handleKeyPress(e, handlePlayPause)}>
+        onKeyDown={(e) => handleEnterKeyPress(e, handlePlayPause)}>
         <i className={`fa-solid fa-${isPlaying ? "pause" : "play"}`}></i>
       </div>
       <i
@@ -72,7 +103,7 @@ export default function PlayerControls({ showList }) {
         title="Next"
         onClick={handleNext}
         tabIndex={0}
-        onKeyDown={(e) => handleKeyPress(e, handleNext)}></i>
+        onKeyDown={(e) => handleEnterKeyPress(e, handleNext)}></i>
       <div className="lyrics-wrapper">
         <i
           id="lyrics"
@@ -80,7 +111,7 @@ export default function PlayerControls({ showList }) {
           title={`${lyrics ? "Hide Lyrics" : "Show Lyrics"}`}
           onClick={fetchLyrics}
           tabIndex={0}
-          onKeyDown={(e) => handleKeyPress(e, fetchLyrics)}></i>
+          onKeyDown={(e) => handleEnterKeyPress(e, fetchLyrics)}></i>
       </div>
       <div className="volume-control">
         <i
@@ -94,9 +125,9 @@ export default function PlayerControls({ showList }) {
               ? "fa-volume-low"
               : "fa-volume-high"
           }`}
-          title="Volume"
+          title={`${volume <= 0 ? "Unmute (m)" : "Mute (m)"}`}
           tabIndex={0}
-          onKeyDown={(e) => handleVolumeKeyDown(e)}>
+          onKeyDown={(e) => handleVolumeChangeClick(e)}>
           <div className="range">
             &nbsp;
             <input

@@ -27,6 +27,10 @@ Song.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    duration: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    }
   },
   {
     sequelize: sequelizeInstance,

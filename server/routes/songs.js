@@ -40,7 +40,7 @@ router.get('/:name', async (req, res) => {
 
 
 router.post('/addsong', async (req, res) => {
-    const { name, artist, img_src, audio_src } = req.body;
+    const { name, artist, img_src, audio_src, duration } = req.body;
     const uuid = crypto.randomUUID();
 
     try {
@@ -49,14 +49,16 @@ router.post('/addsong', async (req, res) => {
         });
         if (song) {
             return res.status(400).json({ error: 'The song has already been added to the database!' });
-
         }
+        const songs = await searchMusics(artist);
+        const filteredSongs = songs.filter(song => song.title === name);
         await Song.create({
             uuid,
             name,
             artist,
             img_src,
             audio_src,
+            duration: duration ? duration : filteredSongs[0].duration.totalSeconds
         });
 
         res.status(200).json({ message: "Song added to database!" });
@@ -114,13 +116,16 @@ router.get('/search/:artist', async (req, res) => {
         const songs = await searchMusics(artist);
 
         const songList = await Promise.all(songs.map(async song => {
-            const { title: name, artists, youtubeId: id } = song;
+            const { title: name, artists, youtubeId: id, duration } = song;
+            const song_duration = duration.totalSeconds
             const artistName = artists[0].name;
             const searchTerm = artistName + name;
             const imgs = await gis(searchTerm);
             const img_src = imgs[0]?.url;
             const audio_src = `https://www.youtube.com/watch?v=${id}`;
-            return { name, artist: artistName, img_src, audio_src };
+            return {
+                name, artist: artistName, img_src, audio_src, duration: song_duration
+            };
         }));
 
         res.json(songList);

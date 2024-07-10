@@ -4,7 +4,9 @@ import showToast from "../../../showToast";
 import Table from "../Table";
 import styles from "../styles/Account.module.css"; // Import the CSS module
 import "../styles/table.css";
+import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 export default function SongSuggestion() {
+  const {getSongTimeStamps} = useMusicPlayer();
   const [artist, setArtist] = useState("");
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -91,7 +93,7 @@ export default function SongSuggestion() {
         <Table
           data={songs}
           hasDbSearch={false}
-          columns={["Image", "Title", "Audio Source", "Actions"]}
+          columns={["Image", "Title", "Audio Source", "Duration", "Actions"]}
           itemsPerPage={songsPerPage}
           renderRow={(song) => (
             <tr key={song.uuid}>
@@ -104,6 +106,7 @@ export default function SongSuggestion() {
               </td>
               <td data-th="Title">{song.name}</td>
               <td data-th="Audio Source">{song.audio_src}</td>
+              <td data-th="Duration">{getSongTimeStamps(song.duration)}</td>
               <td data-th="Actions">
                 <div className="cta-admin-buttons">
                   <button onClick={() => handleAddToDB(song)}>

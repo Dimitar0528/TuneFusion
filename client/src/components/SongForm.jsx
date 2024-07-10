@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import styles from "../styles/songForm.module.css"; // Import CSS module
 import { useParams } from "react-router-dom";
 import showToast from "../showToast";
@@ -10,13 +10,41 @@ export default function SongForm({ action }) {
   const artistRef = useRef();
   const imageUrlRef = useRef();
   const audioSrcRef = useRef();
+  const durationRef = useRef();
   const [errors, setErrors] = useState({});
+  const [showDurationInput, setShowDurationInput] = useState(false);
+  const [audioSrc, setAudioSrc] = useState("");
+
+  useEffect(() => {
+    if (action === "updatesong") {
+      async function getSong() {
+        const response = await fetch(
+          `http://localhost:3000/api/songs/${name}`,
+          {
+            method: "GET",
+          }
+        );
+        const song = await response.json();
+        if (nameRef.current) nameRef.current.value = song.name;
+        if (artistRef.current) artistRef.current.value = song.artist;
+        if (imageUrlRef.current) imageUrlRef.current.value = song.img_src;
+        if (audioSrcRef.current) {
+          audioSrcRef.current.value = song.audio_src;
+          setAudioSrc(song.audio_src);
+          setShowDurationInput(
+            song.audio_src && !song.audio_src.includes("youtube.com")
+          );
+          durationRef.current.value = song.duration;
+        }
+      }
+      getSong();
+    }
+  }, [action, name]);
 
   const validateForm = () => {
     const name = nameRef.current.value;
     const artist = artistRef.current.value;
     const imageUrl = imageUrlRef.current.value;
-    const audioSrc = audioSrcRef.current.value;
     const newErrors = {};
 
     if (!name) newErrors.name = "Name is required";
@@ -24,22 +52,17 @@ export default function SongForm({ action }) {
     if (!imageUrl) {
       newErrors.imageUrl = "Image URL is required";
     }
-    // else if (
-    //   !/^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(imageUrl)
-    // ) {
-    //   newErrors.imageUrl = "Invalid image URL format";
-    // }
+
     if (!audioSrc) {
       newErrors.audioSrc = "Audio URL is required";
     } else {
-      const supportedWebsites = ["youtube.com", "soundcloud.com", "twitch.tv"];
+      const isYouTube = audioSrc.includes("youtube.com");
 
-      const isSupported = supportedWebsites.some((website) =>
-        audioSrc.includes(website)
-      );
-      if (!isSupported) {
-        newErrors.audioSrc =
-          "The provided url is not supported for our audio system";
+      if (!isYouTube) {
+        const duration = durationRef.current.value;
+        if (!duration || isNaN(duration) || duration <= 0) {
+          newErrors.duration = "Valid duration in seconds is required";
+        }
       }
     }
 
@@ -48,20 +71,12 @@ export default function SongForm({ action }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  if (action === "updatesong") {
-    async function getSong() {
-      const response = await fetch(`http://localhost:3000/api/songs/${name}`, {
-        method: "GET",
-      });
-      const song = await response.json();
-      console.log(song);
-      if (nameRef.current) nameRef.current.value = song.name;
-      if (artistRef.current) artistRef.current.value = song.artist;
-      if (imageUrlRef.current) imageUrlRef.current.value = song.img_src;
-      if (audioSrcRef.current) audioSrcRef.current.value = song.audio_src;
-    }
-    getSong();
-  }
+  const handleAudioSrcChange = (e) => {
+    const url = e.target.value;
+    setAudioSrc(url);
+    setShowDurationInput(url && !url.includes("youtube.com"));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -70,48 +85,44 @@ export default function SongForm({ action }) {
         name: nameRef.current.value.trim(),
         artist: artistRef.current.value.trim(),
         img_src: imageUrlRef.current.value.trim(),
-        audio_src: audioSrcRef.current.value.trim(),
+        audio_src: audioSrc.trim(),
       };
-      if (action === "updatesong") {
-        try {
-          await fetch(`http://localhost:3000/api/songs/updateSong/${name}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-          });
 
-          showToast(`Song updated successfully!`, "success");
-          setTimeout(() => {
-            location.href = "/";
-          }, 2500);
+      if (showDurationInput) {
+        formData.duration = parseInt(durationRef.current.value.trim(), 10);
+      }
 
-          setErrors({});
-        } catch (error) {
-          console.error("Error updating song:", error);
-          showToast("Failed to update song", "error");
-        }
-      } else {
-        try {
-          await fetch("http://localhost:3000/api/songs/addsong", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-          });
+      try {
+        const url =
+          action === "updatesong"
+            ? `http://localhost:3000/api/songs/updateSong/${name}`
+            : "http://localhost:3000/api/songs/addsong";
+        const method = action === "updatesong" ? "PUT" : "POST";
 
-          showToast(`Song added successfully!`, "success");
-          setTimeout(() => {
-            location.href = "/";
-          }, 2500);
+        await fetch(url, {
+          method,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
 
-          setErrors({});
-        } catch (error) {
-          console.error("Error adding song:", error);
-          showToast("Failed to add song", "error");
-        }
+        showToast(
+          `Song ${action === "updatesong" ? "updated" : "added"} successfully!`,
+          "success",
+          1500,
+          true
+        );
+        setErrors({});
+      } catch (error) {
+        console.error(
+          `Error ${action === "updatesong" ? "updating" : "adding"} song:`,
+          error
+        );
+        showToast(
+          `Failed to ${action === "updatesong" ? "update" : "add"} song`,
+          "error"
+        );
       }
     }
   };
@@ -143,11 +154,26 @@ export default function SongForm({ action }) {
         </div>
         <div className={styles.formGroup}>
           <label>Audio URL:</label>
-          <input type="text" name="audioSrc" ref={audioSrcRef} />
+          <input
+            type="text"
+            name="audioSrc"
+            ref={audioSrcRef}
+            value={audioSrc}
+            onChange={handleAudioSrcChange}
+          />
           {errors.audioSrc && (
             <span className={styles.error}>{errors.audioSrc}</span>
           )}
         </div>
+        {audioSrc && showDurationInput && (
+          <div className={styles.formGroup}>
+            <label>Duration (in seconds):</label>
+            <input type="text" name="duration" ref={durationRef} />
+            {errors.duration && (
+              <span className={styles.error}>{errors.duration}</span>
+            )}
+          </div>
+        )}
         <button className={styles.submitButton} type="submit">
           {action === "updatesong" ? "Update" : "Add"} Song
         </button>

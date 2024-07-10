@@ -23,25 +23,19 @@ export default function ProgressArea() {
 
   const [isDragging, setIsDragging] = useState(false);
 
-  const handleDuration = (duration) => {
-    durationRef.current.textContent = getSongTimeStamps(duration);
-  };
-
   const handleProgress = (state) => {
     if (!isDragging) {
       const { playedSeconds, played } = state;
-      const duration = playerRef.current.getDuration();
+      const duration = songs[musicIndex].duration
       const progress = played > 0 ? played : currentTime / duration;
       progressBarRef.current.style.width = `${progress * 100}%`;
       currentRef.current.textContent = getSongTimeStamps(currentTime);
-
-      if (playedSeconds > 0) {
-        setCurrentTime(Math.round(playedSeconds));
-        localStorage.setItem(
-          "currentTime",
-          JSON.stringify(Math.round(playedSeconds))
-        );
-      }
+      if (playedSeconds <= 0) return;
+      setCurrentTime(Math.round(playedSeconds));
+      localStorage.setItem(
+        "currentTime",
+        JSON.stringify(Math.round(playedSeconds))
+      );
     }
   };
 
@@ -93,7 +87,7 @@ export default function ProgressArea() {
           0:00
         </span>
         <span className="duration" ref={durationRef}>
-          0:00
+          {getSongTimeStamps(songs[musicIndex].duration)}
         </span>
       </div>
       <ReactPlayer
@@ -104,12 +98,10 @@ export default function ProgressArea() {
         volume={volume}
         onProgress={handleProgress}
         onEnded={handleNext}
-        onDuration={handleDuration}
         width="0"
         height="0"
         progressInterval={100}
         playsinline={true}
-      
       />
     </div>
   );

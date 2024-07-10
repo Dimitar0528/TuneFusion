@@ -1,10 +1,18 @@
-import React from "react";
+import React, { useRef } from "react";
 import "./styles/MusicList.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
+
 export default function MusicList({ handleCurrent }) {
-  const { songs, musicIndex, lyrics, setLyrics, setIsPlaying, musicListRef } =
-    useMusicPlayer();
+  const {
+    songs,
+    musicIndex,
+    lyrics,
+    setLyrics,
+    setIsPlaying,
+    musicListRef,
+    getSongTimeStamps,
+  } = useMusicPlayer();
 
   const hideList = () => {
     musicListRef.current.style.opacity = "0";
@@ -22,12 +30,13 @@ export default function MusicList({ handleCurrent }) {
       </div>
       <table className="music-table">
         <thead>
-            <tr>
-              <th>#</th>
-              <th>Cover</th>
-              <th>Title / Artist</th>
-              <th>Date Added</th>
-            </tr>
+          <tr>
+            <th>#</th>
+            <th>Cover</th>
+            <th>Title / Artist</th>
+            <th>Date Added</th>
+            <th>Duration</th>
+          </tr>
         </thead>
         <tbody>
           {songs.map((song, index) => (
@@ -55,6 +64,7 @@ export default function MusicList({ handleCurrent }) {
                 </div>
               </td>
               <td>{formatDate(song.createdAt)}</td>
+              <td>{getSongTimeStamps(song.duration)}</td>
             </tr>
           ))}
         </tbody>
