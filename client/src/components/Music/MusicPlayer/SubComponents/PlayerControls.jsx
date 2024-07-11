@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
+import { useMusicPlayer } from "../../../../contexts/MusicPlayerContext";
 
 export default function PlayerControls({ showList }) {
   const {

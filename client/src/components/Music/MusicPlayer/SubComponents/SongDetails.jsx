@@ -1,7 +1,6 @@
 import React from "react";
-import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
-
+import { useMusicPlayer } from "../../../../contexts/MusicPlayerContext";
+import extractUUIDPrefix from "../../../../utils/extractUUIDPrefix";
 export default function SongDetails() {
   const {
     isLoading,
@@ -12,7 +11,6 @@ export default function SongDetails() {
     songs,
     currentSongUUID,
   } = useMusicPlayer();
-  
   const currentSong = songs.find(
     (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
   );

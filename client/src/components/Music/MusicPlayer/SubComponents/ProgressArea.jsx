@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import ReactPlayer from "react-player/lazy";
-import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
+import { useMusicPlayer } from "../../../../contexts/MusicPlayerContext";
+import extractUUIDPrefix from "../../../../utils/extractUUIDPrefix";
 export default function ProgressArea() {
   const {
     progressAreaRef,

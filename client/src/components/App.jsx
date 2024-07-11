@@ -16,7 +16,7 @@ import Account from "./Account/Account";
 import { useMusicPlayer } from "../contexts/MusicPlayerContext";
 import TFAVerification from "./Login/TFA";
 import ScrollToTopButton from "./ScrollToTopButton";
-import MusicPlayer from "./Music/SubComponents/MusicPlayer";
+import MusicPlayer from "./Music/MusicPlayer/MusicPlayer";
 export default function App() {
   const [userUUID, setUserUUID] = useState("");
   const [role, setRole] = useState("");

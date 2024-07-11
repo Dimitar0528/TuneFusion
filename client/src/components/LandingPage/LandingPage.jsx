@@ -147,8 +147,18 @@ export default function LandingPage({ userUUID }) {
           />
           <GenreCard
             userUUID={userUUID}
+            imageUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/James_Hetfield_live_in_Amesterdam_29_April_2023.jpg/1200px-James_Hetfield_live_in_Amesterdam_29_April_2023.jpg"
+            genreName="Rock"
+          />
+          <GenreCard
+            userUUID={userUUID}
             imageUrl="https://pbs.twimg.com/media/DUjJ38cW4AAPBy2.jpg"
             genreName="EDM"
+          />
+          <GenreCard
+            userUUID={userUUID}
+            imageUrl="https://scontent.fsof9-1.fna.fbcdn.net/v/t39.30808-6/398669671_867675838053916_6418958843618861615_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=833d8c&_nc_ohc=ieuOaTaA8dkQ7kNvgHSo6uz&_nc_ht=scontent.fsof9-1.fna&oh=00_AYAzckGNuARi6LE0yoZom4oLEiFAMttrnotSj1GhhTZHjg&oe=6695948E"
+            genreName="Bulgarian Pop Folk"
           />
         </div>
       </section>

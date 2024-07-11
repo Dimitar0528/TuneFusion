@@ -219,6 +219,7 @@ nav {
   display: grid;
   place-items: center;
   gap: 2rem 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
 }
 
 .genre__card {
@@ -298,10 +299,12 @@ nav {
 
 .feature__image img {
   padding: 5px;
-  max-width: 400px;
   margin-inline: auto;
   border-radius: 1rem 1rem 1rem 10rem;
   border: 2px solid var(--text-light-clr);
+  @media(width > 768px){
+    max-width: 400px;
+  }
 }
 
 .feature__list {
@@ -447,9 +450,7 @@ footer {
     line-height: 6rem;
   }
 
-  .genre__grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+
 }
 
 @media (width > 768px) {
@@ -514,9 +515,6 @@ footer {
     grid-area: 2/3/3/5;
   }
 
-  .genre__grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
 
   .feature__container {
     grid-template-columns: repeat(2, 1fr);
