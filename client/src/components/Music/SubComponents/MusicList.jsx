@@ -1,24 +1,50 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import "./styles/MusicList.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
-
-export default function MusicList({ handleCurrent }) {
+import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
+import ReactPaginate from "react-paginate";
+export default function MusicList() {
   const {
     songs,
-    musicIndex,
+    currentSongUUID,
+    setCurrentSongUUID,
     lyrics,
     setLyrics,
+    isPlaying,
     setIsPlaying,
     musicListRef,
     getSongTimeStamps,
   } = useMusicPlayer();
+
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const itemsPerPage = 10;
+
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
+  const offset = currentPage * itemsPerPage;
+  const currentSongs = songs.slice(offset, offset + itemsPerPage);
+  const pageCount = Math.ceil(songs.length / itemsPerPage);
 
   const hideList = () => {
     musicListRef.current.style.opacity = "0";
     musicListRef.current.style.pointerEvents = "none";
   };
 
+  const handleCurrentPlayingSong = (songUUID) => {
+    setCurrentSongUUID(songUUID);
+  };
+  const handleMusicListSong = (song) => {
+    handleCurrentPlayingSong(extractUUIDPrefix(song.uuid));
+    setIsPlaying(true);
+    lyrics && setLyrics("");
+    extractUUIDPrefix(song.uuid) === currentSongUUID &&
+      isPlaying &&
+      setIsPlaying(false);
+  };
   return (
     <div ref={musicListRef} className="music-list">
       <div className="header">
@@ -30,7 +56,7 @@ export default function MusicList({ handleCurrent }) {
       </div>
       <table className="music-table">
         <thead>
-          <tr>
+          <tr className="tr">
             <th>#</th>
             <th>Cover</th>
             <th>Title / Artist</th>
@@ -39,22 +65,23 @@ export default function MusicList({ handleCurrent }) {
           </tr>
         </thead>
         <tbody>
-          {songs.map((song, index) => (
+          {currentSongs.map((song, index) => (
             <tr
               key={song.uuid}
-              className={index === musicIndex ? "playing" : ""}
-              onClick={() => {
-                handleCurrent(index);
-                setIsPlaying(true);
-                lyrics && setLyrics("");
-              }}>
-              <td>{index + 1}</td>
+              onClick={() => handleMusicListSong(song)}
+              className={
+                extractUUIDPrefix(song.uuid) === currentSongUUID
+                  ? "playing"
+                  : "tr"
+              }>
+              <td>{offset + index + 1}</td>
               <td>
                 <img
                   width={40}
                   height={40}
                   src={song.img_src}
                   alt={song.name}
+                  style={{ objectFit: "cover" }}
                 />
               </td>
               <td>
@@ -69,6 +96,15 @@ export default function MusicList({ handleCurrent }) {
           ))}
         </tbody>
       </table>
+      <ReactPaginate
+        previousLabel={"Previous"}
+        nextLabel={"Next"}
+        breakLabel={"..."}
+        pageCount={pageCount}
+        onPageChange={handlePageClick}
+        containerClassName={"pagination"}
+        activeClassName={"active"}
+      />
     </div>
   );
 }

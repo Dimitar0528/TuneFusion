@@ -8,11 +8,12 @@ import React, {
 
 const MusicPlayerContext = createContext();
 import showToast from "../showToast";
+import extractUUIDPrefix from "../utils/extractUUIDPrefix";
 
 export function MusicPlayerProvider({ children }) {
   const [songs, setSongs] = useState([]);
-  const [musicIndex, setMusicIndex] = useState(
-    () => JSON.parse(localStorage.getItem("songIndex")) || 0
+  const [currentSongUUID, setCurrentSongUUID] = useState(
+    () => JSON.parse(localStorage.getItem("currentSongUUID")) || ""
   );
   const [isPlaying, setIsPlaying] = useState(false);
   const [lyrics, setLyrics] = useState("");
@@ -45,7 +46,6 @@ export function MusicPlayerProvider({ children }) {
         }
         const data = await response.json();
         setSongs(data);
-        setMusicIndex(JSON.parse(localStorage.getItem("songIndex")) || 0);
       } catch (error) {
         console.error("Error fetching songs:", error);
       }
@@ -55,19 +55,29 @@ export function MusicPlayerProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("songIndex", JSON.stringify(musicIndex));
+    localStorage.setItem("currentSongUUID", JSON.stringify(currentSongUUID));
     if (songs.length > 0) {
-      loadMusic(musicIndex);
+      loadMusic(currentSongUUID);
     }
-  }, [songs, musicIndex]);
+  }, [songs, currentSongUUID]);
 
-  const loadMusic = async (index) => {
-    const music = songs[index];
-    if (songRef.current) songRef.current.textContent = music.name;
-    if (nameRef.current) nameRef.current.textContent = music.artist;
-    if (imageRef.current) imageRef.current.src = music.img_src;
+  useEffect(() => {
+    localStorage.setItem(
+      "currentTime",
+      JSON.stringify(Math.round(currentTime))
+    );
+  }, [Math.round(currentTime)]);
+
+  const loadMusic = async (songUUID) => {
+    const music = songs.find(
+      (song) => extractUUIDPrefix(song.uuid) === songUUID
+    );
+    if (music) {
+      if (songRef.current) songRef.current.textContent = music.name;
+      if (nameRef.current) nameRef.current.textContent = music.artist;
+      if (imageRef.current) imageRef.current.src = music.img_src;
+    }
   };
-
   const fetchLyrics = async () => {
     if (isCollapsed)
       return showToast(
@@ -78,7 +88,13 @@ export function MusicPlayerProvider({ children }) {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3000/api/songs/${songs[musicIndex].artist}/${songs[musicIndex].name}`
+        `http://localhost:3000/api/songs/${
+          songs.find((song) => extractUUIDPrefix(song.uuid) === currentSongUUID)
+            .artist
+        }/${
+          songs.find((song) => extractUUIDPrefix(song.uuid) === currentSongUUID)
+            .name
+        }`
       );
       const lyrics = await response.json();
       if (lyrics.error) return setLyrics(lyrics.error);
@@ -97,17 +113,21 @@ export function MusicPlayerProvider({ children }) {
     setIsPlaying(!isPlaying);
   };
 
-  const handleNext = () => {
+  const handleNextSong = () => {
     if (shuffle) {
       let randomIndex;
       do {
         randomIndex = Math.floor(Math.random() * songs.length);
-      } while (randomIndex === musicIndex);
-      setMusicIndex(randomIndex);
+      } while (extractUUIDPrefix(songs[randomIndex].uuid) === currentSongUUID);
+      setCurrentSongUUID(extractUUIDPrefix(songs[randomIndex].uuid));
       setIsPlaying(true);
       lyrics && setLyrics("");
     } else {
-      setMusicIndex((prevIndex) => (prevIndex + 1) % songs.length);
+      const currentIndex = songs.findIndex(
+        (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
+      );
+      const nextIndex = (currentIndex + 1) % songs.length;
+      setCurrentSongUUID(extractUUIDPrefix(songs[nextIndex].uuid));
       setIsPlaying(true);
       lyrics && setLyrics("");
     }
@@ -127,14 +147,18 @@ export function MusicPlayerProvider({ children }) {
     localStorage.setItem("isCollapsed", JSON.stringify(!isCollapsed));
   };
 
-  const handlePrev = () => {
-    setMusicIndex((prevIndex) => (prevIndex - 1 + songs.length) % songs.length);
+  const handlePreviousSong = () => {
+    const currentIndex = songs.findIndex(
+      (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
+    );
+    const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
+    setCurrentSongUUID(extractUUIDPrefix(songs[prevIndex].uuid));
     setIsPlaying(true);
     lyrics && setLyrics("");
     setCurrentTime(0);
   };
 
-  const handleProgressClick = (e) => {
+  const handleProgressBarClick = (e) => {
     const progressBarWidth = progressAreaRef.current.clientWidth;
     const clickedOffsetX = e.nativeEvent.offsetX;
     const newTime =
@@ -159,8 +183,8 @@ export function MusicPlayerProvider({ children }) {
   const contextValue = {
     songs,
     setSongs,
-    musicIndex,
-    setMusicIndex,
+    currentSongUUID,
+    setCurrentSongUUID,
     isPlaying,
     setIsPlaying,
     lyrics,
@@ -183,11 +207,11 @@ export function MusicPlayerProvider({ children }) {
     loadMusic,
     fetchLyrics,
     handlePlayPause,
-    handleNext,
+    handleNextSong,
     toggleShufflePlayList,
     handleCollapseToggle,
-    handlePrev,
-    handleProgressClick,
+    handlePreviousSong,
+    handleProgressBarClick,
     handleVolumeChange,
     getSongTimeStamps,
     currentTime,

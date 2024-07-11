@@ -1,20 +1,20 @@
 import React, { useRef, useEffect, useState } from "react";
 import ReactPlayer from "react-player/lazy";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-
+import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 export default function ProgressArea() {
   const {
     progressAreaRef,
     progressBarRef,
     playerRef,
-    handleProgressClick,
+    handleProgressBarClick,
     songs,
-    musicIndex,
+    currentSongUUID,
     isPlaying,
     volume,
     currentTime,
     setCurrentTime,
-    handleNext,
+    handleNextSong,
     getSongTimeStamps,
   } = useMusicPlayer();
 
@@ -23,31 +23,30 @@ export default function ProgressArea() {
 
   const [isDragging, setIsDragging] = useState(false);
 
-  const handleProgress = (state) => {
+  const handleMusicPlayerProgress = (state) => {
     if (!isDragging) {
       const { playedSeconds, played } = state;
-      const duration = songs[musicIndex].duration
+      const duration = songs.find(
+        (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
+      )?.duration;
+
       const progress = played > 0 ? played : currentTime / duration;
       progressBarRef.current.style.width = `${progress * 100}%`;
       currentRef.current.textContent = getSongTimeStamps(currentTime);
       if (playedSeconds <= 0) return;
       setCurrentTime(Math.round(playedSeconds));
-      localStorage.setItem(
-        "currentTime",
-        JSON.stringify(Math.round(playedSeconds))
-      );
     }
   };
 
-  const handleDragStart = () => {
+  const handleProgressBarDragStart = () => {
     setIsDragging(true);
   };
 
-  const handleDragEnd = () => {
+  const handleProgressBarDragEnd = () => {
     setIsDragging(false);
   };
 
-  const handleDragProgress = (e) => {
+  const handleProgressBarDrag = (e) => {
     if (isDragging) {
       const progressBarWidth = progressAreaRef.current.clientWidth;
       const offsetX =
@@ -66,38 +65,45 @@ export default function ProgressArea() {
   };
 
   useEffect(() => {
-    document.addEventListener("mousemove", handleDragProgress);
-    document.addEventListener("mouseup", handleDragEnd);
+    document.addEventListener("mousemove", handleProgressBarDrag);
+    document.addEventListener("mouseup", handleProgressBarDragEnd);
 
     return () => {
-      document.removeEventListener("mousemove", handleDragProgress);
-      document.removeEventListener("mouseup", handleDragEnd);
+      document.removeEventListener("mousemove", handleProgressBarDrag);
+      document.removeEventListener("mouseup", handleProgressBarDragEnd);
     };
-  }, [handleDragProgress]);
+  }, [handleProgressBarDrag]);
 
   return (
     <div
       className="progress-area"
       ref={progressAreaRef}
-      onClick={handleProgressClick}
-      onMouseDown={handleDragStart}>
+      onClick={handleProgressBarClick}
+      onMouseDown={handleProgressBarDragStart}>
       <div className="progress-bar" ref={progressBarRef}></div>
       <div className="timer">
         <span className="current" ref={currentRef}>
           0:00
         </span>
         <span className="duration" ref={durationRef}>
-          {getSongTimeStamps(songs[musicIndex].duration)}
+          {getSongTimeStamps(
+            songs.find(
+              (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
+            )?.duration || 0
+          )}
         </span>
       </div>
       <ReactPlayer
         ref={playerRef}
         className="main-audio"
-        url={songs[musicIndex]?.audio_src}
+        url={
+          songs.find((song) => extractUUIDPrefix(song.uuid) === currentSongUUID)
+            ?.audio_src
+        }
         playing={isPlaying}
         volume={volume}
-        onProgress={handleProgress}
-        onEnded={handleNext}
+        onProgress={handleMusicPlayerProgress}
+        onEnded={handleNextSong}
         width="0"
         height="0"
         progressInterval={100}

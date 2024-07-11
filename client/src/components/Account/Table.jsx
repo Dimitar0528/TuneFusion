@@ -19,7 +19,7 @@ export default function TableWithPagination({
     setCurrentPage(selected);
   };
 
-  const handleSearchChange = (e) => {
+  const handleSearchResults = (e) => {
     setSearchQuery(e.target.value);
     setCurrentPage(0);
   };
@@ -62,7 +62,7 @@ export default function TableWithPagination({
             type="text"
             placeholder="Search by UUID or name"
             value={searchQuery}
-            onChange={handleSearchChange}
+            onChange={handleSearchResults}
             style={{
               padding: "0.5rem",
               borderRadius: "4px",

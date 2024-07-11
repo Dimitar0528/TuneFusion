@@ -5,8 +5,8 @@ export default function PlayerControls({ showList }) {
   const {
     isPlaying,
     handlePlayPause,
-    handleNext,
-    handlePrev,
+    handleNextSong,
+    handlePreviousSong,
     shuffle,
     toggleShufflePlayList,
     lyrics,
@@ -23,7 +23,7 @@ export default function PlayerControls({ showList }) {
     }
   };
 
-  const handleVolumeChangeClick = (e) => {
+  const handleVolumeChangeKeyPress = (e) => {
     if (e.key === "ArrowRight") {
       e.preventDefault();
       handleVolumeChange({
@@ -74,7 +74,7 @@ export default function PlayerControls({ showList }) {
         title="Show Music List"
         onClick={showList}
         tabIndex={0}
-        onKeyDown={(e) => handleKeyPress(e, showList)}></i>
+        onKeyDown={(e) => handleEnterKeyPress(e, showList)}></i>
       <i
         id="shuffle"
         className={`fa-solid ${shuffle ? "fa-repeat" : "fa-shuffle"}`}
@@ -86,9 +86,9 @@ export default function PlayerControls({ showList }) {
         id="prev"
         className="fa-solid fa-backward"
         title="Previous"
-        onClick={handlePrev}
+        onClick={handlePreviousSong}
         tabIndex={0}
-        onKeyDown={(e) => handleEnterKeyPress(e, handlePrev)}></i>
+        onKeyDown={(e) => handleEnterKeyPress(e, handlePreviousSong)}></i>
       <div
         className="play-pause text-center"
         title={isPlaying ? "Pause (space)" : "Play (space)"}
@@ -101,9 +101,9 @@ export default function PlayerControls({ showList }) {
         id="next"
         className="fa-solid fa-forward"
         title="Next"
-        onClick={handleNext}
+        onClick={handleNextSong}
         tabIndex={0}
-        onKeyDown={(e) => handleEnterKeyPress(e, handleNext)}></i>
+        onKeyDown={(e) => handleEnterKeyPress(e, handleNextSong)}></i>
       <div className="lyrics-wrapper">
         <i
           id="lyrics"
@@ -127,7 +127,7 @@ export default function PlayerControls({ showList }) {
           }`}
           title={`${volume <= 0 ? "Unmute (m)" : "Mute (m)"}`}
           tabIndex={0}
-          onKeyDown={(e) => handleVolumeChangeClick(e)}>
+          onKeyDown={(e) => handleVolumeChangeKeyPress(e)}>
           <div className="range">
             &nbsp;
             <input

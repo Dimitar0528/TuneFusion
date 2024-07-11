@@ -16,12 +16,12 @@ export default function EditAccount({ user }) {
 
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: name ?? "",
-    first_name: first_name ?? "",
-    last_name: last_name ?? "",
-    email_address: email_address ?? "",
-    phone_number: phone_number ?? "",
-    gender: gender ?? "",
+    name: "",
+    first_name: "",
+    last_name: "",
+    email_address: "",
+    phone_number: "",
+    gender: "",
   });
 
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
@@ -29,7 +29,6 @@ export default function EditAccount({ user }) {
   const [repeatPassword, setRepeatPassword] = useState("");
 
   useEffect(() => {
-    // Populate initial form data
     setFormData({
       name: name ?? "",
       first_name: first_name ?? "",
@@ -42,10 +41,10 @@ export default function EditAccount({ user }) {
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
+    setFormData((oldFormData) => ({ ...oldFormData, [id]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (
       formData.name === name &&
@@ -118,7 +117,7 @@ export default function EditAccount({ user }) {
     }
   };
 
-  const handleLogout = async () => {
+  const handleUserLogout = async () => {
     if (!window.confirm("Are you sure you want to log out from your account?"))
       return;
 
@@ -144,7 +143,7 @@ export default function EditAccount({ user }) {
     }
   };
 
-  const handleDeleteAccount = async () => {
+  const handleUserDeleteAccount = async () => {
     if (!window.confirm("Are you sure you want to delete your account?"))
       return;
 
@@ -190,7 +189,7 @@ export default function EditAccount({ user }) {
       <form
         name="edit-form"
         className={styles.editContainer}
-        onSubmit={handleSubmit}>
+        onSubmit={handleFormSubmit}>
         <h1 className={styles.editTitle}>Edit my account</h1>
         <div className={styles.grid}>
           <div className={`${styles.formGroup} ${styles.a}`}>
@@ -268,13 +267,13 @@ export default function EditAccount({ user }) {
           <button
             type="button"
             className={`${styles.button} ${styles.deleteBtn}`}
-            onClick={handleDeleteAccount}>
+            onClick={handleUserDeleteAccount}>
             Delete Account
           </button>
           <button
             type="button"
             className={`${styles.button} ${styles.logOut}`}
-            onClick={handleLogout}>
+            onClick={handleUserLogout}>
             Log Out
           </button>
           <button
@@ -299,8 +298,7 @@ export default function EditAccount({ user }) {
               The same rules apply for new password: To be at least 8 characters
               long and to have at least one capitalized letter and number
             </p>
-            <form
-              onSubmit={handleResetPassword}>
+            <form onSubmit={handleResetPassword}>
               <label htmlFor="newPassword">New Password:</label>
               <input
                 type="password"

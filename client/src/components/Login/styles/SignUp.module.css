@@ -11,6 +11,15 @@ input {
     font-family: "Poppins", sans-serif;
 }
 
+.label {
+    font-size: 1.4rem;
+    font-weight: bold;
+    background-color: hsl(from var(--primary-clr) h s 80%);
+
+    padding: .25rem;
+    border-radius: 1rem;
+}
+
 .error {
     color: red;
 }

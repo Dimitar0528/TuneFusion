@@ -1,8 +1,21 @@
 import React from "react";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
+import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
+
 export default function SongDetails() {
-  const { isLoading, lyrics, songRef, nameRef, imageRef, songs, musicIndex } =
-    useMusicPlayer();
+  const {
+    isLoading,
+    lyrics,
+    songRef,
+    nameRef,
+    imageRef,
+    songs,
+    currentSongUUID,
+  } = useMusicPlayer();
+  
+  const currentSong = songs.find(
+    (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
+  );
   return (
     <>
       <div className="img-area text-center">
@@ -17,7 +30,7 @@ export default function SongDetails() {
           <img
             ref={imageRef}
             className="image"
-            src={songs[musicIndex]?.img_src}
+            src={currentSong?.img_src}
             alt="Song Cover Art"
             width={440}
           />

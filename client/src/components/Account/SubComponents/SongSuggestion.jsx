@@ -9,7 +9,7 @@ export default function SongSuggestion() {
   const {getSongTimeStamps} = useMusicPlayer();
   const [artist, setArtist] = useState("");
   const [songs, setSongs] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const songsPerPage = 10;
 
   const handleInputChange = (e) => {
@@ -18,7 +18,7 @@ export default function SongSuggestion() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     setSongs([]);
     try {
       const response = await fetch(
@@ -34,12 +34,14 @@ export default function SongSuggestion() {
     } catch (error) {
       showToast(`Error: ${error.message}`, "error");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   const handleAddToDB = async (song) => {
     try {
+      setIsLoading(true);
+      setSongs([]);
       const response = await fetch("http://localhost:3000/api/songs/addsong", {
         method: "POST",
         headers: {
@@ -53,6 +55,7 @@ export default function SongSuggestion() {
       } else {
         const responseData = await response.json();
         showToast(responseData.message, "success", 1500, true);
+        setIsLoading(false)
       }
     } catch (error) {
       showToast(`Error: ${error.message}`, "error");
@@ -80,11 +83,11 @@ export default function SongSuggestion() {
           placeholder="Enter artist name"
           required
         />
-        <button className="addbtn btn6" type="submit" disabled={loading}>
-          {loading ? "Searching..." : "Search"}
+        <button className="addbtn btn6" type="submit" disabled={isLoading}>
+          {isLoading ? "Searching..." : "Search"}
         </button>
       </form>
-      {loading && (
+      {isLoading && (
         <i
           style={{ fontSize: "11rem", color: "white", marginBlock: "1rem" }}
           className="fas fa-spinner fa-spin"></i>

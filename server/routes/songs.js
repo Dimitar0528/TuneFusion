@@ -50,15 +50,13 @@ router.post('/addsong', async (req, res) => {
         if (song) {
             return res.status(400).json({ error: 'The song has already been added to the database!' });
         }
-        const songs = await searchMusics(artist);
-        const filteredSongs = songs.filter(song => song.title === name);
         await Song.create({
             uuid,
             name,
             artist,
             img_src,
             audio_src,
-            duration: duration ? duration : filteredSongs[0].duration.totalSeconds
+            duration: duration
         });
 
         res.status(200).json({ message: "Song added to database!" });

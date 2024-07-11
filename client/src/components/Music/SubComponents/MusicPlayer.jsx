@@ -7,10 +7,12 @@ import ProgressArea from "./ProgressArea";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../showToast";
-export default function MusicPlayer({ showList, userRole,userUUID }) {
+import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
+
+export default function MusicPlayer({ showList, userRole, userUUID }) {
   const {
     songs,
-    musicIndex,
+    currentSongUUID,
     isPlaying,
     isCollapsed,
     loadMusic,
@@ -21,9 +23,9 @@ export default function MusicPlayer({ showList, userRole,userUUID }) {
 
   useEffect(() => {
     if (songs.length > 0) {
-      loadMusic(musicIndex);
+      loadMusic(currentSongUUID);
     }
-  }, [songs, musicIndex]);
+  }, [songs, currentSongUUID]);
 
   const handleKeyPress = (event, action) => {
     if (event.key === "Enter") {
@@ -32,7 +34,7 @@ export default function MusicPlayer({ showList, userRole,userUUID }) {
   };
 
   const desiredUrls = [`/musicplayer/${userUUID}`];
-  const handleCollapseAndRedirect = () => {
+  const handleCollapseAndWarn = () => {
     if (desiredUrls.every((url) => url !== location.pathname)) {
       return showToast(
         "To view the full version of the music player, please enter the Music Player section!",
@@ -51,12 +53,24 @@ export default function MusicPlayer({ showList, userRole,userUUID }) {
             className="fa-solid fa-pen-to-square"
             title="Update Song"
             onClick={() => {
-              navigate(`/updatesong/${songs[musicIndex].name}`);
+              navigate(
+                `/updatesong/${
+                  songs.find(
+                    (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
+                  ).name
+                }`
+              );
             }}
             tabIndex={0}
             onKeyDown={(event) =>
               handleKeyPress(event, () =>
-                navigate(`/updatesong/${songs[musicIndex].name}`)
+                navigate(
+                  `/updatesong/${
+                    songs.find(
+                      (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
+                    ).name
+                  }`
+                )
               )
             }></i>
         )}
@@ -67,19 +81,19 @@ export default function MusicPlayer({ showList, userRole,userUUID }) {
           }`}
           onClick={() => {
             isCollapsed === true
-              ? handleCollapseAndRedirect()
+              ? handleCollapseAndWarn()
               : handleCollapseToggle();
           }}
           title={`${!isCollapsed ? "Collapse" : "Full View"}`}
           tabIndex={0}
           onKeyDown={(event) =>
-            handleKeyPress(event, handleCollapseAndRedirect)
+            handleKeyPress(event, handleCollapseAndWarn)
           }></i>
       </div>
 
       <SongDetails />
 
-      {songs.length > 0 && musicIndex >= 0 && <ProgressArea />}
+      {songs.length > 0 && <ProgressArea />}
 
       <PlayerControls showList={showList} />
     </div>
