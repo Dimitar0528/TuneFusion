@@ -5,13 +5,10 @@ import showToast from "../../../showToast";
 import Table from "../Table";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
+import { getSongTimeStamp } from "../../../utils/getSongTimeStamp";
 export default function ViewSongs({ songs }) {
-  const {
-    currentSongUUID,
-    setCurrentSongUUID,
-    setCurrentTime,
-    getSongTimeStamps,
-  } = useMusicPlayer();
+  const { currentSongUUID, setCurrentSongUUID, setCurrentTime } =
+    useMusicPlayer();
   const navigate = useNavigate();
   const songsPerPage = 10;
 
@@ -75,7 +72,7 @@ export default function ViewSongs({ songs }) {
           <td data-th="UUID">{song.uuid}</td>
           <td data-th="Title">{song.name}</td>
           <td data-th="Artist">{song.artist}</td>
-          <td data-th="Duration">{getSongTimeStamps(song.duration)}</td>
+          <td data-th="Duration">{getSongTimeStamp(song.duration)}</td>
           <td data-th="Audio Source">{song.audio_src}</td>
           <td data-th="Actions">
             <div className="cta-admin-buttons">

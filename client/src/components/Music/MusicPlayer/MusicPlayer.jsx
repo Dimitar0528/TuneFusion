@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./styles/MusicPlayer.css";
 import "react-toastify/dist/ReactToastify.css";
 import PlayerControls from "./SubComponents/PlayerControls";
@@ -7,25 +7,17 @@ import ProgressArea from "./SubComponents/ProgressArea";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../showToast";
-import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 
 export default function MusicPlayer({ showList, userRole, userUUID }) {
   const {
     songs,
-    currentSongUUID,
+    currentSong,
     isPlaying,
     isCollapsed,
-    loadMusic,
     handleCollapseToggle,
   } = useMusicPlayer();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (songs.length > 0) {
-      loadMusic(currentSongUUID);
-    }
-  }, [songs, currentSongUUID]);
 
   const handleKeyPress = (event, action) => {
     if (event.key === "Enter") {
@@ -53,24 +45,12 @@ export default function MusicPlayer({ showList, userRole, userUUID }) {
             className="fa-solid fa-pen-to-square"
             title="Update Song"
             onClick={() => {
-              navigate(
-                `/updatesong/${
-                  songs.find(
-                    (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
-                  ).name
-                }`
-              );
+              navigate(`/updatesong/${currentSong.name}`);
             }}
             tabIndex={0}
             onKeyDown={(event) =>
               handleKeyPress(event, () =>
-                navigate(
-                  `/updatesong/${
-                    songs.find(
-                      (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
-                    ).name
-                  }`
-                )
+                navigate(`/updatesong/${currentSong.name}`)
               )
             }></i>
         )}

@@ -1,19 +1,12 @@
 import React from "react";
 import { useMusicPlayer } from "../../../../contexts/MusicPlayerContext";
-import extractUUIDPrefix from "../../../../utils/extractUUIDPrefix";
 export default function SongDetails() {
   const {
     isLoading,
     lyrics,
-    songRef,
-    nameRef,
-    imageRef,
-    songs,
-    currentSongUUID,
+    currentSong,
   } = useMusicPlayer();
-  const currentSong = songs.find(
-    (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
-  );
+
   return (
     <>
       <div className="img-area text-center">
@@ -26,7 +19,6 @@ export default function SongDetails() {
           <div className="lyrics">{lyrics ? <pre>{lyrics}</pre> : null}</div>
         ) : (
           <img
-            ref={imageRef}
             className="image"
             src={currentSong?.img_src}
             alt="Song Cover Art"
@@ -35,8 +27,8 @@ export default function SongDetails() {
         )}
       </div>
       <div className="song-details text-center">
-        <p className="name" ref={songRef}></p>
-        <p className="artist" ref={nameRef}></p>
+        <p className="name">{currentSong.name}</p>
+        <p className="artist">{currentSong.artist}</p>
       </div>
     </>
   );

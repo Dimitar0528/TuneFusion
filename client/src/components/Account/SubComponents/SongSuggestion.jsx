@@ -4,9 +4,8 @@ import showToast from "../../../showToast";
 import Table from "../Table";
 import styles from "../styles/Account.module.css"; // Import the CSS module
 import "../styles/table.css";
-import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
+import { getSongTimeStamp } from "../../../utils/getSongTimeStamp";
 export default function SongSuggestion() {
-  const {getSongTimeStamps} = useMusicPlayer();
   const [artist, setArtist] = useState("");
   const [songs, setSongs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,7 +54,7 @@ export default function SongSuggestion() {
       } else {
         const responseData = await response.json();
         showToast(responseData.message, "success", 1500, true);
-        setIsLoading(false)
+        setIsLoading(false);
       }
     } catch (error) {
       showToast(`Error: ${error.message}`, "error");
@@ -109,7 +108,7 @@ export default function SongSuggestion() {
               </td>
               <td data-th="Title">{song.name}</td>
               <td data-th="Audio Source">{song.audio_src}</td>
-              <td data-th="Duration">{getSongTimeStamps(song.duration)}</td>
+              <td data-th="Duration">{getSongTimeStamp(song.duration)}</td>
               <td data-th="Actions">
                 <div className="cta-admin-buttons">
                   <button onClick={() => handleAddToDB(song)}>

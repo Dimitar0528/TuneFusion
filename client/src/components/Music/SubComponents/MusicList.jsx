@@ -3,6 +3,7 @@ import "./styles/MusicList.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
+import { getSongTimeStamp } from "../../../utils/getSongTimeStamp";
 import ReactPaginate from "react-paginate";
 export default function MusicList() {
   const {
@@ -14,7 +15,6 @@ export default function MusicList() {
     isPlaying,
     setIsPlaying,
     musicListRef,
-    getSongTimeStamps,
   } = useMusicPlayer();
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -91,7 +91,7 @@ export default function MusicList() {
                 </div>
               </td>
               <td>{formatDate(song.createdAt)}</td>
-              <td>{getSongTimeStamps(song.duration)}</td>
+              <td>{getSongTimeStamp(song.duration)}</td>
             </tr>
           ))}
         </tbody>
