@@ -27,8 +27,8 @@ export default function SongDetails() {
         )}
       </div>
       <div className="song-details text-center">
-        <p className="name">{currentSong.name}</p>
-        <p className="artist">{currentSong.artist}</p>
+        <p className="name">{currentSong?.name}</p>
+        <p className="artist">{currentSong?.artist}</p>
       </div>
     </>
   );

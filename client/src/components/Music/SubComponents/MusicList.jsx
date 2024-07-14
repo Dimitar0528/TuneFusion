@@ -1,22 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./styles/MusicList.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
-import { getSongTimeStamp } from "../../../utils/getSongTimeStamp";
 import ReactPaginate from "react-paginate";
-export default function MusicList() {
+import { getSongTimeStamp } from "../../../utils/getSongTimeStamp";
+export default function MusicList({ songs, title }) {
   const {
-    songs,
     currentSongUUID,
     setCurrentSongUUID,
     lyrics,
     setLyrics,
-    isPlaying,
     setIsPlaying,
     musicListRef,
+    isPlaying,
   } = useMusicPlayer();
-
   const [currentPage, setCurrentPage] = useState(0);
 
   const itemsPerPage = 10;
@@ -50,13 +48,13 @@ export default function MusicList() {
       <div className="header">
         <div className="row list">
           <i className="fa-solid fa-sliders"></i>
-          <span> Music List</span>
+          <span> {title}</span>
         </div>
         <i id="close" className="fa-solid fa-close" onClick={hideList}></i>
       </div>
       <table className="music-table">
         <thead>
-          <tr className="tr">
+          <tr>
             <th>#</th>
             <th>Cover</th>
             <th>Title / Artist</th>
@@ -96,15 +94,17 @@ export default function MusicList() {
           ))}
         </tbody>
       </table>
-      <ReactPaginate
-        previousLabel={"Previous"}
-        nextLabel={"Next"}
-        breakLabel={"..."}
-        pageCount={pageCount}
-        onPageChange={handlePageClick}
-        containerClassName={"pagination"}
-        activeClassName={"active"}
-      />
+      {pageCount > 1 && (
+        <ReactPaginate
+          previousLabel={"Previous"}
+          nextLabel={"Next"}
+          breakLabel={"..."}
+          pageCount={pageCount}
+          onPageChange={handlePageClick}
+          containerClassName={"pagination"}
+          activeClassName={"active"}
+        />
+      )}
     </div>
   );
 }

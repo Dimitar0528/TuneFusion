@@ -53,6 +53,7 @@
     border-collapse: collapse;
     margin-inline: auto;
     width: 100%;
+    margin-bottom: 1rem;
 
     @media(width < 768px) {
 

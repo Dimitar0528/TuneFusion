@@ -1,0 +1,34 @@
+.accordion {
+    width: 400px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+
+.accordion-item {
+    border-top: 1px solid #ccc;
+}
+
+.accordion-item:first-child {
+    border-top: none;
+}
+
+.accordion-title {
+    transition: .25s;
+    background-color: #f7f7f7;
+    cursor: pointer;
+   padding: 1rem;
+    align-items: center;
+    &:where(:hover, :focus-visible){
+        background-color: var(--primary-clr-dark);
+        color: var(--accent-clr-light);
+    }
+}
+
+.accordion-title.active {
+    background-color: var(--primary-clr);
+    color: var(--accent-clr-light);
+}
