@@ -1,6 +1,5 @@
 import { Model, DataTypes } from "sequelize";
 import { sequelizeInstance } from "../connection.js";
-
 class Song extends Model { }
 
 Song.init(
@@ -30,7 +29,7 @@ Song.init(
     duration: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    }
+    },
   },
   {
     sequelize: sequelizeInstance,
@@ -39,4 +38,5 @@ Song.init(
   }
 );
 
-export default Song
+export default Song;
+

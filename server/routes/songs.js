@@ -1,6 +1,6 @@
 import express from 'express';
 import Genius from 'genius-lyrics';
-import Song from '../db/models/Song.js';
+import { Song } from '../db/models/index.js'
 import gis from 'async-g-i-s';
 import { searchMusics } from 'node-youtube-music';
 

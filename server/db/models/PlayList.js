@@ -1,11 +1,12 @@
 import { Model, DataTypes } from "sequelize";
 import { sequelizeInstance } from "../connection.js";
+import User from "./User.js";
 
 class PlayList extends Model { }
 
 PlayList.init(
     {
-        playlist_uuid: {
+        uuid: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             allowNull: false,
@@ -19,16 +20,15 @@ PlayList.init(
             type: DataTypes.STRING,
             allowNull: true,
         },
-        user_uuid: {
+        created_by: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
-
             references: {
                 model: User,
                 key: "uuid",
             },
         },
-        
+
     },
     {
         sequelize: sequelizeInstance,
@@ -37,4 +37,4 @@ PlayList.init(
     }
 );
 
-export default Song
+export default PlayList;

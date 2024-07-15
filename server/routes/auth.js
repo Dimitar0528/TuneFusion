@@ -2,7 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import User from '../db/models/User.js';
+import {User} from '../db/models/index.js'
 import sgMail from '@sendgrid/mail';
 
 const router = express.Router();

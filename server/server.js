@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import songRoutes from './routes/songs.js';
 import userRoutes from './routes/users.js';
 import authRoutes from './routes/auth.js';
-
+import playlistsRoutes from './routes/playlists.js';
 const app = express();
 
 app.use(express.json());
@@ -20,6 +20,7 @@ const port = 3000;
 app.use('/api/songs', songRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/playlists', playlistsRoutes)
 
 app.get('/', (req, res) => {
     res.send("HI");
