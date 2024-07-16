@@ -114,6 +114,10 @@ nav {
   color: var(--secondary-clr);
 }
 
+.nav__link--active.nav__link--active {
+  color: var(--secondary-clr) 
+}
+
 .nav__btns {
   display: none;
 }
@@ -302,7 +306,8 @@ nav {
   margin-inline: auto;
   border-radius: 1rem 1rem 1rem 10rem;
   border: 2px solid var(--text-light-clr);
-  @media(width > 768px){
+
+  @media(width > 768px) {
     max-width: 400px;
   }
 }

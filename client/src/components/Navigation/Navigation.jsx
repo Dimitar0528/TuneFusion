@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import styles from "../LandingPage/styles/LandingPage.module.css";
 
 export default function Navigation({ btnText, goToLocation, userUUID }) {
@@ -56,20 +56,34 @@ export default function Navigation({ btnText, goToLocation, userUUID }) {
         </div>
       </div>
       <ul className={styles["nav__links"]} id="nav-links" ref={navLinksRef}>
-        <Link
+        <NavLink
           to={userUUID ? `/musicplayer/${userUUID}` : "/sign-in"}
-          className={styles["nav__link"]}>
+          className={({ isActive }) =>
+            isActive ? styles["nav__link--active"] : styles["nav__link"]
+          }>
           Music Player
-        </Link>
-        <Link to="/information/aboutus" className={styles["nav__link"]}>
+        </NavLink>
+        <NavLink
+          to="/information/aboutus"
+          className={({ isActive }) =>
+            isActive ? styles["nav__link--active"] : styles["nav__link"]
+          }>
           About Us
-        </Link>
-        <Link to="/information/contactus" className={styles["nav__link"]}>
+        </NavLink>
+        <NavLink
+          to="/information/contactus"
+          className={({ isActive }) =>
+            isActive ? styles["nav__link--active"] : styles["nav__link"]
+          }>
           Contact Us
-        </Link>
-        <Link to="/information/faq" className={styles["nav__link"]}>
+        </NavLink>
+        <NavLink
+          to="/information/faq"
+          className={({ isActive }) =>
+            isActive ? styles["nav__link--active"] : styles["nav__link"]
+          }>
           FAQ
-        </Link>
+        </NavLink>
         <div className={styles["nav__link"]}>
           <button
             className={styles["btn"]}

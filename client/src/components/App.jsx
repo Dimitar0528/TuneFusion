@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import LandingPage from "./LandingPage/LandingPage";
@@ -11,110 +11,77 @@ import ProtectedRoute from "./Routes/ProtectedRoute";
 import ContactUs from "./Navigation/Information/ContactUs";
 import Navigation from "./Navigation/Navigation";
 import Footer from "./Navigation/Footer";
-import NotFound from "./NotFound";
 import Account from "./Account/Account";
 import { useMusicPlayer } from "../contexts/MusicPlayerContext";
 import TFAVerification from "./Login/TFA";
 import ScrollToTopButton from "./ScrollToTopButton";
 import MusicPlayer from "./Music/MusicPlayer/MusicPlayer";
 export default function App() {
-  const [userUUID, setUserUUID] = useState("");
-  const [role, setRole] = useState("");
-  const { musicListRef, songs } = useMusicPlayer();
+  const { musicListRef, songs, user } = useMusicPlayer();
+  const { userUUID, role } = user;
 
-  useEffect(() => {
-    async function getUserToken() {
-      try {
-        const response = await fetch(
-          "http://localhost:3000/api/auth/getToken",
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-
-        const token = await response.json();
-        setUserUUID(token.id.slice(0, 6));
-        setRole(token.role);
-      } catch (error) {
-        console.error("Error fetching user token:", error);
-      }
-    }
-    getUserToken();
-  }, []);
-
-    const showList = () => {
-      musicListRef.current.style.opacity = "1";
-      musicListRef.current.style.pointerEvents = "auto";
-    };
+  const showList = () => {
+    musicListRef.current.style.opacity = "1";
+    musicListRef.current.style.pointerEvents = "auto";
+  };
 
   return (
     <div className="App">
-      <header className="App-header">
-        <ToastContainer />
-        <Navigation
-          userUUID={userUUID}
-          btnText={userUUID ? "My Account" : "Sign up"}
-          goToLocation={userUUID ? `/account/${userUUID}` : "/sign-in"}
+      <ToastContainer />
+      <Navigation
+        userUUID={userUUID}
+        btnText={userUUID ? "My Account" : "Sign up"}
+        goToLocation={userUUID ? `/account/${userUUID}` : "/sign-in"}
+      />
+
+      {userUUID && (
+        <MusicPlayer showList={showList} userUUID={userUUID} userRole={role} />
+      )}
+      <ScrollToTopButton />
+
+      <Routes>
+        <Route path="/" element={<LandingPage userUUID={userUUID} />} />
+
+        <Route path={"/musicplayer/:userUUID"} element={<Music />} />
+
+        <Route path="/information">
+          <Route path="aboutus" element={<AboutUs />} />
+          <Route path="contactus" element={<ContactUs />} />
+          <Route path="faq" element={<Faq />} />
+        </Route>
+        <Route
+          path="/sign-in"
+          element={userUUID ? <Navigate to="/" replace /> : <SignInSignUp />}
+        />
+        <Route
+          path="/otp"
+          element={userUUID ? <Navigate to="/" replace /> : <TFAVerification />}
+        />
+        <Route
+          path={`/updatesong/:name`}
+          element={
+            <ProtectedRoute role={role}>
+              <SongForm action={"updatesong"} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/addsong/newsong"
+          element={
+            <ProtectedRoute role={role}>
+              <SongForm action={"addsong"} name={"newsong"} />
+            </ProtectedRoute>
+          }
         />
 
-          {userUUID && <MusicPlayer showList={showList} userUUID={userUUID} userRole={role} />}
-        <ScrollToTopButton />
+        <Route
+          path={"/account/:userUUID"}
+          element={<Account songs={songs} />}
+        />
+        <Route path="*" element={<Navigate to={"/"} />} />
+      </Routes>
 
-        <Routes>
-          <Route path="/" element={<LandingPage userUUID={userUUID} />} />
-
-
-          <Route
-            path={`/musicplayer/${userUUID}`}
-            element={
-              userUUID ? (
-                <Music userUUID={userUUID} userRole={role} />
-              ) : (
-                <Navigate to="/sign-in" replace />
-              )
-            }
-          />
-          <Route path="/information">
-            <Route path="aboutus" element={<AboutUs />} />
-            <Route path="contactus" element={<ContactUs />} />
-            <Route path="faq" element={<Faq />} />
-          </Route>
-          <Route
-            path="/sign-in"
-            element={userUUID ? <Navigate to="/" replace /> : <SignInSignUp />}
-          />
-          <Route
-            path="/otp"
-            element={
-              userUUID ? <Navigate to="/" replace /> : <TFAVerification />
-            }
-          />
-          <Route
-            path={`/updatesong/:name`}
-            element={
-              <ProtectedRoute role={role}>
-                <SongForm action={"updatesong"} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/addsong/newsong"
-            element={
-              <ProtectedRoute role={role}>
-                <SongForm action={"addsong"} name={"newsong"} />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<NotFound />} />
-          <Route
-            path={`/account/${userUUID}`}
-            element={<Account userUUID={userUUID} songs={songs} />}
-          />
-        </Routes>
-
-        <Footer userUUID={userUUID} />
-      </header>
+      <Footer userUUID={userUUID} />
     </div>
   );
 }

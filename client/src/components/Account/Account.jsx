@@ -4,8 +4,11 @@ import ViewSongs from "./SubComponents/ViewSongs";
 import EditAccount from "./SubComponents/EditAccount";
 import ViewUsers from "./SubComponents/ViewUsers";
 import SongSuggestion from "./SubComponents/SongSuggestion";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function Account({ songs, userUUID }) {
+export default function Account({ songs }) {
+  const { userUUID } = useParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Account");
   const underlineRef = useRef(null);
   const tabsRef = useRef([]);
@@ -29,6 +32,9 @@ export default function Account({ songs, userUUID }) {
           credentials: "include",
         }
       );
+      if (response.status === 404) {
+        navigate("/");
+      }
       const data = await response.json();
       setUser(data);
     }

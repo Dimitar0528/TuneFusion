@@ -9,13 +9,8 @@ import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../showToast";
 
 export default function MusicPlayer({ showList, userRole, userUUID }) {
-  const {
-    songs,
-    currentSong,
-    isPlaying,
-    isCollapsed,
-    handleCollapseToggle,
-  } = useMusicPlayer();
+  const { songs, currentSong, isPlaying, isCollapsed, handleCollapseToggle } =
+    useMusicPlayer();
 
   const navigate = useNavigate();
 
@@ -60,9 +55,7 @@ export default function MusicPlayer({ showList, userRole, userUUID }) {
             !isCollapsed ? " fa-arrow-down" : " fa-arrow-up"
           }`}
           onClick={() => {
-            isCollapsed === true
-              ? handleCollapseAndWarn()
-              : handleCollapseToggle();
+            isCollapsed ? handleCollapseAndWarn() : handleCollapseToggle();
           }}
           title={`${!isCollapsed ? "Collapse" : "Full View"}`}
           tabIndex={0}

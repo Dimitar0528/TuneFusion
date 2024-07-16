@@ -95,6 +95,11 @@ label {
             right: -2.2rem;
             top: -3rem;
         }
+
+        .name {
+            max-width: 80vw;
+            margin-inline: auto;
+        }
     }
 }
 
@@ -165,6 +170,12 @@ label {
 
 .name {
     font-size: 1.2rem;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: clamp(100px, 20vw, 20rem);
+    margin-inline: auto;
 }
 
 .progress-area {
@@ -315,11 +326,6 @@ label {
     & i {
         cursor: pointer;
     }
-}
-
-
-.name {
-    font-weight: bold;
 }
 
 .lyrics-wrapper {
