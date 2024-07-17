@@ -26,7 +26,7 @@ label {
     width: max(350px, 40vw);
     transition-duration: .6s;
     transition-property: display opacity;
-    max-height: 655px;
+    max-height: 650px;
     overflow: hidden;
     position: fixed;
     bottom: .5rem;
@@ -96,7 +96,8 @@ label {
             top: -3rem;
         }
 
-        .name {
+        .name,
+        .artist {
             max-width: 80vw;
             margin-inline: auto;
         }
@@ -175,6 +176,14 @@ label {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: clamp(100px, 20vw, 20rem);
+    margin-inline: auto;
+}
+
+.artist {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: clamp(100px, 15vw, 20rem);
     margin-inline: auto;
 }
 

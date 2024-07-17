@@ -1,11 +1,19 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import "./styles/MusicList.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 import ReactPaginate from "react-paginate";
 import { getSongTimeStamp } from "../../../utils/getSongTimeStamp";
-export default function MusicList({ songs, title }) {
+import showToast from "../../../showToast";
+
+export default function MusicList({
+  songs,
+  title,
+  activePlaylist,
+  playlists,
+  refreshPlaylist,
+}) {
   const {
     currentSongUUID,
     setCurrentSongUUID,
@@ -14,8 +22,13 @@ export default function MusicList({ songs, title }) {
     setIsPlaying,
     musicListRef,
     isPlaying,
+    currentPage,
+    setCurrentPage,
   } = useMusicPlayer();
-  const [currentPage, setCurrentPage] = useState(0);
+
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSong, setSelectedSong] = useState(null);
 
   const itemsPerPage = 10;
 
@@ -35,6 +48,7 @@ export default function MusicList({ songs, title }) {
   const handleCurrentPlayingSong = (songUUID) => {
     setCurrentSongUUID(songUUID);
   };
+
   const handleMusicListSong = (song) => {
     handleCurrentPlayingSong(extractUUIDPrefix(song.uuid));
     setIsPlaying(true);
@@ -43,6 +57,100 @@ export default function MusicList({ songs, title }) {
       isPlaying &&
       setIsPlaying(false);
   };
+
+  const handleAddSongToPlayList = (song) => {
+    setSelectedSong(song);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setSelectedSong(null);
+  };
+
+  const handlePlaylistSelect = (e) => {
+    setSelectedPlaylist(e.target.value);
+  };
+
+  const handleAddSongConfirm = async () => {
+    if (!selectedPlaylist && !selectedSong)
+      return showToast("Please select a playlist first", "warning");
+
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/playlists/add-song",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            songUUID: selectedSong.uuid,
+            playlistUUID: selectedPlaylist,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        showToast("Song added to playlist successfully", "success");
+        handleModalClose();
+        refreshPlaylist();
+      } else {
+        const errorData = await response.json();
+        showToast(`Error: ${errorData.error}`, "error");
+      }
+    } catch (error) {
+      console.error("Error adding song to playlist:", error);
+      showToast(
+        "An error occurred while adding the song to the playlist.",
+        "error"
+      );
+    }
+  };
+
+  const handleRemoveSongFromPlaylist = async (song) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this song from the playlist?"
+      )
+    )
+      return;
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/playlists/remove-song",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            songUUID: song.uuid,
+            playlistName: activePlaylist.name,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        showToast(data.message, "success");
+        refreshPlaylist();
+      } else {
+        const errorData = await response.json();
+        showToast(`Error: ${errorData.error}`, "error");
+      }
+    } catch (error) {
+      console.error("Error removing song from playlist:", error);
+      showToast(
+        "An error occurred while removing the song from the playlist.",
+        "error"
+      );
+    }
+  };
+
+  const totalDuration = activePlaylist?.Songs.reduce((total, song) => {
+    return total + song.duration;
+  }, 0);
+
   return (
     <div ref={musicListRef} className="music-list">
       <div className="header">
@@ -52,6 +160,16 @@ export default function MusicList({ songs, title }) {
         </div>
         <i id="close" className="fa-solid fa-close" onClick={hideList}></i>
       </div>
+      {activePlaylist && (
+          <div className="playlist-description">
+            <p>{activePlaylist?.description}</p>
+            <p>
+              {activePlaylist?.Songs.length} songs{" "},
+              <span>Total duration: {getSongTimeStamp(totalDuration)}</span>
+            </p>
+          </div>
+      )}
+
       <table className="music-table">
         <thead>
           <tr>
@@ -66,7 +184,6 @@ export default function MusicList({ songs, title }) {
           {currentSongs.map((song, index) => (
             <tr
               key={song.uuid}
-              onClick={() => handleMusicListSong(song)}
               className={
                 extractUUIDPrefix(song.uuid) === currentSongUUID
                   ? "playing"
@@ -82,20 +199,42 @@ export default function MusicList({ songs, title }) {
                   style={{ objectFit: "cover" }}
                 />
               </td>
-              <td>
+              <td
+                className="playlist-song-details"
+                onClick={() => handleMusicListSong(song)}>
                 <div>
                   <strong>{song.name}</strong>
                   <p>{song.artist}</p>
                 </div>
               </td>
-              <td>{formatDate(song.createdAt)}</td>
+              <td>
+                {song.PlaylistSong
+                  ? formatDate(song.PlaylistSong.createdAt)
+                  : formatDate(song.createdAt)}
+              </td>
               <td>{getSongTimeStamp(song.duration)}</td>
+              {activePlaylist ? (
+                <td>
+                  <i
+                    className="fa-solid fa-circle-minus"
+                    onClick={() => handleRemoveSongFromPlaylist(song)}
+                    title="Remove from playlist"></i>
+                </td>
+              ) : (
+                <td>
+                  <i
+                    className="fa-solid fa-plus"
+                    onClick={() => handleAddSongToPlayList(song)}
+                    title="Add to playlist"></i>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
       {pageCount > 1 && (
         <ReactPaginate
+          forcePage={currentPage}
           previousLabel={"Previous"}
           nextLabel={"Next"}
           breakLabel={"..."}
@@ -104,6 +243,43 @@ export default function MusicList({ songs, title }) {
           containerClassName={"pagination"}
           activeClassName={"active"}
         />
+      )}
+
+      {showModal && (
+        <dialog open className="modal">
+          <div className="modal-content">
+            <h2>Add a song to the playlist</h2>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: ".5rem",
+              }}>
+              <label htmlFor="playlist"> Select a playlist</label>
+              <div className="custom-select">
+                <select
+                  onChange={handlePlaylistSelect}
+                  value={selectedPlaylist || ""}>
+                  <option value="" disabled>
+                    Select a playlist
+                  </option>
+                  {playlists.map((playlist) => (
+                    <option
+                      key={playlist.uuid}
+                      value={playlist.uuid}
+                      id="playlist">
+                      {playlist.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button onClick={handleAddSongConfirm}>Add</button>
+              <button onClick={handleModalClose}>Cancel</button>
+            </div>
+          </div>
+        </dialog>
       )}
     </div>
   );

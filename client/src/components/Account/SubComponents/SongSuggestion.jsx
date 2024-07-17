@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import showToast from "../../../showToast";
 import Table from "../Table";
 import styles from "../styles/Account.module.css"; // Import the CSS module
@@ -66,9 +65,9 @@ export default function SongSuggestion() {
       <div className={styles.description}>
         <h2>Song Suggestions</h2>
         <p>
-          Use this feature to search for songs by artist. Enter the artist's
-          name and click "Search" to find songs. You can then add any song from
-          the search results to the TuneFusion database.
+          Use this feature to search for songs by artist or genre. Enter the
+          artist's name or the genre and click "Search" to find songs. You can
+          then add any song from the search results to the TuneFusion database.
         </p>
       </div>
       <form
@@ -95,7 +94,14 @@ export default function SongSuggestion() {
         <Table
           data={songs}
           hasDbSearch={false}
-          columns={["Image", "Title", "Audio Source", "Duration", "Actions"]}
+          columns={[
+            "Image",
+            "Title",
+            "Artist",
+            "Audio Source",
+            "Duration",
+            "Actions",
+          ]}
           itemsPerPage={songsPerPage}
           renderRow={(song) => (
             <tr key={song.uuid}>
@@ -107,6 +113,7 @@ export default function SongSuggestion() {
                 />
               </td>
               <td data-th="Title">{song.name}</td>
+              <td data-th="Artist">{song.artist}</td>
               <td data-th="Audio Source">{song.audio_src}</td>
               <td data-th="Duration">{getSongTimeStamp(song.duration)}</td>
               <td data-th="Actions">

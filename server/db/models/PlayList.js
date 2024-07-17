@@ -20,6 +20,10 @@ PlayList.init(
             type: DataTypes.STRING,
             allowNull: true,
         },
+        img_src: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
         created_by: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,

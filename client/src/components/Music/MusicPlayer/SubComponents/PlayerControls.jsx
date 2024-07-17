@@ -40,11 +40,13 @@ export default function PlayerControls({ showList }) {
   useEffect(() => {
     const handleKeyPress = (e) => {
       const targetTagName = e.target.tagName.toLowerCase();
-      const isInputFocused = ["input", "select"].includes(targetTagName);
+      const isInputFocused = ["input", "select", "textarea"].includes(
+        targetTagName
+      );
 
       if (isInputFocused) return;
 
-      if (e.key === "m") {
+      if (e.key === "m" || e.key === "п") {
         e.preventDefault();
         if (volume > 0) {
           setPreviousVolume(volume);

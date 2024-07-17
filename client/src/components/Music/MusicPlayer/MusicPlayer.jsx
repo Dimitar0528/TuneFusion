@@ -24,7 +24,7 @@ export default function MusicPlayer({ showList, userRole, userUUID }) {
   const handleCollapseAndWarn = () => {
     if (desiredUrls.every((url) => url !== location.pathname)) {
       return showToast(
-        "To view the full version of the music player, please enter the Music Player section!",
+        "To view the expanded music player, please enter the Music Player section!",
         "warning"
       );
     } else {
@@ -57,7 +57,7 @@ export default function MusicPlayer({ showList, userRole, userUUID }) {
           onClick={() => {
             isCollapsed ? handleCollapseAndWarn() : handleCollapseToggle();
           }}
-          title={`${!isCollapsed ? "Collapse" : "Full View"}`}
+          title={`${!isCollapsed ? "Collapse Player" : "Expand Player"}`}
           tabIndex={0}
           onKeyDown={(event) =>
             handleKeyPress(event, handleCollapseAndWarn)

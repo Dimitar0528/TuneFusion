@@ -63,7 +63,7 @@ export function MusicPlayerProvider({ children }) {
         const data = await response.json();
         setSongs(data);
         if (!activePlaylist) {
-          setFilteredSongs(data.slice(0, 20));
+          setFilteredSongs(data.slice(0, 40));
         }
       } catch (error) {
         console.error("Error fetching songs:", error);
@@ -119,7 +119,7 @@ export function MusicPlayerProvider({ children }) {
       );
       setFilteredSongs(activePlaylist.Songs);
     } else {
-      setFilteredSongs(songs.slice(0, 20));
+      setFilteredSongs(songs.slice(0, 40));
     }
     setCurrentPage(0);
   }, [activePlaylist]);
@@ -217,6 +217,7 @@ export function MusicPlayerProvider({ children }) {
     shuffle,
     setShuffle,
     isLoading,
+    setIsLoading,
     isCollapsed,
     setIsCollapsed,
     volume,

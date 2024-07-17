@@ -61,6 +61,7 @@ export default function Navigation({ btnText, goToLocation, userUUID }) {
           className={({ isActive }) =>
             isActive ? styles["nav__link--active"] : styles["nav__link"]
           }>
+          <i className="fas fa-play"></i>
           Music Player
         </NavLink>
         <NavLink
@@ -68,6 +69,7 @@ export default function Navigation({ btnText, goToLocation, userUUID }) {
           className={({ isActive }) =>
             isActive ? styles["nav__link--active"] : styles["nav__link"]
           }>
+          <i className="fas fa-address-card"></i>
           About Us
         </NavLink>
         <NavLink
@@ -75,6 +77,7 @@ export default function Navigation({ btnText, goToLocation, userUUID }) {
           className={({ isActive }) =>
             isActive ? styles["nav__link--active"] : styles["nav__link"]
           }>
+          <i className="fas fa-address-book"></i>
           Contact Us
         </NavLink>
         <NavLink
@@ -82,6 +85,7 @@ export default function Navigation({ btnText, goToLocation, userUUID }) {
           className={({ isActive }) =>
             isActive ? styles["nav__link--active"] : styles["nav__link"]
           }>
+          <i className="fas fa-circle-question"></i>
           FAQ
         </NavLink>
         <div className={styles["nav__link"]}>
@@ -90,6 +94,11 @@ export default function Navigation({ btnText, goToLocation, userUUID }) {
             onClick={() => {
               navigate(goToLocation);
             }}>
+            {btnText === "My Account" ? (
+              <i className="fas fa-user"></i>
+            ) : (
+              <i className="fas fa-user-plus"></i>
+            )}
             {btnText}
           </button>
         </div>

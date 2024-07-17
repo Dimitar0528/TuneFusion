@@ -1,13 +1,58 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MusicList from "./SubComponents/MusicList";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import UserPlayLists from "./SubComponents/UserPlayLists";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function Music({}) {
-  const { filteredSongs, activePlaylist } = useMusicPlayer();
+export default function Music() {
+  const navigate = useNavigate();
+  const { userUUID } = useParams();
+  const { filteredSongs, activePlaylist, setActivePlaylist } = useMusicPlayer();
+  const [playlists, setPlaylists] = useState([]);
+  const [refreshPlaylist, setRefreshPlaylist] = useState(false);
+
+  useEffect(() => {
+    const fetchPlaylists = async (userUUID) => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/playlists/${userUUID}`
+        );
+        if (response.status === 404) {
+          navigate("/");
+        }
+        const data = await response.json();
+        setPlaylists(data);
+      } catch (error) {
+        console.error("Error fetching playlists:", error);
+      }
+    };
+    fetchPlaylists(userUUID);
+  }, [refreshPlaylist]);
+
+  useEffect(() => {
+    if (playlists.length === 0) return;
+    const storedActivePlaylist = JSON.parse(
+      localStorage.getItem("activePlaylist")
+    );
+    if (storedActivePlaylist) {
+      const playlist = playlists.find(
+        (pl) => pl.name === storedActivePlaylist.name
+      );
+      setActivePlaylist({ ...storedActivePlaylist, Songs: playlist.Songs, description: playlist.description });
+    }
+  }, [playlists]);
+
+  const refreshPlaylistHandler = () => {
+    setRefreshPlaylist((prev) => !prev);
+  };
+
   return (
     <div className="body">
-      <UserPlayLists />
+      <UserPlayLists
+        refreshPlaylist={refreshPlaylistHandler}
+        playlists={playlists}
+      />
+
       <MusicList
         title={
           activePlaylist !== null
@@ -15,6 +60,9 @@ export default function Music({}) {
             : "Freshly Added Songs"
         }
         songs={filteredSongs}
+        activePlaylist={activePlaylist}
+        playlists={playlists}
+        refreshPlaylist={refreshPlaylistHandler}
       />
     </div>
   );

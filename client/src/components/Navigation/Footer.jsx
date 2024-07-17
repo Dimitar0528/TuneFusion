@@ -15,18 +15,42 @@ export default function Footer({ userUUID }) {
           <li>
             <NavLink
               to={userUUID ? `/musicplayer/${userUUID}` : "/sign-in"}
-              className={styles["nav__link"]}>
+              className={({ isActive }) =>
+                isActive ? styles["nav__link--active"] : styles["nav__link"]
+              }>
+              <i className="fas fa-play"></i>
               Music Player
             </NavLink>
           </li>
           <li>
-            <NavLink to="/information/aboutus">About Us</NavLink>
+            <NavLink
+              to="/information/aboutus"
+              className={({ isActive }) =>
+                isActive ? styles["nav__link--active"] : styles["nav__link"]
+              }>
+              <i className="fas fa-address-card"></i>
+              About Us
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/information/contactus">Contact Us</NavLink>
+            <NavLink
+              to="/information/contactus"
+              className={({ isActive }) =>
+                isActive ? styles["nav__link--active"] : styles["nav__link"]
+              }>
+              <i className="fas fa-address-book"></i>
+              Contact Us
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/information/faq">FAQ</NavLink>
+            <NavLink
+              to="/information/faq"
+              className={({ isActive }) =>
+                isActive ? styles["nav__link--active"] : styles["nav__link"]
+              }>
+              <i className="fas fa-circle-question"></i>
+              FAQ
+            </NavLink>
           </li>
         </ul>
       </div>

@@ -2,7 +2,7 @@ import express from 'express';
 import Genius from 'genius-lyrics';
 import { Song } from '../db/models/index.js'
 import gis from 'async-g-i-s';
-import { searchMusics } from 'node-youtube-music';
+import { searchMusics, getSuggestions } from 'node-youtube-music';
 
 const router = express.Router();
 const Client = new Genius.Client();
@@ -107,15 +107,18 @@ router.put('/updatesong/:name', async (req, res) => {
         return res.status(500).json({ error: "Internal Server Error" });
     }
 });
-
-router.get('/search/:artist', async (req, res) => {
+router.get('/search/:query', async (req, res) => {
     try {
-        const artist = req.params.artist;
-        const songs = await searchMusics(artist);
+        const query = req.params.query.toLowerCase();
 
-        const songList = await Promise.all(songs.map(async song => {
+        const songs = await searchMusics(query);
+        const suggestions = await getSuggestions(songs[0].youtubeId);
+        // check if the provided query corresponds to an artist's name
+        const artistSongs = songs.filter(song => song.artists.every(artist => artist.name.toLowerCase().includes(query.toLowerCase())));
+
+        const songList = await Promise.all((artistSongs.length > 0 ? artistSongs : suggestions).map(async song => {
             const { title: name, artists, youtubeId: id, duration } = song;
-            const song_duration = duration.totalSeconds
+            const song_duration = duration.totalSeconds;
             const artistName = artists[0].name;
             const searchTerm = artistName + name;
             const imgs = await gis(searchTerm);
@@ -132,6 +135,7 @@ router.get('/search/:artist', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 
 router.get('/:artist/:song', async (req, res) => {
     const { artist, song } = req.params;

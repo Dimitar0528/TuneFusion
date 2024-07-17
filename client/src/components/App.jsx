@@ -40,6 +40,12 @@ export default function App() {
       <ScrollToTopButton />
 
       <Routes>
+        {userUUID && (
+          <Route
+            path={"/account/:userUUID"}
+            element={<Account songs={songs} />}
+          />
+        )}
         <Route path="/" element={<LandingPage userUUID={userUUID} />} />
 
         <Route path={"/musicplayer/:userUUID"} element={<Music />} />
@@ -74,10 +80,6 @@ export default function App() {
           }
         />
 
-        <Route
-          path={"/account/:userUUID"}
-          element={<Account songs={songs} />}
-        />
         <Route path="*" element={<Navigate to={"/"} />} />
       </Routes>
 

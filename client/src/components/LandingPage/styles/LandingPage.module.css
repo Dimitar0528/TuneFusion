@@ -106,16 +106,25 @@ nav {
   transform: translateY(1%);
 }
 
-.nav__links a {
+.nav__links .nav__link,
+.footer__links .nav__link {
   color: var(--text-light-clr);
+
+  & i {
+    margin-right: .25rem;
+  }
 }
 
-.nav__links a:where(:hover, :focus-visible) {
+.nav__links .nav__link:where(:hover, :focus-visible) {
   color: var(--secondary-clr);
 }
 
-.nav__link--active.nav__link--active {
-  color: var(--secondary-clr) 
+.nav__link--active {
+  color: var(--secondary-clr);
+
+  & i {
+    margin-right: .25rem;
+  }
 }
 
 .nav__btns {
@@ -434,14 +443,6 @@ footer {
   grid-area: 1/1/2/4;
 }
 
-.footer__links li:not(.footer__logo) a {
-  color: var(--text-light-clr);
-}
-
-.footer__links li:not(.footer__logo) a:where(:hover, :focus-visible) {
-  color: var(--secondary-clr);
-}
-
 .footer__bar {
   padding: 1rem;
   font-size: 0.9rem;
@@ -458,7 +459,7 @@ footer {
 
 }
 
-@media (width > 768px) {
+@media (width > 868px) {
   nav {
     padding-block: .5rem;
     padding-inline: 1rem;
