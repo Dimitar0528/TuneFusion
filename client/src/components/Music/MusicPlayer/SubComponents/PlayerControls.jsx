@@ -14,14 +14,9 @@ export default function PlayerControls({ showList }) {
     volume,
     setVolume,
     handleVolumeChange,
+    handleKeyPressWhenTabbed,
   } = useMusicPlayer();
   const [previousVolume, setPreviousVolume] = useState(volume);
-
-  const handleEnterKeyPress = (e, action) => {
-    if (e.key === "Enter") {
-      action();
-    }
-  };
 
   const handleVolumeChangeKeyPress = (e) => {
     if (e.key === "ArrowRight") {
@@ -38,7 +33,7 @@ export default function PlayerControls({ showList }) {
   };
 
   useEffect(() => {
-    const handleKeyPress = (e) => {
+    const handleSpecificKeyPress = (e) => {
       const targetTagName = e.target.tagName.toLowerCase();
       const isInputFocused = ["input", "select", "textarea"].includes(
         targetTagName
@@ -62,11 +57,11 @@ export default function PlayerControls({ showList }) {
       }
     };
 
-    document.addEventListener("keydown", handleKeyPress);
+    document.addEventListener("keydown", handleSpecificKeyPress);
     return () => {
-      document.removeEventListener("keydown", handleKeyPress);
+      document.removeEventListener("keydown", handleSpecificKeyPress);
     };
-  }, [volume, previousVolume, setVolume, setPreviousVolume, handlePlayPause]);
+  }, [volume, handlePlayPause]);
 
   return (
     <div className="controls">
@@ -76,27 +71,29 @@ export default function PlayerControls({ showList }) {
         title="Show Music List"
         onClick={showList}
         tabIndex={0}
-        onKeyDown={(e) => handleEnterKeyPress(e, showList)}></i>
+        onKeyDown={(e) => handleKeyPressWhenTabbed(e, showList)}></i>
       <i
         id="shuffle"
         className={`fa-solid ${shuffle ? "fa-repeat" : "fa-shuffle"}`}
         title={`${shuffle ? "Disable" : "Enable"} Shuffle`}
         onClick={toggleShufflePlayList}
         tabIndex={0}
-        onKeyDown={(e) => handleEnterKeyPress(e, toggleShufflePlayList)}></i>
+        onKeyDown={(e) =>
+          handleKeyPressWhenTabbed(e, toggleShufflePlayList)
+        }></i>
       <i
         id="prev"
         className="fa-solid fa-backward"
         title="Previous"
         onClick={handlePreviousSong}
         tabIndex={0}
-        onKeyDown={(e) => handleEnterKeyPress(e, handlePreviousSong)}></i>
+        onKeyDown={(e) => handleKeyPressWhenTabbed(e, handlePreviousSong)}></i>
       <div
         className="play-pause text-center"
         title={isPlaying ? "Pause (space)" : "Play (space)"}
         onClick={handlePlayPause}
         tabIndex={0}
-        onKeyDown={(e) => handleEnterKeyPress(e, handlePlayPause)}>
+        onKeyDown={(e) => handleKeyPressWhenTabbed(e, handlePlayPause)}>
         <i className={`fa-solid fa-${isPlaying ? "pause" : "play"}`}></i>
       </div>
       <i
@@ -105,7 +102,7 @@ export default function PlayerControls({ showList }) {
         title="Next"
         onClick={handleNextSong}
         tabIndex={0}
-        onKeyDown={(e) => handleEnterKeyPress(e, handleNextSong)}></i>
+        onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleNextSong)}></i>
       <div className="lyrics-wrapper">
         <i
           id="lyrics"
@@ -113,7 +110,7 @@ export default function PlayerControls({ showList }) {
           title={`${lyrics ? "Hide Lyrics" : "Show Lyrics"}`}
           onClick={fetchLyrics}
           tabIndex={0}
-          onKeyDown={(e) => handleEnterKeyPress(e, fetchLyrics)}></i>
+          onKeyDown={(e) => handleKeyPressWhenTabbed(e, fetchLyrics)}></i>
       </div>
       <div className="volume-control">
         <i

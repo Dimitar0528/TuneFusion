@@ -202,6 +202,12 @@ export function MusicPlayerProvider({ children }) {
     localStorage.setItem("audioVolume", JSON.stringify(newVolume));
   };
 
+    const handleKeyPressWhenTabbed = (e, action) => {
+      if (e.key === "Enter") {
+        action();
+      }
+    };
+
   const contextValue = {
     songs,
     setSongs,
@@ -241,6 +247,7 @@ export function MusicPlayerProvider({ children }) {
     setCurrentPage,
     user,
     setUser,
+    handleKeyPressWhenTabbed,
   };
 
   return (

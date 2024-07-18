@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player/lazy";
 import { useMusicPlayer } from "../../../../contexts/MusicPlayerContext";
 import { getSongTimeStamp } from "../../../../utils/getSongTimeStamp";
@@ -13,6 +13,7 @@ export default function ProgressArea() {
     currentTime,
     setCurrentTime,
     handleNextSong,
+    handleKeyPressWhenTabbed,
   } = useMusicPlayer();
 
   const [isDragging, setIsDragging] = useState(false);
@@ -62,6 +63,22 @@ export default function ProgressArea() {
     setCurrentTime(newTime);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault();
+      let newTime = currentTime;
+      if (e.key === "ArrowLeft") {
+        newTime = Math.max(0, currentTime - 1);
+      } else if (e.key === "ArrowRight") {
+        newTime = Math.min(playerRef.current.getDuration(), currentTime + 1);
+      }
+      setCurrentTime(newTime);
+      const progress = newTime / currentSong.duration;
+      progressBarRef.current.style.width = `${progress * 100}%`;
+      playerRef.current.seekTo(newTime, "seconds");
+    }
+  };
+
   useEffect(() => {
     document.addEventListener("mousemove", handleProgressBarDrag);
     document.addEventListener("mouseup", handleProgressBarDragEnd);
@@ -77,8 +94,15 @@ export default function ProgressArea() {
       className="progress-area"
       ref={progressAreaRef}
       onClick={handleProgressBarClick}
-      onMouseDown={handleProgressBarDragStart}>
-      <div className="progress-bar" ref={progressBarRef}></div>
+      onMouseDown={handleProgressBarDragStart}
+      onKeyDown={handleKeyDown}>
+      <div
+        className="progress-bar"
+        ref={progressBarRef}
+        tabIndex={0}
+        onKeyDown={(e) =>
+          handleKeyPressWhenTabbed(e, handleProgressBarClick)
+        }></div>
       <div className="timer">
         <span className="current">{getSongTimeStamp(currentTime) || 0}</span>
         <span className="duration">

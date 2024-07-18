@@ -24,6 +24,7 @@ export default function MusicList({
     isPlaying,
     currentPage,
     setCurrentPage,
+    handleKeyPressWhenTabbed,
   } = useMusicPlayer();
 
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
@@ -158,16 +159,21 @@ export default function MusicList({
           <i className="fa-solid fa-sliders"></i>
           <span> {title}</span>
         </div>
-        <i id="close" className="fa-solid fa-close" onClick={hideList}></i>
+        <i
+          tabIndex={0}
+          id="close"
+          className="fa-solid fa-close"
+          onClick={hideList}
+          onKeyDown={(e) => handleKeyPressWhenTabbed(e, hideList)}></i>
       </div>
       {activePlaylist && (
-          <div className="playlist-description">
-            <p>{activePlaylist?.description}</p>
-            <p>
-              {activePlaylist?.Songs.length} songs{" "},
-              <span>Total duration: {getSongTimeStamp(totalDuration)}</span>
-            </p>
-          </div>
+        <div className="playlist-description">
+          <p>{activePlaylist?.description}</p>
+          <p>
+            {activePlaylist?.Songs.length} songs ,
+            <span>Total duration: {getSongTimeStamp(totalDuration)}</span>
+          </p>
+        </div>
       )}
 
       <table className="music-table">
@@ -216,15 +222,27 @@ export default function MusicList({
               {activePlaylist ? (
                 <td>
                   <i
+                    tabIndex={0}
                     className="fa-solid fa-circle-minus"
                     onClick={() => handleRemoveSongFromPlaylist(song)}
+                    onKeyDown={(e) =>
+                      handleKeyPressWhenTabbed(e, () => {
+                        handleRemoveSongFromPlaylist(song);
+                      })
+                    }
                     title="Remove from playlist"></i>
                 </td>
               ) : (
                 <td>
                   <i
+                    tabIndex={0}
                     className="fa-solid fa-plus"
                     onClick={() => handleAddSongToPlayList(song)}
+                    onKeyDown={(e) =>
+                      handleKeyPressWhenTabbed(e, () => {
+                        handleAddSongToPlayList(song);
+                      })
+                    }
                     title="Add to playlist"></i>
                 </td>
               )}

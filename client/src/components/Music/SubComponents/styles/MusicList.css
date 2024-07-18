@@ -175,7 +175,8 @@ select {
     justify-content: space-between;
     margin-inline: 1rem;
     margin-block: .5rem;
-    & p:not(:empty){
+
+    & p:not(:empty) {
         font-weight: 600;
         background-color: var(--secondary-clr);
         padding: .25rem;

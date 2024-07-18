@@ -9,16 +9,16 @@ import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../showToast";
 
 export default function MusicPlayer({ showList, userRole, userUUID }) {
-  const { songs, currentSong, isPlaying, isCollapsed, handleCollapseToggle } =
-    useMusicPlayer();
+  const {
+    songs,
+    currentSong,
+    isPlaying,
+    isCollapsed,
+    handleCollapseToggle,
+    handleKeyPressWhenTabbed,
+  } = useMusicPlayer();
 
   const navigate = useNavigate();
-
-  const handleKeyPress = (event, action) => {
-    if (event.key === "Enter") {
-      action();
-    }
-  };
 
   const desiredUrls = [`/musicplayer/${userUUID}`];
   const handleCollapseAndWarn = () => {
@@ -44,7 +44,7 @@ export default function MusicPlayer({ showList, userRole, userUUID }) {
             }}
             tabIndex={0}
             onKeyDown={(event) =>
-              handleKeyPress(event, () =>
+              handleKeyPressWhenTabbed(event, () =>
                 navigate(`/updatesong/${currentSong.name}`)
               )
             }></i>
@@ -59,8 +59,8 @@ export default function MusicPlayer({ showList, userRole, userUUID }) {
           }}
           title={`${!isCollapsed ? "Collapse Player" : "Expand Player"}`}
           tabIndex={0}
-          onKeyDown={(event) =>
-            handleKeyPress(event, handleCollapseAndWarn)
+          onKeyDown={(e) =>
+            handleKeyPressWhenTabbed(e, handleCollapseAndWarn)
           }></i>
       </div>
 

@@ -4,7 +4,8 @@ import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../showToast";
 
 export default function UserPlayLists({ playlists, refreshPlaylist }) {
-  const { setActivePlaylist, user } = useMusicPlayer();
+  const { setActivePlaylist, user, handleKeyPressWhenTabbed } =
+    useMusicPlayer();
   const { userUUID } = user;
   const [activeIndex, setActiveIndex] = useState(() => {
     const storedActivePlaylist = JSON.parse(
@@ -99,15 +100,23 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
           <i className="fa-brands fa-napster"></i> Your Library
         </h3>
         <i
+          tabIndex={0}
           className="fa-solid fa-plus | add-playlist"
           onClick={handleCreatePlaylist}
+          onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleCreatePlaylist)}
           title="Create playlist"></i>
       </div>
       {playlists.map((playlist, index) => (
         <div key={index} className="playlist">
           <div
+            tabIndex={0}
             className={`playlist-title ${activeIndex === index && "active"}`}
             onClick={() => toggleActivePlayList(index, playlist)}
+            onKeyDown={(e) =>
+              handleKeyPressWhenTabbed(e, () =>
+                toggleActivePlayList(index, playlist)
+              )
+            }
             title={
               activeIndex === index
                 ? "Deactivate playlist"
