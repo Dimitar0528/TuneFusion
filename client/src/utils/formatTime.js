@@ -1,4 +1,4 @@
-export const getSongTimeStamp = (time) => {
+export const formatTime = (time) => {
     const hours = Math.floor(time / 3600);
     const min = Math.floor((time % 3600) / 60);
     let sec = Math.floor(time % 60);

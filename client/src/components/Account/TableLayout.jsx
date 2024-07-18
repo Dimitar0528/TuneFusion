@@ -1,9 +1,8 @@
-// TableWithPagination.js
 import React, { useState } from "react";
 import ReactPaginate from "react-paginate";
 import "./styles/table.css";
 
-export default function TableWithPagination({
+export default function TableLayout({
   data,
   columns,
   title,

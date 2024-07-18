@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./styles/Account.module.css";
-import ViewSongs from "./SubComponents/ViewSongs";
+import ViewAllSongs from "./SubComponents/ViewAllSongs";
 import EditAccount from "./SubComponents/EditAccount";
-import ViewUsers from "./SubComponents/ViewUsers";
+import ViewAllUsers from "./SubComponents/ViewAllUsers";
 import SongSuggestion from "./SubComponents/SongSuggestion";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -15,7 +15,7 @@ export default function Account({ songs }) {
   const contentsRef = useRef([]);
   const [user, setUser] = useState({});
 
-  const tabs = ["Song Suggestions", "Songs", "Account", "PlayLists", "Users"]; // Add new tab
+  const tabs = ["Song Suggestions", "Songs", "Account", "PlayLists", "Users"];
 
   useEffect(() => {
     updateUnderline();
@@ -94,7 +94,7 @@ export default function Account({ songs }) {
       case "Account":
         return <EditAccount user={user} />;
       case "Songs":
-        return user.role === "admin" && <ViewSongs songs={songs} />;
+        return user.role === "admin" && <ViewAllSongs songs={songs} />;
       case "PlayLists":
         return (
           <div>
@@ -103,7 +103,7 @@ export default function Account({ songs }) {
           </div>
         );
       case "Users":
-        return user.role === "admin" && <ViewUsers />;
+        return user.role === "admin" && <ViewAllUsers />;
       case "Song Suggestions":
         return user.role === "admin" && <SongSuggestion />;
       default:

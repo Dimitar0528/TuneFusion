@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import styles from "../styles/songForm.module.css"; // Import CSS module
+import styles from "../styles/SongManagerHandler.module.css"; // Import CSS module
 import { useParams } from "react-router-dom";
-import showToast from "../showToast";
+import showToast from "../utils/showToast";
 
-export default function SongForm({ action }) {
+export default function SongManagerHandler({ action }) {
   const { name } = useParams();
   const [formData, setFormData] = useState({
     name: "",

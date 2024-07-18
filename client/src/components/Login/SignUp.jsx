@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "./styles/SignUp.module.css";
-import showToast from "../../showToast";
+import showToast from "../../utils/showToast";
 
 export default function SignUp() {
   const [signUpMode, setSignUpMode] = useState(false);
@@ -133,7 +133,9 @@ export default function SignUp() {
             className={styles["sign-in-form"]}
             onSubmit={handleSignInSubmit}>
             <h2 className={styles.title}>Sign in</h2>
-            <label className={styles.label} htmlFor="username">Username</label>
+            <label className={styles.label} htmlFor="username">
+              Username
+            </label>
             <div className={styles["input-field"]}>
               <i className="fas fa-user"></i>
               <input
@@ -147,7 +149,9 @@ export default function SignUp() {
             </div>
             {errors.name && <p className={styles.error}>{errors.name}</p>}
 
-            <label className={styles.label} htmlFor="password">Password</label>
+            <label className={styles.label} htmlFor="password">
+              Password
+            </label>
             <div className={styles["input-field"]}>
               <i className="fas fa-lock"></i>
               <input
@@ -190,7 +194,9 @@ export default function SignUp() {
             className={styles["sign-up-form"]}
             onSubmit={handleSignUpSubmit}>
             <h2 className={styles.title}>Sign up</h2>
-            <label className={styles.label} htmlFor="signUpUsername">Username</label>
+            <label className={styles.label} htmlFor="signUpUsername">
+              Username
+            </label>
             <div className={styles["input-field"]}>
               <i className="fas fa-user"></i>
               <input
@@ -204,7 +210,9 @@ export default function SignUp() {
             </div>
             {errors.name && <p className={styles.error}>{errors.name}</p>}
 
-            <label className={styles.label} htmlFor="signUpEmail">Email Address</label>
+            <label className={styles.label} htmlFor="signUpEmail">
+              Email Address
+            </label>
             <div className={styles["input-field"]}>
               <i className="fas fa-envelope"></i>
               <input
@@ -218,7 +226,9 @@ export default function SignUp() {
             </div>
             {errors.email && <p className={styles.error}>{errors.email}</p>}
 
-            <label className={styles.label} htmlFor="signUpPassword">Password</label>
+            <label className={styles.label} htmlFor="signUpPassword">
+              Password
+            </label>
             <div className={styles["input-field"]}>
               <i className="fas fa-lock"></i>
               <input

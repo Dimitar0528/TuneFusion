@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import showToast from "../../../showToast";
-import Table from "../Table";
+import showToast from "../../../utils/showToast";
+import Table from "../TableLayout";
 import styles from "../styles/Account.module.css"; // Import the CSS module
 import "../styles/table.css";
-import { getSongTimeStamp } from "../../../utils/getSongTimeStamp";
+import { formatTime } from "../../../utils/formatTime";
 export default function SongSuggestion() {
   const [artist, setArtist] = useState("");
   const [songs, setSongs] = useState([]);
@@ -115,7 +115,7 @@ export default function SongSuggestion() {
               <td data-th="Title">{song.name}</td>
               <td data-th="Artist">{song.artist}</td>
               <td data-th="Audio Source">{song.audio_src}</td>
-              <td data-th="Duration">{getSongTimeStamp(song.duration)}</td>
+              <td data-th="Duration">{formatTime(song.duration)}</td>
               <td data-th="Actions">
                 <div className="cta-admin-buttons">
                   <button onClick={() => handleAddToDB(song)}>

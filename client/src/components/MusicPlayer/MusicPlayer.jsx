@@ -5,9 +5,8 @@ import PlayerControls from "./SubComponents/PlayerControls";
 import SongDetails from "./SubComponents/SongDetails";
 import ProgressArea from "./SubComponents/ProgressArea";
 import { useNavigate } from "react-router-dom";
-import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-import showToast from "../../../showToast";
-
+import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
+import showToast from "../../utils/showToast";
 export default function MusicPlayer({ showList, userRole, userUUID }) {
   const {
     songs,
@@ -24,7 +23,7 @@ export default function MusicPlayer({ showList, userRole, userUUID }) {
   const handleCollapseAndWarn = () => {
     if (desiredUrls.every((url) => url !== location.pathname)) {
       return showToast(
-        "To view the expanded music player, please enter the Music Player section!",
+        "To view the expanded music player, please enter the My Music section!",
         "warning"
       );
     } else {

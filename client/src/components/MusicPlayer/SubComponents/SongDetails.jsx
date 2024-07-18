@@ -1,5 +1,5 @@
 import React from "react";
-import { useMusicPlayer } from "../../../../contexts/MusicPlayerContext";
+import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 export default function SongDetails() {
   const {
     isLoading,

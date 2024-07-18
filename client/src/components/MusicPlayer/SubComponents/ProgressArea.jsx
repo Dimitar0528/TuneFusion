@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player/lazy";
-import { useMusicPlayer } from "../../../../contexts/MusicPlayerContext";
-import { getSongTimeStamp } from "../../../../utils/getSongTimeStamp";
+import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
+import { formatTime } from "../../../utils/formatTime";
 export default function ProgressArea() {
   const {
     progressAreaRef,
@@ -104,9 +104,9 @@ export default function ProgressArea() {
           handleKeyPressWhenTabbed(e, handleProgressBarClick)
         }></div>
       <div className="timer">
-        <span className="current">{getSongTimeStamp(currentTime) || 0}</span>
+        <span className="current">{formatTime(currentTime) || 0}</span>
         <span className="duration">
-          {getSongTimeStamp(currentSong.duration || 0)}
+          {formatTime(currentSong.duration || 0)}
         </span>
       </div>
       <ReactPlayer

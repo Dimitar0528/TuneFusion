@@ -19,7 +19,7 @@ export default function Footer({ userUUID }) {
                 isActive ? styles["nav__link--active"] : styles["nav__link"]
               }>
               <i className="fas fa-play"></i>
-              Music Player
+              My Music
             </NavLink>
           </li>
           <li>

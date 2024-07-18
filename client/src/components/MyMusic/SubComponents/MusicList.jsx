@@ -4,8 +4,8 @@ import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 import ReactPaginate from "react-paginate";
-import { getSongTimeStamp } from "../../../utils/getSongTimeStamp";
-import showToast from "../../../showToast";
+import { formatTime } from "../../../utils/formatTime";
+import showToast from "../../../utils/showToast";
 
 export default function MusicList({
   songs,
@@ -171,7 +171,7 @@ export default function MusicList({
           <p>{activePlaylist?.description}</p>
           <p>
             {activePlaylist?.Songs.length} songs ,
-            <span>Total duration: {getSongTimeStamp(totalDuration)}</span>
+            <span>Total duration: {formatTime(totalDuration)}</span>
           </p>
         </div>
       )}
@@ -218,7 +218,7 @@ export default function MusicList({
                   ? formatDate(song.PlaylistSong.createdAt)
                   : formatDate(song.createdAt)}
               </td>
-              <td>{getSongTimeStamp(song.duration)}</td>
+              <td>{formatTime(song.duration)}</td>
               {activePlaylist ? (
                 <td>
                   <i

@@ -4,7 +4,7 @@ import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import UserPlayLists from "./SubComponents/UserPlayLists";
 import { useNavigate, useParams } from "react-router-dom";
 
-export default function Music() {
+export default function MyMusic() {
   const navigate = useNavigate();
   const { userUUID } = useParams();
   const { filteredSongs, activePlaylist, setActivePlaylist } = useMusicPlayer();
@@ -38,7 +38,11 @@ export default function Music() {
       const playlist = playlists.find(
         (pl) => pl.name === storedActivePlaylist.name
       );
-      setActivePlaylist({ ...storedActivePlaylist, Songs: playlist.Songs, description: playlist.description });
+      setActivePlaylist({
+        ...storedActivePlaylist,
+        Songs: playlist.Songs,
+        description: playlist.description,
+      });
     }
   }, [playlists]);
 

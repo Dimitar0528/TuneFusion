@@ -5,17 +5,17 @@ import LandingPage from "./LandingPage/LandingPage";
 import AboutUs from "./Navigation/Information/AboutUs";
 import SignInSignUp from "./Login/SignUp";
 import Faq from "./Navigation/Information/Faq";
-import Music from "./Music/Music";
-import SongForm from "./SongForm";
-import ProtectedRoute from "./Routes/ProtectedRoute";
+import MyMusic from "./MyMusic/MyMusic";
+import SongManagerHandler from "./SongManagerHandler";
+import ProtectedRouteHandler from "./ProtectedRouteHandler";
 import ContactUs from "./Navigation/Information/ContactUs";
-import Navigation from "./Navigation/Navigation";
+import Header from "./Navigation/Header";
 import Footer from "./Navigation/Footer";
 import Account from "./Account/Account";
 import { useMusicPlayer } from "../contexts/MusicPlayerContext";
 import TFAVerification from "./Login/TFA";
 import ScrollToTopButton from "./ScrollToTopButton";
-import MusicPlayer from "./Music/MusicPlayer/MusicPlayer";
+import MusicPlayer from "./MusicPlayer/MusicPlayer";
 export default function App() {
   const { musicListRef, songs, user } = useMusicPlayer();
   const { userUUID, role } = user;
@@ -28,7 +28,7 @@ export default function App() {
   return (
     <div className="App">
       <ToastContainer />
-      <Navigation
+      <Header
         userUUID={userUUID}
         btnText={userUUID ? "My Account" : "Sign up"}
         goToLocation={userUUID ? `/account/${userUUID}` : "/sign-in"}
@@ -48,7 +48,7 @@ export default function App() {
         )}
         <Route path="/" element={<LandingPage userUUID={userUUID} />} />
 
-        <Route path={"/musicplayer/:userUUID"} element={<Music />} />
+        <Route path={"/musicplayer/:userUUID"} element={<MyMusic />} />
 
         <Route path="/information">
           <Route path="aboutus" element={<AboutUs />} />
@@ -66,17 +66,17 @@ export default function App() {
         <Route
           path={`/updatesong/:name`}
           element={
-            <ProtectedRoute role={role}>
-              <SongForm action={"updatesong"} />
-            </ProtectedRoute>
+            <ProtectedRouteHandler role={role}>
+              <SongManagerHandler action={"updatesong"} />
+            </ProtectedRouteHandler>
           }
         />
         <Route
           path="/addsong/newsong"
           element={
-            <ProtectedRoute role={role}>
-              <SongForm action={"addsong"} name={"newsong"} />
-            </ProtectedRoute>
+            <ProtectedRouteHandler role={role}>
+              <SongManagerHandler action={"addsong"} name={"newsong"} />
+            </ProtectedRouteHandler>
           }
         />
 

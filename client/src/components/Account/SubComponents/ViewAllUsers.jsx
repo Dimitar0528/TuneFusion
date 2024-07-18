@@ -1,11 +1,9 @@
 // ViewUsers.js
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Table from "../Table";
+import TableLayout from "../TableLayout";
 
-export default function ViewUsers() {
+export default function ViewAllUsers() {
   const [users, setUsers] = useState([]);
-  const navigate = useNavigate();
   const usersPerPage = 10;
 
   useEffect(() => {
@@ -21,7 +19,7 @@ export default function ViewUsers() {
   }, []);
 
   return (
-    <Table
+    <TableLayout
       data={users}
       columns={["UUID", "Name", "Email Address", "Phone Number", "Actions"]}
       title="Users"

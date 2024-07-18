@@ -1,12 +1,13 @@
 // ViewSongs.js
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import showToast from "../../../showToast";
-import Table from "../Table";
+import showToast from "../../../utils/showToast";
+import TableLayout from "../TableLayout";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
-import { getSongTimeStamp } from "../../../utils/getSongTimeStamp";
-export default function ViewSongs({ songs }) {
+import { formatTime } from "../../../utils/formatTime";
+
+export default function ViewAllSongs({ songs }) {
   const { currentSongUUID, setCurrentSongUUID, setCurrentTime } =
     useMusicPlayer();
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ export default function ViewSongs({ songs }) {
   };
 
   return (
-    <Table
+    <TableLayout
       data={songs}
       columns={[
         "Image",
@@ -72,7 +73,7 @@ export default function ViewSongs({ songs }) {
           <td data-th="UUID">{song.uuid}</td>
           <td data-th="Title">{song.name}</td>
           <td data-th="Artist">{song.artist}</td>
-          <td data-th="Duration">{getSongTimeStamp(song.duration)}</td>
+          <td data-th="Duration">{formatTime(song.duration)}</td>
           <td data-th="Audio Source">{song.audio_src}</td>
           <td data-th="Actions">
             <div className="cta-admin-buttons">

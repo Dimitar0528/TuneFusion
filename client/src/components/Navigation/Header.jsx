@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "../LandingPage/styles/LandingPage.module.css";
 
-export default function Navigation({ btnText, goToLocation, userUUID }) {
+export default function Header({ btnText, goToLocation, userUUID }) {
   const menuBtnRef = useRef();
   const navLinksRef = useRef();
   const menuBtnIconRef = useRef();
@@ -62,7 +62,7 @@ export default function Navigation({ btnText, goToLocation, userUUID }) {
             isActive ? styles["nav__link--active"] : styles["nav__link"]
           }>
           <i className="fas fa-play"></i>
-          Music Player
+          My Music
         </NavLink>
         <NavLink
           to="/information/aboutus"

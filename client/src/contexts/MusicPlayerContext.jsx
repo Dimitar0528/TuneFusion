@@ -5,7 +5,7 @@ import React, {
   useRef,
   useEffect,
 } from "react";
-import showToast from "../showToast";
+import showToast from "../utils/showToast";
 import extractUUIDPrefix from "../utils/extractUUIDPrefix";
 
 const MusicPlayerContext = createContext();
@@ -202,11 +202,11 @@ export function MusicPlayerProvider({ children }) {
     localStorage.setItem("audioVolume", JSON.stringify(newVolume));
   };
 
-    const handleKeyPressWhenTabbed = (e, action) => {
-      if (e.key === "Enter") {
-        action();
-      }
-    };
+  const handleKeyPressWhenTabbed = (e, action) => {
+    if (e.key === "Enter") {
+      action();
+    }
+  };
 
   const contextValue = {
     songs,

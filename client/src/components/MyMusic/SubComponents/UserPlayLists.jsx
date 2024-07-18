@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import "./styles/UserPlayLists.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-import showToast from "../../../showToast";
+import showToast from "../../../utils/showToast";
 
 export default function UserPlayLists({ playlists, refreshPlaylist }) {
   const { setActivePlaylist, user, handleKeyPressWhenTabbed } =
