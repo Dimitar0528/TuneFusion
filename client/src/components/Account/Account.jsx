@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./styles/Account.module.css";
-import ViewAllSongs from "./SubComponents/ViewAllSongs";
-import EditAccount from "./SubComponents/EditAccount";
-import ViewAllUsers from "./SubComponents/ViewAllUsers";
-import SongSuggestion from "./SubComponents/SongSuggestion";
+import EditAccount from './subComponents/EditAccount'
+import ViewAllUsers from './subComponents/ViewAllUsers'
+import SongSuggestion from './subComponents/SongSuggestion'
+import ViewAllSongs from './subComponents/ViewAllSongs'
 import { useNavigate, useParams } from "react-router-dom";
-
 export default function Account({ songs }) {
   const { userUUID } = useParams();
   const navigate = useNavigate();

@@ -1,9 +1,9 @@
 import React from "react";
 import "./styles/MusicPlayer.css";
 import "react-toastify/dist/ReactToastify.css";
-import PlayerControls from "./SubComponents/PlayerControls";
-import SongDetails from "./SubComponents/SongDetails";
-import ProgressArea from "./SubComponents/ProgressArea";
+import PlayerControls from "./subComponents/PlayerControls";
+import SongDetails from "./subComponents/SongDetails";
+import ProgressArea from "./subComponents/ProgressArea";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import showToast from "../../utils/showToast";

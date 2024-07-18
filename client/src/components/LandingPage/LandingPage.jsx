@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import ScrollReveal from "scrollreveal";
 import Swiper from "swiper/bundle";
 import styles from "./styles/LandingPage.module.css";
-import GenreCard from "./SubComponents/GenreCard";
-import FeatureCard from "./SubComponents/FeatureCard";
-import ClientCard from "./SubComponents/ClientCard";
+import GenreCard from "./subComponents/GenreCard";
+import FeatureCard from "./subComponents/FeatureCard";
+import ClientCard from "./subComponents/ClientCard";
 import { useNavigate } from "react-router-dom";
 export default function LandingPage({ userUUID }) {
   const navigate = useNavigate();

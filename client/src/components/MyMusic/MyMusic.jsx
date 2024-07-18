@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import MusicList from "./SubComponents/MusicList";
+import MusicList from "./subComponents/MusicList";
+import UserPlayLists from "./subComponents/UserPlayLists";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
-import UserPlayLists from "./SubComponents/UserPlayLists";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function MyMusic() {

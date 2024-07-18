@@ -106,13 +106,13 @@ export default function ProgressArea() {
       <div className="timer">
         <span className="current">{formatTime(currentTime) || 0}</span>
         <span className="duration">
-          {formatTime(currentSong.duration || 0)}
+          {formatTime(currentSong?.duration || 0)}
         </span>
       </div>
       <ReactPlayer
         ref={playerRef}
         className="main-audio"
-        url={currentSong.audio_src}
+        url={currentSong?.audio_src}
         playing={isPlaying}
         volume={volume}
         onProgress={handleMusicPlayerProgress}

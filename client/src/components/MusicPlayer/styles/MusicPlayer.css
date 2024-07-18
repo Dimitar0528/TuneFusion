@@ -26,7 +26,7 @@ label {
     width: max(350px, 40vw);
     transition-duration: .6s;
     transition-property: display opacity;
-    max-height: 650px;
+    max-height: 630px;
     overflow: hidden;
     position: fixed;
     bottom: .5rem;
@@ -111,7 +111,7 @@ label {
 
     opacity: 1;
     display: block;
-    height: max(20rem, 28vw);
+    height: max(20rem, 26.5vw);
     margin-block: 1rem;
 }
 
