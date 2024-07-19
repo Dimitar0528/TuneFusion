@@ -121,6 +121,7 @@ export default function ProgressArea() {
         height="0"
         progressInterval={100}
         playsinline={true}
+        
       />
     </div>
   );

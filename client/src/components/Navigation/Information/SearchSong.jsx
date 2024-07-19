@@ -5,7 +5,14 @@ import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import MusicList from "../../myMusic/subComponents/MusicList";
 
 export default function SearchSong() {
-  const { songs, musicListRef, setFilteredSongs, playlists } = useMusicPlayer();
+  const {
+    songs,
+    musicListRef,
+    setFilteredSongs,
+    playlists,
+    setCurrentPage,
+    setActivePlaylist,
+  } = useMusicPlayer();
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("q");
   const [searchSongs, setSearchSongs] = useState([]);
@@ -13,7 +20,7 @@ export default function SearchSong() {
   useEffect(() => {
     if (searchTerm) {
       let filteredSongs;
-      searchTerm === "All-Songs"
+      searchTerm === "All_Songs"
         ? (filteredSongs = songs)
         : (filteredSongs = songs.filter(
             (song) =>
@@ -21,9 +28,14 @@ export default function SearchSong() {
               song.name.toLowerCase().includes(searchTerm?.toLowerCase())
           ));
       setSearchSongs(filteredSongs);
-    } else {
-      setSearchSongs(songs);
+      setFilteredSongs(filteredSongs);
+      localStorage.removeItem("activePlaylist");
+      setActivePlaylist(null);
     }
+    return () => {
+      setFilteredSongs(songs.slice(0, 20));
+      setCurrentPage(0);
+    };
   }, [searchTerm, songs, setFilteredSongs]);
 
   return (

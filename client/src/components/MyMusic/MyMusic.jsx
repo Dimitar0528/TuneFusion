@@ -3,18 +3,11 @@ import UserPlayLists from "./subComponents/UserPlayLists";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 
 export default function MyMusic() {
-  const {
-    filteredSongs,
-    activePlaylist,
-    playlists,
-    
-  } = useMusicPlayer();
+  const { filteredSongs, activePlaylist, playlists } = useMusicPlayer();
 
   return (
     <div className="body">
-      <UserPlayLists
-        playlists={playlists}
-      />
+      <UserPlayLists playlists={playlists} />
 
       <MusicList
         title={

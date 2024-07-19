@@ -21,11 +21,11 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
     handleKeyPressWhenTabbed,
   } = useMusicPlayer();
 
-  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+  const [selectedPlaylist, setSelectedPlaylist] = useState();
   const [showModal, setShowModal] = useState(false);
-  const [selectedSong, setSelectedSong] = useState(null);
-
-  const itemsPerPage = 10;
+  const [selectedSong, setSelectedSong] = useState();
+  const [hoveredSongUUID, setHoveredSongUUID] = useState();
+  const itemsPerPage = 20;
 
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
@@ -35,6 +35,9 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
   const currentSongs = songs.slice(offset, offset + itemsPerPage);
   const pageCount = Math.ceil(songs.length / itemsPerPage);
 
+  const totalDuration = activePlaylist?.Songs.reduce((total, song) => {
+    return total + song.duration;
+  }, 0);
   const hideList = () => {
     musicListRef.current.style.opacity = "0";
     musicListRef.current.style.pointerEvents = "none";
@@ -140,10 +143,6 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
     }
   };
 
-  const totalDuration = activePlaylist?.Songs.reduce((total, song) => {
-    return total + song.duration;
-  }, 0);
-
   return (
     <div ref={musicListRef} className="music-list">
       <div className="header">
@@ -186,8 +185,31 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
                 extractUUIDPrefix(song.uuid) === currentSongUUID
                   ? "playing"
                   : "tr"
-              }>
-              <td>{offset + index + 1}</td>
+              }
+              onMouseEnter={() => setHoveredSongUUID(song.uuid)}
+              onMouseLeave={() => setHoveredSongUUID(null)}
+              onDoubleClick={() => handleMusicListSong(song)}>
+              <td>
+                {hoveredSongUUID === song.uuid ? (
+                  <i
+                    className={`fa-solid fa-${
+                      extractUUIDPrefix(song.uuid) === currentSongUUID &&
+                      isPlaying
+                        ? "pause"
+                        : "play"
+                    }`}
+                    onClick={() => handleMusicListSong(song)}
+                    style={{ cursor: "pointer" }}
+                    title={
+                      extractUUIDPrefix(song.uuid) === currentSongUUID &&
+                      isPlaying
+                        ? "Pause"
+                        : `Play ${song.name} by ${song.artist}`
+                    }></i>
+                ) : (
+                  offset + index + 1
+                )}
+              </td>
               <td>
                 <img
                   width={40}
@@ -197,9 +219,7 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
                   style={{ objectFit: "cover" }}
                 />
               </td>
-              <td
-                className="playlist-song-details"
-                onClick={() => handleMusicListSong(song)}>
+              <td>
                 <div>
                   <strong>{song.name}</strong>
                   <p>{song.artist}</p>

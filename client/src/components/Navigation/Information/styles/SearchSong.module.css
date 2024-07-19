@@ -4,8 +4,4 @@
     gap: 1rem;
     margin-block: 1rem;
     text-align: center;
-
-    & .music-list{
-        background-color: red !important;
-    }
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import LandingPage from "./landingPage/LandingPage";
@@ -18,14 +18,14 @@ import ScrollToTopButton from "./ScrollToTopButton";
 import MusicPlayer from "./musicPlayer/MusicPlayer";
 import SearchSong from "./navigation/Information/SearchSong";
 export default function App() {
-  const { musicListRef, songs, user } = useMusicPlayer();
+  const { musicListRef, songs, user, setFilteredSongs, filteredSongs } =
+    useMusicPlayer();
   const { userUUID, role } = user;
 
   const showList = () => {
     musicListRef.current.style.opacity = "1";
     musicListRef.current.style.pointerEvents = "auto";
   };
-
   return (
     <div className="App">
       <ToastContainer />

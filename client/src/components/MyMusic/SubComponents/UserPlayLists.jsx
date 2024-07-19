@@ -105,32 +105,34 @@ export default function UserPlayLists({ playlists }) {
           onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleCreatePlaylist)}
           title="Create playlist"></i>
       </div>
-      {playlists.map((playlist, index) => (
-        <div key={index} className="playlist">
-          <div
-            tabIndex={0}
-            className={`playlist-title ${activeIndex === index && "active"}`}
-            onClick={() => toggleActivePlayList(index, playlist)}
-            onKeyDown={(e) =>
-              handleKeyPressWhenTabbed(e, () =>
-                toggleActivePlayList(index, playlist)
-              )
-            }
-            title={
-              activeIndex === index
-                ? "Deactivate playlist"
-                : "Set active playlist"
-            }>
-            <img
-              src={getPlaylistImage(playlist)}
-              alt={playlist.name}
-              width={45}
-              height={45}
-            />{" "}
-            <h3>{playlist.name}</h3>
+      {[...playlists, ...playlists, ...playlists, ...playlists].map(
+        (playlist, index) => (
+          <div key={index} className="playlist">
+            <div
+              tabIndex={0}
+              className={`playlist-title ${activeIndex === index && "active"}`}
+              onClick={() => toggleActivePlayList(index, playlist)}
+              onKeyDown={(e) =>
+                handleKeyPressWhenTabbed(e, () =>
+                  toggleActivePlayList(index, playlist)
+                )
+              }
+              title={
+                activeIndex === index
+                  ? "Deactivate playlist"
+                  : "Set active playlist"
+              }>
+              <img
+                src={getPlaylistImage(playlist)}
+                alt={playlist.name}
+                width={45}
+                height={45}
+              />{" "}
+              <h3>{playlist.name}</h3>
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      )}
 
       {showDialog && (
         <dialog open ref={dialogRef} className="modal">

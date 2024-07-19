@@ -1,6 +1,6 @@
 .music-list {
-    width: clamp(390px, 58rem, 100%);
-    max-height: clamp(320px, 35vw, 80vh);
+    width: clamp(390px, 60rem, 100%);
+    max-height: clamp(320px, 36vw, 80vh);
     margin-left: auto;
     background-color: var(--accent-clr-light);
     box-shadow: 0 -5px 10px rgba(0, 0, 0, .1);
@@ -182,4 +182,9 @@ select {
         padding: .25rem;
         border-radius: 1rem;
     }
+}
+
+.music-table tbody tr td i.fa-play {
+    font-size: 1.2em;
+    color: #000;
 }
