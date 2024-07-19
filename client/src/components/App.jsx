@@ -16,6 +16,7 @@ import { useMusicPlayer } from "../contexts/MusicPlayerContext";
 import TFAVerification from "./login/TFA";
 import ScrollToTopButton from "./ScrollToTopButton";
 import MusicPlayer from "./musicPlayer/MusicPlayer";
+import SearchSong from "./navigation/Information/SearchSong";
 export default function App() {
   const { musicListRef, songs, user } = useMusicPlayer();
   const { userUUID, role } = user;
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="contactus" element={<ContactUs />} />
           <Route path="faq" element={<Faq />} />
         </Route>
+        <Route path="/search" element={<SearchSong />} />
         <Route
           path="/sign-in"
           element={userUUID ? <Navigate to="/" replace /> : <SignInSignUp />}

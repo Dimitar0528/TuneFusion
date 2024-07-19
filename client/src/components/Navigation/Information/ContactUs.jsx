@@ -1,11 +1,14 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./styles/ContactUs.css";
+import showToast from "../../../utils/showToast";
 
 export default function ContactUs() {
-  const nameRef = useRef(null);
-  const emailRef = useRef(null);
-  const phoneRef = useRef(null);
-  const messageRef = useRef(null);
+  const nameRef = useRef();
+  const emailRef = useRef();
+  const phoneRef = useRef();
+  const messageRef = useRef();
+
+  const [errors, setErrors] = useState({});
 
   const focusFunc = (event) => {
     let parent = event.target.parentNode;
@@ -41,6 +44,40 @@ export default function ContactUs() {
     };
   }, []);
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!nameRef.current.value.trim()) {
+      newErrors.name = "Name is required";
+    }
+    if (!emailRef.current.value.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(emailRef.current.value)) {
+      newErrors.email = "Email is invalid";
+    }
+    if (!phoneRef.current.value.trim()) {
+      newErrors.phone = "Phone is required";
+    } else if (!/^\d{10}$/.test(phoneRef.current.value)) {
+      newErrors.phone = "Phone is invalid";
+    }
+    if (!messageRef.current.value.trim()) {
+      newErrors.message = "Message is required";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleContactFormSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      showToast(
+        "Your message has been sent successfully!",
+        "success",
+        1500,
+        true
+      );
+    }
+  };
+
   return (
     <div className="container">
       <span className="big-circle"></span>
@@ -49,7 +86,8 @@ export default function ContactUs() {
         <div className="contact-info">
           <h3 className="title">Let's Connect with TuneFusion</h3>
           <p className="text">
-            Have questions or feedback? Reach out to us! We're here to help anytime.
+            Have questions or feedback? Reach out to us! We're here to help
+            anytime.
           </p>
           <div className="info">
             <div className="information">
@@ -86,12 +124,15 @@ export default function ContactUs() {
         <div className="contact-form">
           <span className="circle one"></span>
           <span className="circle two"></span>
-          <form action="index.html" autoComplete="off">
+          <form className="contact-us-form" autoComplete="off" onSubmit={handleContactFormSubmit}>
             <h3 className="title">Send us a Message</h3>
             <div className="input-container">
               <input type="text" name="name" className="input" ref={nameRef} />
               <label htmlFor="">Your Name</label>
               <span>Your Name</span>
+              {errors.name && (
+                <span className="error-message">{errors.name}</span>
+              )}
             </div>
             <div className="input-container">
               <input
@@ -102,11 +143,17 @@ export default function ContactUs() {
               />
               <label htmlFor="">Your Email</label>
               <span>Your Email</span>
+              {errors.email && (
+                <span className="error-message">{errors.email}</span>
+              )}
             </div>
             <div className="input-container">
               <input type="tel" name="phone" className="input" ref={phoneRef} />
               <label htmlFor="">Your Phone</label>
               <span>Your Phone</span>
+              {errors.phone && (
+                <span className="error-message">{errors.phone}</span>
+              )}
             </div>
             <div className="input-container textarea">
               <textarea
@@ -115,6 +162,9 @@ export default function ContactUs() {
                 ref={messageRef}></textarea>
               <label htmlFor="">Your Message</label>
               <span>Your Message</span>
+              {errors.message && (
+                <span className="error-message">{errors.message}</span>
+              )}
             </div>
             <input type="submit" value="Send" className="btn" />
           </form>

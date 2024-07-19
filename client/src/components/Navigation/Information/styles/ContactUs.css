@@ -73,7 +73,7 @@ textarea {
     left: -13px;
 }
 
-form {
+.contact-us-form {
     padding: 2.3rem 2.2rem;
     z-index: 10;
     overflow: hidden;
@@ -350,7 +350,7 @@ textarea.input {
         display: none;
     }
 
-    form,
+    .contact-us-form,
     .contact-info {
         padding: 1.7rem 1.6rem;
         margin-top: 3rem;

@@ -7,13 +7,7 @@ import ReactPaginate from "react-paginate";
 import { formatTime } from "../../../utils/formatTime";
 import showToast from "../../../utils/showToast";
 
-export default function MusicList({
-  songs,
-  title,
-  activePlaylist,
-  playlists,
-  refreshPlaylist,
-}) {
+export default function MusicList({ songs, title, activePlaylist, playlists }) {
   const {
     currentSongUUID,
     setCurrentSongUUID,
@@ -95,7 +89,6 @@ export default function MusicList({
       if (response.ok) {
         showToast("Song added to playlist successfully", "success");
         handleModalClose();
-        refreshPlaylist();
       } else {
         const errorData = await response.json();
         showToast(`Error: ${errorData.error}`, "error");
@@ -134,7 +127,6 @@ export default function MusicList({
       if (response.ok) {
         const data = await response.json();
         showToast(data.message, "success");
-        refreshPlaylist();
       } else {
         const errorData = await response.json();
         showToast(`Error: ${errorData.error}`, "error");

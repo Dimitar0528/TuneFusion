@@ -3,7 +3,7 @@ import "./styles/UserPlayLists.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../utils/showToast";
 
-export default function UserPlayLists({ playlists, refreshPlaylist }) {
+export default function UserPlayLists({ playlists }) {
   const { setActivePlaylist, user, handleKeyPressWhenTabbed } =
     useMusicPlayer();
   const { userUUID } = user;
@@ -18,7 +18,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
   const [newPlaylist, setNewPlaylist] = useState({
     name: "",
     description: "",
-    img_src: "", // Add this line
+    img_src: "", 
   });
 
   const dialogRef = useRef(null);
@@ -64,7 +64,6 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
     if (response.ok) {
       const data = await response.json();
       showToast(data.message, "success");
-      refreshPlaylist();
     } else {
       const data = await response.json();
       showToast(data.error, "error");

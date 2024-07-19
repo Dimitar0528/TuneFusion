@@ -14,13 +14,15 @@ export function MusicPlayerProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const [songs, setSongs] = useState([]);
+  const [filteredSongs, setFilteredSongs] = useState([]);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [lyrics, setLyrics] = useState("");
   const [shuffle, setShuffle] = useState(false);
 
-  const [filteredSongs, setFilteredSongs] = useState([]);
   const [activePlaylist, setActivePlaylist] = useState(null);
+  const [playlists, setPlaylists] = useState([]);
+  const [refreshPlaylist, setRefreshPlaylist] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(
@@ -63,8 +65,9 @@ export function MusicPlayerProvider({ children }) {
         const data = await response.json();
         setSongs(data);
         if (!activePlaylist) {
-          setFilteredSongs(data.slice(0, 40));
+          setFilteredSongs(data.slice(0, 20));
         }
+        return data;
       } catch (error) {
         console.error("Error fetching songs:", error);
       }
@@ -90,12 +93,59 @@ export function MusicPlayerProvider({ children }) {
           userUUID: token.id.slice(0, 6),
           role: token.role,
         });
+        return token.id.slice(0, 6);
       } catch (error) {
         console.error("Error fetching user token:", error);
       }
     };
     getUserToken();
-  }, []);
+
+    const fetchPlaylists = async (userUUID) => {
+      const response = await fetch(
+        `http://localhost:3000/api/playlists/${userUUID}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch playlists");
+      }
+
+      const data = await response.json();
+      setPlaylists(data);
+      return data;
+    };
+    (async () => {
+      try {
+        const [token] = await Promise.all([
+          getUserToken(),
+          fetchSongs(),
+        ]);
+        await fetchPlaylists(token);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    })();
+  }, [activePlaylist]);
+
+  useEffect(() => {
+    if (playlists.length === 0) return;
+    const storedActivePlaylist = JSON.parse(
+      localStorage.getItem("activePlaylist")
+    );
+    if (storedActivePlaylist) {
+      const playlist = playlists.find(
+        (pl) => pl.name === storedActivePlaylist.name
+      );
+      setActivePlaylist({
+        ...storedActivePlaylist,
+        Songs: playlist.Songs,
+        description: playlist.description,
+      });
+    }
+  }, [playlists]);
+
+  const refreshPlaylistHandler = () => {
+    setRefreshPlaylist((prev) => !prev);
+  };
 
   useEffect(() => {
     localStorage.setItem("currentSongUUID", JSON.stringify(currentSongUUID));
@@ -119,7 +169,7 @@ export function MusicPlayerProvider({ children }) {
       );
       setFilteredSongs(activePlaylist.Songs);
     } else {
-      setFilteredSongs(songs.slice(0, 40));
+      setFilteredSongs(songs.slice(0, 20));
     }
     setCurrentPage(0);
   }, [activePlaylist]);
@@ -241,6 +291,8 @@ export function MusicPlayerProvider({ children }) {
     handleVolumeChange,
     currentTime,
     setCurrentTime,
+    playlists,
+    refreshPlaylistHandler,
     activePlaylist,
     setActivePlaylist,
     currentPage,

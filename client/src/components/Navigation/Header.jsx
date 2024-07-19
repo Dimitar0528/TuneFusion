@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "../landingPage/styles/LandingPage.module.css";
-
 export default function Header({ btnText, goToLocation, userUUID }) {
   const menuBtnRef = useRef();
   const navLinksRef = useRef();
   const menuBtnIconRef = useRef();
   const navigate = useNavigate();
+  let [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const menuBtn = menuBtnRef.current;
@@ -35,6 +35,13 @@ export default function Header({ btnText, goToLocation, userUUID }) {
       navLinks.removeEventListener("click", handleNavLinksClick);
     };
   }, []);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery === "") searchQuery = "All-Songs";
+    navigate(`/search?q=${searchQuery}`);
+    setSearchQuery("");
+  };
 
   return (
     <nav className={styles["nav"]}>
@@ -72,6 +79,26 @@ export default function Header({ btnText, goToLocation, userUUID }) {
           <i className="fas fa-address-card"></i>
           About Us
         </NavLink>
+        <form onSubmit={handleSearchSubmit}>
+          <input
+            type="text"
+            placeholder="Search songs..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles["search__input"]}
+            title={`${
+              searchQuery ? "Search a specific song" : "Search all songs"
+            }`}
+          />
+          <button
+            type="submit"
+            className={styles["search__button"]}
+            title={`${
+              searchQuery ? "Search a specific song" : "Search all songs"
+            }`}>
+            <i className="ri-search-line"></i>
+          </button>
+        </form>
         <NavLink
           to="/information/contactus"
           className={({ isActive }) =>
