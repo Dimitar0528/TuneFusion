@@ -74,7 +74,6 @@ router.get('/:user_uuid', async (req, res) => {
 
 router.post('/add-song', async (req, res) => {
     const { songUUID, playlistUUID } = req.body;
-
     try {
         const song = await Song.findByPk(songUUID);
         const playlist = await PlayList.findByPk(playlistUUID);

@@ -2,9 +2,8 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import {User} from '../db/models/index.js'
+import { User, PlayList } from '../db/models/index.js'
 import sgMail from '@sendgrid/mail';
-
 const router = express.Router();
 const secretKey = process.env.JWT_SECRET_KEY;
 
@@ -35,6 +34,13 @@ router.post('/register', async (req, res) => {
             role,
         });
 
+        await PlayList.create({
+            uuid: crypto.randomUUID(),
+            name: 'Liked Songs',
+            description: "The songs that you enjoy listening to the most",
+            created_by: newUser.uuid,
+            img_src: "https://i1.sndcdn.com/artworks-y6qitUuZoS6y8LQo-5s2pPA-t500x500.jpg"
+        })
         return res.status(200).json(newUser);
     } catch (error) {
         console.error('Error creating user:', error);

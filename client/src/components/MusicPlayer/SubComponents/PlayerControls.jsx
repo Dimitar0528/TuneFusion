@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 
-export default function PlayerControls({ showList }) {
+export default function PlayerControls() {
   const {
     isPlaying,
     handlePlayPause,
@@ -15,6 +15,7 @@ export default function PlayerControls({ showList }) {
     setVolume,
     handleVolumeChange,
     handleKeyPressWhenTabbed,
+    showMusicList,
   } = useMusicPlayer();
   const [previousVolume, setPreviousVolume] = useState(volume);
 
@@ -69,9 +70,9 @@ export default function PlayerControls({ showList }) {
         id="more-music"
         className="fa-solid fa-sliders"
         title="Show Music List"
-        onClick={showList}
+        onClick={showMusicList}
         tabIndex={0}
-        onKeyDown={(e) => handleKeyPressWhenTabbed(e, showList)}></i>
+        onKeyDown={(e) => handleKeyPressWhenTabbed(e, showMusicList)}></i>
       <i
         id="shuffle"
         className={`fa-solid ${shuffle ? "fa-repeat" : "fa-shuffle"}`}

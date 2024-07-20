@@ -7,7 +7,7 @@ import ProgressArea from "./subComponents/ProgressArea";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import showToast from "../../utils/showToast";
-export default function MusicPlayer({ showList, userRole, userUUID }) {
+export default function MusicPlayer({ userRole, userUUID }) {
   const {
     songs,
     currentSong,
@@ -67,7 +67,7 @@ export default function MusicPlayer({ showList, userRole, userUUID }) {
 
       {songs.length > 0 && <ProgressArea />}
 
-      <PlayerControls showList={showList} />
+      <PlayerControls />
     </div>
   );
 }

@@ -12,6 +12,7 @@ export default function SearchSong() {
     playlists,
     setCurrentPage,
     setActivePlaylist,
+    refreshPlaylistHandler,
   } = useMusicPlayer();
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("q");
@@ -49,6 +50,7 @@ export default function SearchSong() {
           title={`Search results for ${searchTerm}`}
           musicListRef={musicListRef}
           playlists={playlists}
+          refreshPlaylist={refreshPlaylistHandler}
         />
       )}
     </div>

@@ -18,14 +18,9 @@ import ScrollToTopButton from "./ScrollToTopButton";
 import MusicPlayer from "./musicPlayer/MusicPlayer";
 import SearchSong from "./navigation/Information/SearchSong";
 export default function App() {
-  const { musicListRef, songs, user, setFilteredSongs, filteredSongs } =
-    useMusicPlayer();
+  const { songs, user } = useMusicPlayer();
   const { userUUID, role } = user;
 
-  const showList = () => {
-    musicListRef.current.style.opacity = "1";
-    musicListRef.current.style.pointerEvents = "auto";
-  };
   return (
     <div className="App">
       <ToastContainer />
@@ -35,9 +30,7 @@ export default function App() {
         goToLocation={userUUID ? `/account/${userUUID}` : "/sign-in"}
       />
 
-      {userUUID && (
-        <MusicPlayer showList={showList} userUUID={userUUID} userRole={role} />
-      )}
+      {userUUID && <MusicPlayer userUUID={userUUID} userRole={role} />}
       <ScrollToTopButton />
 
       <Routes>

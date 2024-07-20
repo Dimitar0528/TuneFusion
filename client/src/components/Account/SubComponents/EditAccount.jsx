@@ -148,9 +148,12 @@ export default function EditAccount({ user }) {
       return;
 
     try {
-      const response = await fetch(`/api/users/deleteUser/${uuid}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `http://localhost:3000/api/users/deleteUser/${uuid}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();

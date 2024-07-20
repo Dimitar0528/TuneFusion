@@ -1,6 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import { User } from '../db/models/index.js'
+import { PlayList, User, PlaylistSong } from '../db/models/index.js'
 import { Sequelize } from 'sequelize';
 
 const router = express.Router();
@@ -106,5 +106,36 @@ router.put('/resetPassword/:user_email_address', async (req, res) => {
     }
 });
 
+router.delete('/deleteUser/:userUUID', async (req, res) => {
+    const userUUID = req.params.userUUID;
 
+    try {
+        const hasPlaylists = await PlayList.findAll({
+            where: { created_by: userUUID },
+        });
+
+        if (hasPlaylists.length >= 0) {
+            const playlistUUIDs = hasPlaylists.map(playlist => playlist.dataValues.uuid);
+
+            await PlayList.destroy({
+                where: {
+                    uuid: playlistUUIDs,
+                },
+            });
+            const hasPlayListSongs = await PlaylistSong.findAll({
+                where: { playlist_uuid: playlistUUIDs }
+            })
+            hasPlayListSongs && (await PlaylistSong.destroy({
+                where: { playlist_uuid: playlistUUIDs },
+            }));
+            await User.destroy({
+                where: { uuid: userUUID },
+            });
+            res.status(200).json({ message: 'Account deleted successfully.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while deleting the user' });
+    }
+});
 export default router;

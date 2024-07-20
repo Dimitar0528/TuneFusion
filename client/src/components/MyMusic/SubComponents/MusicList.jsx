@@ -7,7 +7,13 @@ import ReactPaginate from "react-paginate";
 import { formatTime } from "../../../utils/formatTime";
 import showToast from "../../../utils/showToast";
 
-export default function MusicList({ songs, title, activePlaylist, playlists }) {
+export default function MusicList({
+  songs,
+  title,
+  activePlaylist,
+  playlists,
+  refreshPlaylist,
+}) {
   const {
     currentSongUUID,
     setCurrentSongUUID,
@@ -24,6 +30,11 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
   const [selectedPlaylist, setSelectedPlaylist] = useState();
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState();
+  const [likedSongs, setLikedSongs] = useState(() => {
+    const storedLikedSongs = localStorage.getItem("likedSongs");
+    return storedLikedSongs ? JSON.parse(storedLikedSongs) : [];
+  });
+
   const [hoveredSongUUID, setHoveredSongUUID] = useState();
   const itemsPerPage = 20;
 
@@ -92,6 +103,7 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
       if (response.ok) {
         showToast("Song added to playlist successfully", "success");
         handleModalClose();
+        refreshPlaylist();
       } else {
         const errorData = await response.json();
         showToast(`Error: ${errorData.error}`, "error");
@@ -105,13 +117,7 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
     }
   };
 
-  const handleRemoveSongFromPlaylist = async (song) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this song from the playlist?"
-      )
-    )
-      return;
+  const handleRemoveSongFromPlaylist = async (song, playlistName) => {
     try {
       const response = await fetch(
         "http://localhost:3000/api/playlists/remove-song",
@@ -122,7 +128,7 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
           },
           body: JSON.stringify({
             songUUID: song.uuid,
-            playlistName: activePlaylist.name,
+            playlistName: playlistName,
           }),
         }
       );
@@ -130,6 +136,7 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
       if (response.ok) {
         const data = await response.json();
         showToast(data.message, "success");
+        refreshPlaylist();
       } else {
         const errorData = await response.json();
         showToast(`Error: ${errorData.error}`, "error");
@@ -141,6 +148,59 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
         "error"
       );
     }
+  };
+
+  const likedSongsPlaylist = playlists.filter((playlist) => {
+    return playlist.name === "Liked Songs";
+  });
+  const handleToggleLikedSong = async (song) => {
+    const songUUID = extractUUIDPrefix(song.uuid);
+    const isLiked = likedSongs.includes(songUUID);
+    let updatedLikedSongs;
+
+    if (isLiked) {
+      updatedLikedSongs = likedSongs.filter((uuid) => uuid !== songUUID);
+      setLikedSongs(updatedLikedSongs);
+      handleRemoveSongFromPlaylist(song, likedSongsPlaylist[0].name);
+    } else {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/api/playlists/add-song",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              songUUID: song.uuid,
+              playlistUUID: likedSongsPlaylist[0].uuid, // Use the first matched playlist's UUID
+            }),
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          showToast(data.message, "success");
+          updatedLikedSongs = [...likedSongs, songUUID];
+          setLikedSongs(updatedLikedSongs);
+          refreshPlaylist();
+        } else {
+          const errorData = await response.json();
+          showToast(`Error: ${errorData.error}`, "error");
+          return;
+        }
+      } catch (error) {
+        console.error("Error adding song to liked songs playlist:", error);
+        showToast(
+          "An error occurred while adding the song to the liked songs playlist.",
+          "error"
+        );
+        return;
+      }
+    }
+
+    // Update localStorage
+    localStorage.setItem("likedSongs", JSON.stringify(updatedLikedSongs));
   };
 
   return (
@@ -230,34 +290,53 @@ export default function MusicList({ songs, title, activePlaylist, playlists }) {
                   ? formatDate(song.PlaylistSong.createdAt)
                   : formatDate(song.createdAt)}
               </td>
-              <td>{formatTime(song.duration)}</td>
-              {activePlaylist ? (
-                <td>
-                  <i
-                    tabIndex={0}
-                    className="fa-solid fa-circle-minus"
-                    onClick={() => handleRemoveSongFromPlaylist(song)}
-                    onKeyDown={(e) =>
-                      handleKeyPressWhenTabbed(e, () => {
-                        handleRemoveSongFromPlaylist(song);
-                      })
-                    }
-                    title="Remove from playlist"></i>
-                </td>
-              ) : (
-                <td>
-                  <i
-                    tabIndex={0}
-                    className="fa-solid fa-plus"
-                    onClick={() => handleAddSongToPlayList(song)}
-                    onKeyDown={(e) =>
-                      handleKeyPressWhenTabbed(e, () => {
-                        handleAddSongToPlayList(song);
-                      })
-                    }
-                    title="Add to playlist"></i>
-                </td>
-              )}
+              <td>
+                <i
+                  className={` fa-heart | add-to-playlist ${
+                    likedSongs.includes(extractUUIDPrefix(song.uuid))
+                      ? "fa-solid"
+                      : "fa-regular"
+                  }`}
+                  title={
+                    likedSongs.includes(extractUUIDPrefix(song.uuid))
+                      ? "Remove from Liked Songs Playlist"
+                      : "Save to Liked Songs Playlist"
+                  }
+                  onClick={() => handleToggleLikedSong(song)}
+                  style={{ cursor: "pointer" }}></i>
+                {formatTime(song.duration)}
+              </td>
+              {activePlaylist?.name !== "Liked Songs" ? (
+                activePlaylist ? (
+                  <td>
+                    <i
+                      tabIndex={0}
+                      className="fa-solid fa-circle-minus"
+                      onClick={() =>
+                        handleRemoveSongFromPlaylist(song, activePlaylist.name)
+                      }
+                      onKeyDown={(e) =>
+                        handleKeyPressWhenTabbed(e, () => {
+                          handleRemoveSongFromPlaylist(song);
+                        })
+                      }
+                      title="Remove from playlist"></i>
+                  </td>
+                ) : (
+                  <td>
+                    <i
+                      tabIndex={0}
+                      className="fa-solid fa-plus"
+                      onClick={() => handleAddSongToPlayList(song)}
+                      onKeyDown={(e) =>
+                        handleKeyPressWhenTabbed(e, () => {
+                          handleAddSongToPlayList(song);
+                        })
+                      }
+                      title="Add to playlist"></i>
+                  </td>
+                )
+              ) : null}
             </tr>
           ))}
         </tbody>

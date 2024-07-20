@@ -37,13 +37,26 @@
     pointer-events: auto;
 }
 
+.fa-regular {
+    opacity: 0;
+    pointer-events: none;
+    transition: .5s;
+    color: var(--accent-clr-light);
+}
+
 .tr {
     transition: .2s;
 
     &:where(:hover, :focus-visible) {
         background-color: var(--primary-clr-dark);
         color: var(--accent-clr-light);
+
+        & .fa-regular {
+            opacity: 1;
+            pointer-events: all;
+        }
     }
+
 }
 
 .playlist-song-details {
@@ -79,7 +92,7 @@
 
 .music-table tr.playing {
     color: var(--accent-clr-light);
-    background-color: hsl(from var(--primary-clr) h s 25%)
+    background-color: hsl(from var(--primary-clr) h s 25%);
 }
 
 .music-table img {
@@ -187,4 +200,9 @@ select {
 .music-table tbody tr td i.fa-play {
     font-size: 1.2em;
     color: #000;
+}
+
+.add-to-playlist {
+    margin-right: 1rem;
+    cursor: pointer;
 }

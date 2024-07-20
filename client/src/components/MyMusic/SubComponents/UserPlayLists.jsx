@@ -3,7 +3,7 @@ import "./styles/UserPlayLists.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../utils/showToast";
 
-export default function UserPlayLists({ playlists }) {
+export default function UserPlayLists({ playlists, refreshPlaylist }) {
   const { setActivePlaylist, user, handleKeyPressWhenTabbed } =
     useMusicPlayer();
   const { userUUID } = user;
@@ -18,10 +18,8 @@ export default function UserPlayLists({ playlists }) {
   const [newPlaylist, setNewPlaylist] = useState({
     name: "",
     description: "",
-    img_src: "", 
+    img_src: "",
   });
-
-  const dialogRef = useRef(null);
 
   const toggleActivePlayList = (index, playlist) => {
     const newActiveIndex = activeIndex === index ? null : index;
@@ -64,6 +62,7 @@ export default function UserPlayLists({ playlists }) {
     if (response.ok) {
       const data = await response.json();
       showToast(data.message, "success");
+      refreshPlaylist();
     } else {
       const data = await response.json();
       showToast(data.error, "error");
@@ -105,37 +104,35 @@ export default function UserPlayLists({ playlists }) {
           onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleCreatePlaylist)}
           title="Create playlist"></i>
       </div>
-      {[...playlists, ...playlists, ...playlists, ...playlists].map(
-        (playlist, index) => (
-          <div key={index} className="playlist">
-            <div
-              tabIndex={0}
-              className={`playlist-title ${activeIndex === index && "active"}`}
-              onClick={() => toggleActivePlayList(index, playlist)}
-              onKeyDown={(e) =>
-                handleKeyPressWhenTabbed(e, () =>
-                  toggleActivePlayList(index, playlist)
-                )
-              }
-              title={
-                activeIndex === index
-                  ? "Deactivate playlist"
-                  : "Set active playlist"
-              }>
-              <img
-                src={getPlaylistImage(playlist)}
-                alt={playlist.name}
-                width={45}
-                height={45}
-              />{" "}
-              <h3>{playlist.name}</h3>
-            </div>
+      {playlists.map((playlist, index) => (
+        <div key={index} className="playlist">
+          <div
+            tabIndex={0}
+            className={`playlist-title ${activeIndex === index && "active"}`}
+            onClick={() => toggleActivePlayList(index, playlist)}
+            onKeyDown={(e) =>
+              handleKeyPressWhenTabbed(e, () =>
+                toggleActivePlayList(index, playlist)
+              )
+            }
+            title={
+              activeIndex === index
+                ? "Deactivate playlist"
+                : "Set active playlist"
+            }>
+            <img
+              src={getPlaylistImage(playlist)}
+              alt={playlist.name}
+              width={45}
+              height={45}
+            />{" "}
+            <h3>{playlist.name}</h3>
           </div>
-        )
-      )}
+        </div>
+      ))}
 
       {showDialog && (
-        <dialog open ref={dialogRef} className="modal">
+        <dialog open className="modal">
           <div className="playlist-dialog">
             <h2>Create New Playlist</h2>
             <form method="dialog">

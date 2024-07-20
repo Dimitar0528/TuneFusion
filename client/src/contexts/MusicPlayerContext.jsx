@@ -25,6 +25,7 @@ export function MusicPlayerProvider({ children }) {
   const [refreshPlaylist, setRefreshPlaylist] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(0);
+
   const [isCollapsed, setIsCollapsed] = useState(
     () => JSON.parse(localStorage.getItem("isCollapsed")) || false
   );
@@ -140,6 +141,10 @@ export function MusicPlayerProvider({ children }) {
     }
   }, [playlists]);
 
+  const refreshPlaylistHandler = () => {
+    setRefreshPlaylist((prev) => !prev);
+  };
+
   useEffect(() => {
     localStorage.setItem("currentSongUUID", JSON.stringify(currentSongUUID));
   }, [currentSongUUID]);
@@ -250,9 +255,13 @@ export function MusicPlayerProvider({ children }) {
     }
   };
 
+  const showMusicList = () => {
+    musicListRef.current.style.opacity = "1";
+    musicListRef.current.style.pointerEvents = "auto";
+  };
+
   const contextValue = {
     songs,
-    setSongs,
     filteredSongs,
     setFilteredSongs,
     currentSongUUID,
@@ -263,11 +272,8 @@ export function MusicPlayerProvider({ children }) {
     lyrics,
     setLyrics,
     shuffle,
-    setShuffle,
     isLoading,
-    setIsLoading,
     isCollapsed,
-    setIsCollapsed,
     volume,
     setVolume,
     progressAreaRef,
@@ -284,13 +290,14 @@ export function MusicPlayerProvider({ children }) {
     currentTime,
     setCurrentTime,
     playlists,
+    refreshPlaylistHandler,
     activePlaylist,
     setActivePlaylist,
     currentPage,
     setCurrentPage,
     user,
-    setUser,
     handleKeyPressWhenTabbed,
+    showMusicList,
   };
 
   return (
