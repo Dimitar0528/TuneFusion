@@ -1,16 +1,16 @@
 import React from "react";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
+import LoadingSpinner from "../../LoadingSpinner";
 export default function SongDetails() {
-  const { isLoading, lyrics, currentSong } = useMusicPlayer();
+  const { islyricsLoading, lyrics, currentSong } = useMusicPlayer();
 
   return (
     <>
       <div className="img-area text-center">
-        {isLoading ? (
-          <div className="loading">
-            <i className="fa-solid fa-spinner fa-spin"></i>
-            <h2>Loading...</h2>
-          </div>
+        {islyricsLoading ? (
+          <LoadingSpinner
+            isLoading={islyricsLoading}
+          />
         ) : lyrics ? (
           <div className="lyrics">{lyrics ? <pre>{lyrics}</pre> : null}</div>
         ) : (

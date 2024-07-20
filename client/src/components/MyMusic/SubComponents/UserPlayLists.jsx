@@ -2,10 +2,14 @@ import React, { useState, useRef } from "react";
 import "./styles/UserPlayLists.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../utils/showToast";
-
+import LoadinSpinner from "../../LoadingSpinner";
 export default function UserPlayLists({ playlists, refreshPlaylist }) {
-  const { setActivePlaylist, user, handleKeyPressWhenTabbed } =
-    useMusicPlayer();
+  const {
+    setActivePlaylist,
+    user,
+    handleKeyPressWhenTabbed,
+    isPlaylistLoading,
+  } = useMusicPlayer();
   const { userUUID } = user;
   const [activeIndex, setActiveIndex] = useState(() => {
     const storedActivePlaylist = JSON.parse(
@@ -104,6 +108,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
           onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleCreatePlaylist)}
           title="Create playlist"></i>
       </div>
+      <LoadinSpinner isLoading={isPlaylistLoading} />
       {playlists.map((playlist, index) => (
         <div key={index} className="playlist">
           <div

@@ -350,14 +350,3 @@ label {
     border-radius: 5px;
     background-color: #f9f9f9;
 }
-
-.loading {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-
-    & .fa-spinner {
-        font-size: 10rem;
-    }
-}

@@ -6,6 +6,7 @@ import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 import ReactPaginate from "react-paginate";
 import { formatTime } from "../../../utils/formatTime";
 import showToast from "../../../utils/showToast";
+import LoadingSpinner from "../../LoadingSpinner";
 
 export default function MusicList({
   songs,
@@ -17,8 +18,8 @@ export default function MusicList({
   const {
     currentSongUUID,
     setCurrentSongUUID,
-    lyrics,
-    setLyrics,
+    isSongLoading,
+    fetchLyrics,
     setIsPlaying,
     musicListRef,
     isPlaying,
@@ -61,7 +62,7 @@ export default function MusicList({
   const handleMusicListSong = (song) => {
     handleCurrentPlayingSong(extractUUIDPrefix(song.uuid));
     setIsPlaying(true);
-    lyrics && setLyrics("");
+    fetchLyrics();
     extractUUIDPrefix(song.uuid) === currentSongUUID &&
       isPlaying &&
       setIsPlaying(false);
@@ -227,6 +228,7 @@ export default function MusicList({
         </div>
       )}
 
+      <LoadingSpinner isLoading={isSongLoading} />
       <table className="music-table">
         <thead>
           <tr>

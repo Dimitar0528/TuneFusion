@@ -73,7 +73,6 @@ body {
     background: var(--bg)
 }
 
-/* index.css */
 
 .scrollToTop {
     position: fixed;
@@ -104,4 +103,14 @@ body {
 .scrollButton:hover {
     background-color: var(--card-text-light-clr);
     color: var(--accent-clr-light);
+}
+
+.loading {
+    margin-top: 1rem;
+    display: grid;
+    place-items: center;
+
+    & .fa-spinner {
+        font-size: 11rem;
+    }
 }
