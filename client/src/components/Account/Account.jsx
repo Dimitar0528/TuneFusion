@@ -1,92 +1,39 @@
-import React, { useState, useRef, useEffect } from "react";
 import styles from "./styles/Account.module.css";
-import EditAccount from './subComponents/EditAccount'
-import ViewAllUsers from './subComponents/ViewAllUsers'
-import SongSuggestion from './subComponents/SongSuggestion'
-import ViewAllSongs from './subComponents/ViewAllSongs'
-import { useNavigate, useParams } from "react-router-dom";
+import EditAccount from "./subComponents/EditAccount";
+import ViewAllUsers from "./subComponents/ViewAllUsers";
+import SongSuggestion from "./subComponents/SongSuggestion";
+import ViewAllSongs from "./subComponents/ViewAllSongs";
+import { useParams } from "react-router-dom";
+
+import useUserDetailsFetch from "./hooks/useUserDetailsFetch";
+import useTabs from "./hooks/useTabs";
+import useTabEventListeners from "./hooks/useTabEventListeners";
 export default function Account({ songs }) {
   const { userUUID } = useParams();
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("Account");
-  const underlineRef = useRef(null);
-  const tabsRef = useRef([]);
-  const contentsRef = useRef([]);
-  const [user, setUser] = useState({});
 
+  const { user } = useUserDetailsFetch(userUUID);
   const tabs = ["Song Suggestions", "Songs", "Account", "PlayLists", "Users"];
-
-  useEffect(() => {
-    updateUnderline();
-    window.addEventListener("resize", updateUnderline);
-    return () => window.removeEventListener("resize", updateUnderline);
-  }, [activeTab]);
-
-  useEffect(() => {
-    async function getUser() {
-      const response = await fetch(
-        `http://localhost:3000/api/users/${userUUID}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      if (response.status === 404) {
-        navigate("/");
-      }
-      const data = await response.json();
-      setUser(data);
-    }
-    getUser();
-  }, [userUUID]);
-
-  useEffect(() => {
-    const handleHover = (e) => {
-      const hoveredTab = e.currentTarget;
-      updateUnderlinePosition(hoveredTab);
-    };
-
-    const handleLeave = () => {
-      updateUnderline();
-    };
-
-    tabsRef.current.forEach((tab) => {
-      if (tab) {
-        tab.addEventListener("mouseenter", handleHover);
-        tab.addEventListener("mouseleave", handleLeave);
-        tab.addEventListener("keydown", (e) => {
-          if (e.code === "Enter") setActiveTab(e.currentTarget.dataset.target);
-        });
-      }
-    });
-
-    return () => {
-      tabsRef.current.forEach((tab) => {
-        if (tab) {
-          tab.removeEventListener("mouseenter", handleHover);
-          tab.removeEventListener("mouseleave", handleLeave);
-          tab.removeEventListener("keydown", (e) => {
-            if (e.code === "Enter")
-              setActiveTab(e.currentTarget.dataset.target);
-          });
-        }
-      });
-    };
-  }, [activeTab]);
-
-  const updateUnderline = () => {
-    const activeTabElement = tabsRef.current.find(
-      (tab) => tab && tab.dataset.target === activeTab
-    );
-    if (activeTabElement && underlineRef.current) {
-      updateUnderlinePosition(activeTabElement);
-    }
-  };
+  const {
+    activeTab,
+    setActiveTab,
+    underlineRef,
+    tabsRef,
+    contentsRef,
+    updateUnderline,
+  } = useTabs();
 
   const updateUnderlinePosition = (element) => {
     underlineRef.current.style.width = `${element.offsetWidth}px`;
     underlineRef.current.style.left = `${element.offsetLeft}px`;
   };
+
+  useTabEventListeners(
+    tabsRef,
+    activeTab,
+    setActiveTab,
+    updateUnderline,
+    updateUnderlinePosition
+  );
 
   const renderTabContent = (tab) => {
     switch (tab) {

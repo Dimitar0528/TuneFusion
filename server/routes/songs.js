@@ -1,6 +1,6 @@
 import express from 'express';
 import Genius from 'genius-lyrics';
-import { Song } from '../db/models/index.js'
+import { Song, PlaylistSong } from '../db/models/index.js'
 import gis from 'async-g-i-s';
 import { searchMusics, getSuggestions } from 'node-youtube-music';
 
@@ -72,6 +72,12 @@ router.delete('/deleteSong/:uuid', async (req, res) => {
     try {
         await Song.destroy({ where: { uuid: songUUID } });
 
+        const hasPlayListSongs = await PlaylistSong.findAll({
+            where: { song_uuid: songUUID }
+        })
+        hasPlayListSongs && (await PlaylistSong.destroy({
+            where: { song_uuid: songUUID },
+        }));
         return res.status(200).json({ message: 'Song deleted successfully!' });
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });

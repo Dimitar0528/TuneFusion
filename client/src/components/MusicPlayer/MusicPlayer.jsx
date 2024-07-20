@@ -48,7 +48,7 @@ export default function MusicPlayer({ userRole, userUUID }) {
               )
             }></i>
         )}
-        <h2>{isPlaying ? "Now Playing" : "TuneFusion"}</h2>
+        <h2>{isPlaying ? "Playing" : "TuneFusion"}</h2>
         <i
           className={`fa-solid ${
             !isCollapsed ? " fa-arrow-down" : " fa-arrow-up"

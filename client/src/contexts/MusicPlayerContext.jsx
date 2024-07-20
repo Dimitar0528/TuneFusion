@@ -9,6 +9,7 @@ import useLocalStorage from "../hooks/useLocalStorage";
 import useStoredActivePlaylist from "../hooks/useStoredActivePlaylist";
 import useUpdateActivePlaylist from "../hooks/useUpdateActivePlaylist";
 import useFetchSongLyrics from "../hooks/fetch-get-hooks/useFetchSongLyrics";
+
 const MusicPlayerContext = createContext();
 
 export function MusicPlayerProvider({ children }) {
@@ -16,8 +17,10 @@ export function MusicPlayerProvider({ children }) {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [shuffle, setShuffle] = useState(false);
+  const [isLooped, setIsLooped] = useState(false);
+  const [playBackSpeed, setPlayBackSpeed] = useState(1);
 
-  const [activePlaylist, setActivePlaylist] = useState(null);
+  const [activePlaylist, setActivePlaylist] = useState();
 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -58,7 +61,8 @@ export function MusicPlayerProvider({ children }) {
     lyrics,
     loading: islyricsLoading,
     fetchLyrics,
-  } = useFetchSongLyrics(currentSong, isCollapsed, showToast);
+    setLyrics,
+  } = useFetchSongLyrics(currentSong);
 
   useStoredActivePlaylist(playlists, setActivePlaylist);
 
@@ -85,12 +89,12 @@ export function MusicPlayerProvider({ children }) {
       );
       setCurrentSongUUID(extractUUIDPrefix(filteredSongs[randomIndex].uuid));
       setIsPlaying(true);
-      fetchLyrics();
+      setLyrics("");
     } else {
       const nextIndex = (currentIndex + 1) % filteredSongs.length;
       setCurrentSongUUID(extractUUIDPrefix(filteredSongs[nextIndex].uuid));
       setIsPlaying(true);
-      fetchLyrics();
+      setLyrics("");
     }
     setCurrentTime(0);
   };
@@ -113,7 +117,7 @@ export function MusicPlayerProvider({ children }) {
       (currentIndex - 1 + filteredSongs.length) % filteredSongs.length;
     setCurrentSongUUID(extractUUIDPrefix(filteredSongs[prevIndex].uuid));
     setIsPlaying(true);
-    fetchLyrics();
+    setLyrics("");
     setCurrentTime(0);
   };
 
@@ -134,6 +138,34 @@ export function MusicPlayerProvider({ children }) {
     musicListRef.current.style.pointerEvents = "auto";
   };
 
+  const handleLoopSong = () => {
+    setIsLooped((isLooped) => !isLooped);
+    showToast(
+      `${
+        isLooped
+          ? "Repeat disabled successfully"
+          : "Repeat enabled successfully"
+      } `,
+      "success"
+    );
+  };
+
+  const handlePlayBackSpeed = () => {
+    const unsupportedAudioFile =
+      !currentSong?.audio_src.includes("youtube.com");
+    if (unsupportedAudioFile)
+      return showToast(
+        "The current song does not support this feature",
+        "warning"
+      );
+    const playBackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+
+    const currentIndex = playBackSpeeds.indexOf(playBackSpeed);
+
+    const nextIndex = (currentIndex + 1) % playBackSpeeds.length;
+
+    setPlayBackSpeed(playBackSpeeds[nextIndex]);
+  };
   const contextValue = {
     songs,
     filteredSongs,
@@ -144,10 +176,10 @@ export function MusicPlayerProvider({ children }) {
     isPlaying,
     setIsPlaying,
     lyrics,
+    setLyrics,
     shuffle,
     islyricsLoading,
     isPlaylistLoading,
-    isSongLoading,
     isCollapsed,
     volume,
     setVolume,
@@ -158,6 +190,10 @@ export function MusicPlayerProvider({ children }) {
     fetchLyrics,
     handlePlayPause,
     handleNextSong,
+    isLooped,
+    handleLoopSong,
+    playBackSpeed,
+    handlePlayBackSpeed,
     toggleShufflePlayList,
     handleCollapseToggle,
     handlePreviousSong,

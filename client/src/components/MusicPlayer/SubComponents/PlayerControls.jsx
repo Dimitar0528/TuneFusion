@@ -6,6 +6,10 @@ export default function PlayerControls() {
     isPlaying,
     handlePlayPause,
     handleNextSong,
+    isLooped,
+    handleLoopSong,
+    playBackSpeed,
+    handlePlayBackSpeed,
     handlePreviousSong,
     shuffle,
     toggleShufflePlayList,
@@ -56,6 +60,12 @@ export default function PlayerControls() {
         e.preventDefault();
         handlePlayPause();
       }
+      if (e.shiftKey && e.key === "N") {
+        handleNextSong();
+      }
+      if (e.shiftKey && e.key === "P") {
+        handlePreviousSong();
+      }
     };
 
     document.addEventListener("keydown", handleSpecificKeyPress);
@@ -63,7 +73,6 @@ export default function PlayerControls() {
       document.removeEventListener("keydown", handleSpecificKeyPress);
     };
   }, [volume, handlePlayPause]);
-
   return (
     <div className="controls">
       <i
@@ -73,6 +82,13 @@ export default function PlayerControls() {
         onClick={showMusicList}
         tabIndex={0}
         onKeyDown={(e) => handleKeyPressWhenTabbed(e, showMusicList)}></i>
+      <i
+        id="playback-speed"
+        className="fa-solid fa-plus-minus"
+        title={`Current playback speed: ${playBackSpeed}. Increase by 0.25`}
+        onClick={handlePlayBackSpeed}
+        tabIndex={0}
+        onKeyDown={(e) => handleKeyPressWhenTabbed(e, handlePlayBackSpeed)}></i>
       <i
         id="shuffle"
         className={`fa-solid ${shuffle ? "fa-repeat" : "fa-shuffle"}`}
@@ -85,7 +101,7 @@ export default function PlayerControls() {
       <i
         id="prev"
         className="fa-solid fa-backward"
-        title="Previous"
+        title="Previous (Shift + P)"
         onClick={handlePreviousSong}
         tabIndex={0}
         onKeyDown={(e) => handleKeyPressWhenTabbed(e, handlePreviousSong)}></i>
@@ -100,10 +116,17 @@ export default function PlayerControls() {
       <i
         id="next"
         className="fa-solid fa-forward"
-        title="Next"
+        title="Next (Shift + N)"
         onClick={handleNextSong}
         tabIndex={0}
         onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleNextSong)}></i>
+      <i
+        id="loop"
+        className={`fa-solid ${isLooped ? "fa-rotate-right" : "fa-repeat"}`}
+        title={isLooped ? "Disable Repeat" : "Enable Repeat"}
+        onClick={handleLoopSong}
+        tabIndex={0}
+        onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleLoopSong)}></i>
       <div className="lyrics-wrapper">
         <i
           id="lyrics"

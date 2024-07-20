@@ -1,19 +1,20 @@
 import { useEffect } from "react";
-import useLocalStorage from "./useLocalStorage";
 
 const useActivePlaylistEffect = (activePlaylist, songs, setFilteredSongs) => {
-    useLocalStorage("activePlaylist", {
-        name: activePlaylist?.name,
-        activeIndex: activePlaylist?.activeIndex,
-    });
-
     useEffect(() => {
         if (activePlaylist) {
+            localStorage.setItem(
+                "activePlaylist",
+                JSON.stringify({
+                    name: activePlaylist?.name,
+                    activeIndex: activePlaylist?.activeIndex,
+                })
+            );
             setFilteredSongs(activePlaylist.Songs);
         } else {
             setFilteredSongs(songs.slice(0, 20));
         }
-    }, [activePlaylist, songs, setFilteredSongs]);
+    }, [activePlaylist, songs, setFilteredSongs,]);
 };
 
 export default useActivePlaylistEffect;

@@ -73,7 +73,7 @@ label {
     @media (max-width: 850px) {
         display: grid;
         grid-template-columns: 1fr;
-        max-height: 170px;
+        max-height: 175px;
 
 
         .controls {
@@ -111,11 +111,14 @@ label {
 
     opacity: 1;
     display: block;
-    height: max(20rem, 26.5vw);
+    height: 25.5rem;
     margin-block: 1rem;
 }
 
-.volume-control {}
+.wrapper.collapsed #playback-speed,
+.wrapper.collapsed .lyrics-wrapper {
+    display: none;
+}
 
 .wrapper.collapsed .img-area {
     display: none;

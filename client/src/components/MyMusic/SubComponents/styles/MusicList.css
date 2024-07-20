@@ -93,6 +93,10 @@
 .music-table tr.playing {
     color: var(--accent-clr-light);
     background-color: hsl(from var(--primary-clr) h s 25%);
+        & .fa-regular {
+                opacity: 1;
+                pointer-events: all;
+            }
 }
 
 .music-table img {

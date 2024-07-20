@@ -1,15 +1,10 @@
 import { useState, useCallback } from "react";
 
-const useFetchSongLyrics = (currentSong, isCollapsed, showToast) => {
+const useFetchSongLyrics = (currentSong) => {
     const [lyrics, setLyrics] = useState("");
     const [loading, setIsLoading] = useState(false);
 
     const fetchLyrics = useCallback(async () => {
-        if (isCollapsed) {
-            showToast("Can't show lyrics when the player is collapsed", "warning");
-            return;
-        }
-
         if (lyrics) {
             setLyrics("");
             return;
@@ -19,7 +14,7 @@ const useFetchSongLyrics = (currentSong, isCollapsed, showToast) => {
 
         try {
             const response = await fetch(
-                `http://localhost:3000/api/songs/${currentSong.artist}/${currentSong.name}`
+                `http://localhost:3000/api/songs/${currentSong.artist.split(',')[0]}/${currentSong.name}`
             );
             const data = await response.json();
 
@@ -34,9 +29,9 @@ const useFetchSongLyrics = (currentSong, isCollapsed, showToast) => {
         } finally {
             setIsLoading(false);
         }
-    }, [currentSong, isCollapsed, lyrics, showToast]);
+    }, [currentSong, lyrics]);
 
-    return { lyrics, loading, fetchLyrics };
+    return { lyrics, loading, fetchLyrics, setLyrics };
 };
 
 export default useFetchSongLyrics;

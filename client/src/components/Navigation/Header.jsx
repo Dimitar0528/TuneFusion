@@ -38,7 +38,7 @@ export default function Header({ btnText, goToLocation, userUUID }) {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery === "") searchQuery = "All_Songs";
+    if (searchQuery === "") searchQuery = "All-Songs";
     navigate(`/search?q=${searchQuery}`);
     setSearchQuery("");
   };

@@ -71,7 +71,7 @@ export default function SongSuggestion() {
         </p>
       </div>
       <form
-        style={{ display: "flex", justifyContent: "center" }}
+        style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}
         onSubmit={handleFormSubmit}>
         <input
           type="search"

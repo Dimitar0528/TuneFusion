@@ -13,6 +13,8 @@ export default function ProgressArea() {
     currentTime,
     setCurrentTime,
     handleNextSong,
+    isLooped,
+    playBackSpeed,
     handleKeyPressWhenTabbed,
   } = useMusicPlayer();
 
@@ -121,7 +123,8 @@ export default function ProgressArea() {
         height="0"
         progressInterval={100}
         playsinline={true}
-        
+        loop={isLooped}
+        playbackRate={playBackSpeed}
       />
     </div>
   );

@@ -21,7 +21,7 @@ export default function SearchSong() {
   useEffect(() => {
     if (searchTerm) {
       let filteredSongs;
-      searchTerm === "All_Songs"
+      searchTerm === "All-Songs"
         ? (filteredSongs = songs)
         : (filteredSongs = songs.filter(
             (song) =>
@@ -51,6 +51,7 @@ export default function SearchSong() {
           musicListRef={musicListRef}
           playlists={playlists}
           refreshPlaylist={refreshPlaylistHandler}
+          styles={{ width: "95%", marginInline: "auto", maxHeight: "100vh" }}
         />
       )}
     </div>

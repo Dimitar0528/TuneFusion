@@ -14,12 +14,13 @@ export default function MusicList({
   activePlaylist,
   playlists,
   refreshPlaylist,
+  styles,
 }) {
   const {
     currentSongUUID,
     setCurrentSongUUID,
     isSongLoading,
-    fetchLyrics,
+    setLyrics,
     setIsPlaying,
     musicListRef,
     isPlaying,
@@ -62,7 +63,7 @@ export default function MusicList({
   const handleMusicListSong = (song) => {
     handleCurrentPlayingSong(extractUUIDPrefix(song.uuid));
     setIsPlaying(true);
-    fetchLyrics();
+    setLyrics("");
     extractUUIDPrefix(song.uuid) === currentSongUUID &&
       isPlaying &&
       setIsPlaying(false);
@@ -174,7 +175,7 @@ export default function MusicList({
             },
             body: JSON.stringify({
               songUUID: song.uuid,
-              playlistUUID: likedSongsPlaylist[0].uuid, // Use the first matched playlist's UUID
+              playlistUUID: likedSongsPlaylist[0].uuid,
             }),
           }
         );
@@ -205,7 +206,7 @@ export default function MusicList({
   };
 
   return (
-    <div ref={musicListRef} className="music-list">
+    <div ref={musicListRef} className="music-list" style={styles}>
       <div className="header">
         <div className="row list">
           <i className="fa-solid fa-sliders"></i>
