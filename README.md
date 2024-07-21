@@ -10,18 +10,19 @@ Welcome to TuneFusion, a modern music streaming application. This README provide
    - [Prerequisites](#prerequisites)
    - [Installation](#installation)
    - [Running the Application](#running-the-application)
-4. [Project Architecture](#project-architecture)
+4. [Useful Commands](#useful-commands)
+5. [Project Architecture](#project-architecture)
    - [Backend](#backend)
    - [Frontend](#frontend)
    - [Database](#database)
-5. [Contributing](#contributing)
-6. [License](#license)
+6. [Contributing](#contributing)
+7. [License](#license)
 
-## Introduction
+## 1. Introduction
 
 TuneFusion is a music streaming platform designed to provide users with an intuitive and seamless experience for discovering, playing, and managing their favorite songs and artists. It includes features such as song suggestions, user management robust pagination for easy navigation and much more.
 
-## Features
+## 2. Features
 
 - **User Authentication**: Register and log in securely.
 - **Music Playback**: Play, pause, and navigate through songs.
@@ -29,8 +30,9 @@ TuneFusion is a music streaming platform designed to provide users with an intui
 - **Playlist Management**: Create and manage specific playlists.
 - **Pagination**: Efficient navigation through song and user lists.
 - **Admin Actions**: Special functionalities for admin users like adding songs to the database and managing user data.
+- **And Much More**
 
-## Setup Instructions
+## 3. Setup Instructions
 
 ### Prerequisites
 
@@ -38,14 +40,15 @@ Ensure you have the following installed:
 
 - Node.js (>= 20.x) (https://nodejs.org/en)
 - npm (>= 10.x) (comes with Node.js by default)
-- MySQL (>= 8.x) (https://dev.mysql.com/downloads/workbench/)
+- MySQL Installer (>= 8.x) (https://dev.mysql.com/downloads/installer/)
+- After you have downloaded the MySQL Installer, you need to open it and also install MySQL Server (>= 8.x) and MySQL Workbench (>= 8.x) (reference video: https://www.youtube.com/watch?v=g2rilf_v4V4).
 
 ### Installation
 
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/your-name/TuneFusion.git
+   git clone https://github.com/Dimitar0528/TuneFusion.git
    cd TuneFusion
    ```
 
@@ -55,7 +58,8 @@ Ensure you have the following installed:
    cd server
    npm install
    ```
-    2.1. Create a .env file inside the server folder with the following content:
+
+   2.1. Create a .env file inside the server folder with the following content:
 
    ```bash
    DB_NAME=your_database_name
@@ -64,8 +68,11 @@ Ensure you have the following installed:
    DB_HOST=your_database_host
    DB_PORT=your_database_port
    JWT_SECRET_KEY=your_secret_key_for_jwt
+   SENDGRID_API_KEY=your_sendgrid_api_key
    ```
-   where the DB_{VARIABLES} are your MySQL database variables and the JWT_SECRET_KEY is    the secret key for signing / verifying the JSON Web Token (JWT).
+
+   - where the DB\_{VARIABLES} are your MySQL database variables, the JWT_SECRET_KEY is the secret key for signing / verifying the JSON Web Token (JWT) and the SENDGRID_API_KEY is the Sendgrid API Key needed for the 2FA to work. ( How to set up an Sengrid API Key: https://www.twilio.com/docs/sendgrid/ui/account-and-settings/api-keys)
+
 3. **Frontend Setup**:
 
    ```bash
@@ -93,9 +100,22 @@ Ensure you have the following installed:
    npm run dev
    ```
 
-   The application should now be running at `http://localhost:3000`.
+   The application should now be running at `http://localhost:5173/`.
 
-## Project Architecture
+## 4. Useful Commands
+
+All commands are run from the root of the project, from an already opened terminal:
+
+| Command           | Action                                      |
+| :---------------- | :------------------------------------------ |
+| `npm install`     | Installs dependencies                       |
+| `npm run dev`     | Starts local dev client at `localhost:5173` |
+| `npm run server`  | Starts local dev server at `localhost:3000` |
+| `npm run build`   | Build the production site to `/dist/`       |
+| `npm run preview` | Preview the build locally, before deploying |
+| `npm run lint`    | Run ESLint to check for code quality        |
+
+## 5. Project Architecture
 
 TuneFusion is built using a modern stack with a clear separation between the backend, frontend, and database layers.
 
@@ -129,7 +149,7 @@ TuneFusion is built using a modern stack with a clear separation between the bac
   - Song: Stores song metadata, including title, artist, and audio source.
   - PlayList: Stores playlist information and song metadata.
 
-## Contributing
+## 6. Contributing
 
 We welcome contributions from the community! Here’s how you can get involved:
 
@@ -140,7 +160,7 @@ We welcome contributions from the community! Here’s how you can get involved:
 
 Please ensure your code follows our coding standards and includes appropriate tests.
 
-## License
+## 7. License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
