@@ -1,0 +1,49 @@
+.container {
+    margin: 0;
+    font-family: "Poppins, sans-serif";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgba(40 42 54 / .65);
+    height: 100vh;
+    color: #fff;
+}
+
+.heading {
+    margin-bottom: 1rem;
+}
+
+.otpField {
+    display: flex;
+}
+
+.input {
+    width: 3rem;
+    font-size: 32px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    margin: 2px;
+    border: 2px solid var(--secondary-clr);
+    background-color: var(--primary-clr-dark);
+    font-weight: bold;
+    color: #fff;
+    outline: none;
+    transition: all 0.1s;
+}
+
+.button {
+    margin-top: 2rem;
+    padding: 1rem 1.5rem;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--primary-clr);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    &:where(:hover, :focus-visible){
+        background-color: var(--primary-clr-dark);
+    }
+}

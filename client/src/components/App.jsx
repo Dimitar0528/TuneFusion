@@ -51,14 +51,18 @@ export default function App() {
           <Route path="faq" element={<Faq />} />
         </Route>
         <Route path="/search" element={<SearchSong />} />
-        <Route
-          path="/sign-in"
-          element={userUUID ? <Navigate to="/" replace /> : <SignInSignUp />}
-        />
-        <Route
-          path="/otp"
-          element={userUUID ? <Navigate to="/" replace /> : <TFAVerification />}
-        />
+        <Route path="/sign-in">
+          <Route
+            path=""
+            element={userUUID ? <Navigate to="/" replace /> : <SignInSignUp />}
+          />
+          <Route
+            path="otp"
+            element={
+              userUUID ? <Navigate to="/" replace /> : <TFAVerification />
+            }
+          />
+        </Route>
         <Route
           path={`/updatesong/:name`}
           element={

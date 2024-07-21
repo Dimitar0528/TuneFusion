@@ -160,7 +160,7 @@ export default function EditAccount({ user }) {
         showToast(`Error: ${errorData.error}`, "error");
       } else {
         const responseData = await response.json();
-        showToast(responseData.message, "success");
+        showToast(responseData.message, "success", 1500, true);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -168,8 +168,9 @@ export default function EditAccount({ user }) {
     }
 
     try {
-      const response = await fetch("/api/users/miscellaneous/deleteCookie", {
+      const response = await fetch("http://localhost:3000/api/auth/logout", {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -178,8 +179,6 @@ export default function EditAccount({ user }) {
       if (!response.ok) {
         const errorData = await response.json();
         showToast(`Error: ${errorData.error}`, "error");
-      } else {
-        window.location.href = "/";
       }
     } catch (error) {
       console.error("Error:", error);

@@ -131,7 +131,7 @@ router.post('/sendOTP', async (req, res) => {
 
     const msg = {
         to: email,
-        from: process.env.SENDER_EMAIL,
+        from: 'wrld@abv.bg',
         subject: 'OTP Verification',
         html: `<p>Your OTP for verification is: <strong>${otp}</strong></p>`,
     };

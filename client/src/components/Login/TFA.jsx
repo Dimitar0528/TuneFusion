@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
-
+import styles from "./styles/TFA.module.css";
 export default function TFAVerification() {
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const email = localStorage.getItem("email");
 
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
+    const signal = controller.signal;
 
     const sendOTP = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/auth/sendOTP", {
+          signal: signal,
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -17,18 +19,16 @@ export default function TFAVerification() {
           body: JSON.stringify({ email }),
         });
 
-        if (isMounted) {
-          if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem("otp", data.otp);
-            console.log(data.otp);
-            alert(
-              "A two-factor authentication (2FA) token has been sent to the provided email address for verification! Please enter it in the input below."
-            );
-          }
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem("otp", data.otp);
+          console.log(data.otp);
+          alert(
+            "A two-factor authentication (2FA) code has been sent to the provided email address! Please enter it in the input below and then click Verify my account buton in order to complete the verification!"
+          );
         }
       } catch (error) {
-        if (isMounted) {
+        if (error.name !== "AbortError") {
           console.error(error);
         }
       }
@@ -37,7 +37,7 @@ export default function TFAVerification() {
     sendOTP();
 
     return () => {
-      isMounted = false;
+      controller.abort();
     };
   }, [email]);
 
@@ -61,7 +61,7 @@ export default function TFAVerification() {
     });
     setOtp(newOtp);
 
-    console.log(newOtp.join("")); 
+    console.log(newOtp.join(""));
 
     if (pastedValues.length === 6) {
       setTimeout(() => {
@@ -85,9 +85,9 @@ export default function TFAVerification() {
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.heading}>Enter 2FA code</h1>
-      <div style={styles.otpField} onPaste={handlePaste}>
+    <div className={styles.container}>
+      <h1 className={styles.heading}>Enter the provided 2FA code</h1>
+      <div className={styles.otpField} onPaste={handlePaste}>
         {otp.map((data, index) => (
           <input
             key={index}
@@ -112,44 +112,13 @@ export default function TFAVerification() {
                 handleSubmit();
               }
             }}
-            style={styles.input}
+            className={styles.input}
           />
         ))}
       </div>
+      <button onClick={handleSubmit} className={styles.button}>
+        Verify my account
+      </button>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    margin: 0,
-    fontFamily: "Poppins, sans-serif",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-    backgroundColor: "#282a36",
-    height: "100vh",
-    color: "#fff",
-  },
-  heading: {
-    marginBottom: "1rem",
-  },
-  otpField: {
-    display: "flex",
-  },
-  input: {
-    width: "2.5rem",
-    fontSize: "32px",
-    padding: "10px",
-    textAlign: "center",
-    borderRadius: "5px",
-    margin: "2px",
-    border: "2px solid #55525c",
-    backgroundColor: "#21232d",
-    fontWeight: "bold",
-    color: "#fff",
-    outline: "none",
-    transition: "all 0.1s",
-  },
-};
+}
