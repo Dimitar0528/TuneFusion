@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import ReactPlayer from "react-player/lazy";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatTime } from "../../../utils/formatTime";
@@ -38,23 +38,25 @@ export default function ProgressArea() {
   const handleProgressBarDragEnd = () => {
     setIsDragging(false);
   };
+  const handleProgressBarDrag = useCallback(
+    (e) => {
+      if (isDragging) {
+        const progressBarWidth = progressAreaRef.current.clientWidth;
+        const offsetX =
+          e.clientX - progressAreaRef.current.getBoundingClientRect().left;
+        let newProgress = offsetX / progressBarWidth;
 
-  const handleProgressBarDrag = (e) => {
-    if (isDragging) {
-      const progressBarWidth = progressAreaRef.current.clientWidth;
-      const offsetX =
-        e.clientX - progressAreaRef.current.getBoundingClientRect().left;
-      let newProgress = offsetX / progressBarWidth;
+        newProgress = Math.min(1, Math.max(0, newProgress));
 
-      newProgress = Math.min(1, Math.max(0, newProgress));
+        const duration = playerRef.current.getDuration();
+        const newTime = newProgress * duration;
 
-      const duration = playerRef.current.getDuration();
-      const newTime = newProgress * duration;
-
-      setCurrentTime(newTime);
-      progressBarRef.current.style.width = `${newProgress * 100}%`;
-    }
-  };
+        setCurrentTime(newTime);
+        progressBarRef.current.style.width = `${newProgress * 100}%`;
+      }
+    },
+    [isDragging, playerRef, progressAreaRef, setCurrentTime,progressBarRef]
+  );
 
   const handleProgressBarClick = (e) => {
     const progressBarWidth = progressAreaRef.current.clientWidth;

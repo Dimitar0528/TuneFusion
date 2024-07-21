@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import ScrollReveal from "scrollreveal";
 import Swiper from "swiper/bundle";
 import styles from "./styles/LandingPage.module.css";
@@ -59,7 +59,7 @@ export default function LandingPage({ userUUID }) {
       interval: 500,
     });
 
-    const swiper = new Swiper(".swiper", {
+    new Swiper(".swiper", {
       slidesPerView: "auto",
       spaceBetween: 20,
     });

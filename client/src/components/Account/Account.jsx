@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 import useUserDetailsFetch from "./hooks/useUserDetailsFetch";
 import useTabs from "./hooks/useTabs";
 import useTabEventListeners from "./hooks/useTabEventListeners";
-export default function Account({ songs }) {
+export default function Account() {
   const { userUUID } = useParams();
 
   const { user } = useUserDetailsFetch(userUUID);
@@ -40,7 +40,7 @@ export default function Account({ songs }) {
       case "Account":
         return <EditAccount user={user} />;
       case "Songs":
-        return user.role === "admin" && <ViewAllSongs songs={songs} />;
+        return user.role === "admin" && <ViewAllSongs />;
       case "PlayLists":
         return (
           <div>

@@ -20,6 +20,6 @@ export default function useUserDetailsFetch(userUUID) {
             setUser(data);
         }
         getUser();
-    }, [userUUID]);
+    }, [userUUID, navigate]);
     return { user }
 }

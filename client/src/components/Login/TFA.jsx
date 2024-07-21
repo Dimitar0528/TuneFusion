@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./styles/TFA.module.css";
 export default function TFAVerification() {
   const [otp, setOtp] = useState(new Array(6).fill(""));

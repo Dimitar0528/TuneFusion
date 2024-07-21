@@ -11,11 +11,11 @@ export default function showToast(message, type, autoClose = 2000, triggerRefres
         progress: undefined,
         theme: "colored",
         pauseOnFocusLoss: false,
-        
+
     });
-    if(triggerRefresh){
+    if (triggerRefresh) {
         setTimeout(() => {
             location.reload();
         }, autoClose + 500);
     }
-};
+}

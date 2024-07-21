@@ -1,4 +1,3 @@
-import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import LandingPage from "./LandingPage/LandingPage";
@@ -19,7 +18,7 @@ import MusicPlayer from "./MusicPlayer/MusicPlayer";
 import SearchSong from "./Navigation/Information/SearchSong";
 import ArtistDescription from "./Artist/ArtistDescription";
 export default function App() {
-  const { songs, user } = useMusicPlayer();
+  const { user } = useMusicPlayer();
   const { userUUID, role } = user;
 
   return (
@@ -36,10 +35,7 @@ export default function App() {
 
       <Routes>
         {userUUID && (
-          <Route
-            path={"/account/:userUUID"}
-            element={<Account songs={songs} />}
-          />
+          <Route path={"/account/:userUUID"} element={<Account />} />
         )}
         <Route path="/" element={<LandingPage userUUID={userUUID} />} />
 

@@ -1,4 +1,3 @@
-import React from "react";
 import "./styles/MusicPlayer.css";
 import "react-toastify/dist/ReactToastify.css";
 import PlayerControls from "./SubComponents/PlayerControls";

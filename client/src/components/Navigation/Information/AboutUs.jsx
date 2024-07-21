@@ -1,6 +1,4 @@
-import React from "react";
-import styles from "./styles/AboutUs.module.css"; // Import your CSS Module
-
+import styles from "./styles/AboutUs.module.css";
 export default function AboutUs() {
   return (
     <>
@@ -45,8 +43,8 @@ export default function AboutUs() {
 
             <p>
               TuneFusion provides a comprehensive range of features to satisfy
-              all your music listening needs. Whether you're looking for the
-              latest hits, curated playlists, or advanced sound settings,
+              all your music listening needs. Whether you&apos;re looking for
+              the latest hits, curated playlists, or advanced sound settings,
               TuneFusion has it all! Our app includes personalized
               recommendations, offline listening, and social sharing options to
               enhance your music experience. Join us and discover why TuneFusion

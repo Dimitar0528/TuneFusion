@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useRef } from "react";
+import { createContext, useContext, useState, useRef } from "react";
 import showToast from "../utils/showToast";
 import extractUUIDPrefix from "../utils/extractUUIDPrefix";
 
@@ -42,8 +42,8 @@ export function MusicPlayerProvider({ children }) {
   const playerRef = useRef();
   const musicListRef = useRef();
 
-  const { songs, loading: isSongLoading } = useFetchSongs();
-  const { user, loading: userLoading } = useFetchUserToken();
+  const { songs } = useFetchSongs();
+  const { user } = useFetchUserToken();
   const {
     playlists,
     loading: isPlaylistLoading,

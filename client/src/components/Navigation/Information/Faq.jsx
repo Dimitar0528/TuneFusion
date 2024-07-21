@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./styles/Faq.module.css";
 
 export default function Faq() {
@@ -25,9 +25,9 @@ export default function Faq() {
             }`}>
             <div className={styles["accordion-item-body-content"]}>
               TuneFusion stands out by offering a diverse library of music from
-              various genres, ensuring there's something for every listener. Our
-              platform provides high-quality audio streaming, personalized
-              playlists, and an ad-free experience.
+              various genres, ensuring there&apos;s something for every
+              listener. Our platform provides high-quality audio streaming,
+              personalized playlists, and an ad-free experience.
             </div>
           </div>
         </div>
@@ -44,10 +44,10 @@ export default function Faq() {
               activeIndex === 1 ? styles["active"] : ""
             }`}>
             <div className={styles["accordion-item-body-content"]}>
-              Explore new music effortlessly with TuneFusion's curated playlists
-              and personalized recommendations. Our intuitive interface allows
-              you to explore different genres, artists, and trending tracks
-              easily.
+              Explore new music effortlessly with TuneFusion&apos;s curated
+              playlists and personalized recommendations. Our intuitive
+              interface allows you to explore different genres, artists, and
+              trending tracks easily.
             </div>
           </div>
         </div>
@@ -66,7 +66,7 @@ export default function Faq() {
             <div className={styles["accordion-item-body-content"]}>
               Yes, TuneFusion offers offline listening capabilities. Simply
               download your favorite tracks or playlists to enjoy them offline,
-              whether you're commuting, traveling, or in areas with limited
+              whether you&apos;re commuting, traveling, or in areas with limited
               internet connectivity.
             </div>
           </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "../LandingPage/styles/LandingPage.module.css";
 export default function Header({ btnText, goToLocation, userUUID }) {

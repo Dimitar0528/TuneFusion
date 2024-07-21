@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import showToast from "../../../utils/showToast";
 import Table from "../TableLayout";
 import styles from "../styles/Account.module.css"; // Import the CSS module
@@ -66,12 +66,17 @@ export default function SongSuggestion() {
         <h2>Song Suggestions</h2>
         <p>
           Use this feature to search for songs by artist or genre. Enter the
-          artist's name or the genre and click "Search" to find songs. You can
-          then add any song from the search results to the TuneFusion database.
+          artist&apos;s name or the genre and click &quot;Search&quot; to find
+          songs. You can then add any song from the search results to the
+          TuneFusion database.
         </p>
       </div>
       <form
-        style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "1.5rem",
+        }}
         onSubmit={handleFormSubmit}>
         <input
           type="search"

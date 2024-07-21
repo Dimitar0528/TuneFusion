@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styles from "../styles/SongManagerHandler.module.css"; // Import CSS module
 import { useParams } from "react-router-dom";
 import showToast from "../utils/showToast";
@@ -15,23 +15,20 @@ export default function SongManagerHandler({ action }) {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
+    async function getSong() {
+      const response = await fetch(`http://localhost:3000/api/songs/${name}`, {
+        method: "GET",
+      });
+      const song = await response.json();
+      setFormData({
+        name: song.name || "",
+        artist: song.artist || "",
+        img_src: song.img_src || "",
+        audio_src: song.audio_src || "",
+        duration: song.duration || "",
+      });
+    }
     if (action === "updatesong") {
-      async function getSong() {
-        const response = await fetch(
-          `http://localhost:3000/api/songs/${name}`,
-          {
-            method: "GET",
-          }
-        );
-        const song = await response.json();
-        setFormData({
-          name: song.name || "",
-          artist: song.artist || "",
-          img_src: song.img_src || "",
-          audio_src: song.audio_src || "",
-          duration: song.duration || "",
-        });
-      }
       getSong();
     }
   }, [action, name]);

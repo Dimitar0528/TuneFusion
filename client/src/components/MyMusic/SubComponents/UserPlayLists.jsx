@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState } from "react";
 import "./styles/UserPlayLists.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../utils/showToast";
@@ -92,6 +92,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
     if (playlist.img_src) return playlist.img_src;
     if (playlist.Songs && playlist.Songs.length > 0)
       return playlist.Songs[playlist.Songs.length - 1].img_src;
+    return "https://cdn-icons-png.freepik.com/512/5644/5644664.png";
   };
 
   return (

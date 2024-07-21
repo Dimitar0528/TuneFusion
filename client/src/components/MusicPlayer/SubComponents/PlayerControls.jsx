@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 
 export default function PlayerControls() {
@@ -81,7 +81,16 @@ export default function PlayerControls() {
     return () => {
       document.removeEventListener("keydown", handleSpecificKeyPress);
     };
-  }, [volume, handlePlayPause]);
+  }, [
+    volume,
+    handlePlayPause,
+    handleLoopSong,
+    handleNextSong,
+    handlePreviousSong,
+    handleShufflePlayList,
+    previousVolume,
+    setVolume,
+  ]);
   return (
     <div className="controls">
       <i

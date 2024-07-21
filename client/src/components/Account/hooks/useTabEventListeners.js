@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 const useTabEventListeners = (tabsRef, activeTab, setActiveTab, updateUnderline, updateUnderlinePosition) => {
     useEffect(() => {
+        const currentRef = tabsRef.current
         const handleHover = (e) => {
             const hoveredTab = e.currentTarget;
             updateUnderlinePosition(hoveredTab);
@@ -11,7 +12,7 @@ const useTabEventListeners = (tabsRef, activeTab, setActiveTab, updateUnderline,
             updateUnderline();
         };
 
-        tabsRef.current.forEach((tab) => {
+        currentRef.forEach((tab) => {
             if (tab) {
                 tab.addEventListener("mouseenter", handleHover);
                 tab.addEventListener("mouseleave", handleLeave);
@@ -22,7 +23,7 @@ const useTabEventListeners = (tabsRef, activeTab, setActiveTab, updateUnderline,
         });
 
         return () => {
-            tabsRef.current.forEach((tab) => {
+            currentRef.forEach((tab) => {
                 if (tab) {
                     tab.removeEventListener("mouseenter", handleHover);
                     tab.removeEventListener("mouseleave", handleLeave);
@@ -33,7 +34,7 @@ const useTabEventListeners = (tabsRef, activeTab, setActiveTab, updateUnderline,
                 }
             });
         };
-    }, [activeTab]);
+    }, [activeTab, setActiveTab, updateUnderline, updateUnderlinePosition, tabsRef]);
 };
 
 export default useTabEventListeners;

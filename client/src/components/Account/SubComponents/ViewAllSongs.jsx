@@ -1,5 +1,3 @@
-// ViewSongs.js
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import showToast from "../../../utils/showToast";
 import TableLayout from "../TableLayout";
@@ -7,8 +5,8 @@ import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 import { formatTime } from "../../../utils/formatTime";
 
-export default function ViewAllSongs({ songs }) {
-  const { currentSongUUID, setCurrentSongUUID, setCurrentTime } =
+export default function ViewAllSongs() {
+  const { songs, currentSongUUID, setCurrentSongUUID, setCurrentTime } =
     useMusicPlayer();
   const navigate = useNavigate();
   const songsPerPage = 10;

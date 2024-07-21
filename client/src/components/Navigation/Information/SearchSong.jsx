@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import styles from "./styles/SearchSong.module.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
@@ -37,11 +37,11 @@ export default function SearchSong() {
       setFilteredSongs(songs.slice(0, 20));
       setCurrentPage(0);
     };
-  }, [searchTerm, songs, setFilteredSongs]);
+  }, [searchTerm, songs, setFilteredSongs, setActivePlaylist, setCurrentPage]);
 
   return (
     <div className={styles.searchContainer}>
-      <h1>Search Results for "{searchTerm}"</h1>
+      <h1>Search Results for &quot;{searchTerm}&quot;</h1>
       {searchSongs.length === 0 ? (
         <p>No results found.</p>
       ) : (

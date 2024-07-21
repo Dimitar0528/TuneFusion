@@ -1,4 +1,3 @@
-import React from "react";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import LoadingSpinner from "../../LoadingSpinner";
 export default function SongDetails() {

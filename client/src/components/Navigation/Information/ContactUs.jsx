@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import "./styles/ContactUs.css";
 import showToast from "../../../utils/showToast";
 
@@ -84,9 +84,9 @@ export default function ContactUs() {
       <img src="img/shape.png" className="square" alt="" />
       <div className="form">
         <div className="contact-info">
-          <h3 className="title">Let's Connect with TuneFusion</h3>
+          <h3 className="title">Let&apos;s Connect with TuneFusion</h3>
           <p className="text">
-            Have questions or feedback? Reach out to us! We're here to help
+            Have questions or feedback? Reach out to us! We&apos;re here to help
             anytime.
           </p>
           <div className="info">
@@ -124,7 +124,10 @@ export default function ContactUs() {
         <div className="contact-form">
           <span className="circle one"></span>
           <span className="circle two"></span>
-          <form className="contact-us-form" autoComplete="off" onSubmit={handleContactFormSubmit}>
+          <form
+            className="contact-us-form"
+            autoComplete="off"
+            onSubmit={handleContactFormSubmit}>
             <h3 className="title">Send us a Message</h3>
             <div className="input-container">
               <input type="text" name="name" className="input" ref={nameRef} />

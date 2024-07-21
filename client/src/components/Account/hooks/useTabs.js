@@ -19,7 +19,7 @@ const useTabs = () => {
         updateUnderline();
         window.addEventListener("resize", updateUnderline);
         return () => window.removeEventListener("resize", updateUnderline);
-    }, [activeTab]);
+    },);
 
     return {
         activeTab,
