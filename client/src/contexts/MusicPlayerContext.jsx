@@ -99,7 +99,7 @@ export function MusicPlayerProvider({ children }) {
     setCurrentTime(0);
   };
 
-  const toggleShufflePlayList = () => {
+  const handleShufflePlayList = () => {
     setShuffle(!shuffle);
     showToast(
       `Shuffle ${!shuffle ? "enabled" : "disabled"} successfully!`,
@@ -194,7 +194,7 @@ export function MusicPlayerProvider({ children }) {
     handleLoopSong,
     playBackSpeed,
     handlePlayBackSpeed,
-    toggleShufflePlayList,
+    handleShufflePlayList,
     handleCollapseToggle,
     handlePreviousSong,
     handleVolumeChange,

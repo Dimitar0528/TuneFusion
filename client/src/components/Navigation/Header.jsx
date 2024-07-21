@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import styles from "../landingPage/styles/LandingPage.module.css";
+import styles from "../LandingPage/styles/LandingPage.module.css";
 export default function Header({ btnText, goToLocation, userUUID }) {
   const menuBtnRef = useRef();
   const navLinksRef = useRef();

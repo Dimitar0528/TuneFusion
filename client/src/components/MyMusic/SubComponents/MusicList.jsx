@@ -7,6 +7,7 @@ import ReactPaginate from "react-paginate";
 import { formatTime } from "../../../utils/formatTime";
 import showToast from "../../../utils/showToast";
 import LoadingSpinner from "../../LoadingSpinner";
+import { Link } from "react-router-dom";
 
 export default function MusicList({
   songs,
@@ -285,7 +286,13 @@ export default function MusicList({
               <td>
                 <div>
                   <strong>{song.name}</strong>
-                  <p>{song.artist}</p>
+                  <p>
+                    <Link
+                      className="song-artist"
+                      to={`/artist/${song.artist}/description`}>
+                      {song.artist}{" "}
+                    </Link>
+                  </p>
                 </div>
               </td>
               <td>
@@ -295,6 +302,7 @@ export default function MusicList({
               </td>
               <td>
                 <i
+                  tabIndex={0}
                   className={` fa-heart | add-to-playlist ${
                     likedSongs.includes(extractUUIDPrefix(song.uuid))
                       ? "fa-solid"
@@ -306,6 +314,11 @@ export default function MusicList({
                       : "Save to Liked Songs Playlist"
                   }
                   onClick={() => handleToggleLikedSong(song)}
+                  onKeyDown={(e) =>
+                    handleKeyPressWhenTabbed(e, () => {
+                      handleToggleLikedSong(song);
+                    })
+                  }
                   style={{ cursor: "pointer" }}></i>
                 {formatTime(song.duration)}
               </td>

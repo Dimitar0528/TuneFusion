@@ -125,7 +125,7 @@ router.get('/search/:query', async (req, res) => {
         const songList = await Promise.all((artistSongs.length > 0 ? artistSongs : suggestions).map(async song => {
             const { title: name, artists, youtubeId: id, duration } = song;
             const song_duration = duration.totalSeconds;
-            const artistName = artists[0].name;
+            const artistName = artists[0].name.split(',')[0];
             const searchTerm = artistName + name;
             const imgs = await gis(searchTerm);
             const img_src = imgs[0]?.url;

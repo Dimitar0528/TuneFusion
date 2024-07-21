@@ -1,8 +1,8 @@
 import styles from "./styles/Account.module.css";
-import EditAccount from "./subComponents/EditAccount";
-import ViewAllUsers from "./subComponents/ViewAllUsers";
-import SongSuggestion from "./subComponents/SongSuggestion";
-import ViewAllSongs from "./subComponents/ViewAllSongs";
+import EditAccount from "./SubComponents/EditAccount";
+import ViewAllUsers from "./SubComponents/ViewAllUsers";
+import SongSuggestion from "./SubComponents/SongSuggestion";
+import ViewAllSongs from "./SubComponents/ViewAllSongs";
 import { useParams } from "react-router-dom";
 
 import useUserDetailsFetch from "./hooks/useUserDetailsFetch";

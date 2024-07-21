@@ -1,5 +1,5 @@
-import MusicList from "./subComponents/MusicList";
-import UserPlayLists from "./subComponents/UserPlayLists";
+import MusicList from "./SubComponents/MusicList";
+import UserPlayLists from "./SubComponents/UserPlayLists";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 
 export default function MyMusic() {
@@ -16,7 +16,7 @@ export default function MyMusic() {
       <MusicList
         title={
           activePlaylist !== null
-            ? `${activePlaylist?.name} Songs`
+            ? `${activePlaylist?.name}`
             : "Freshly Added Songs"
         }
         songs={filteredSongs}

@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import styles from "../landingPage/styles/LandingPage.module.css";
+import styles from "../LandingPage/styles/LandingPage.module.css";
 
 export default function Footer({ userUUID }) {
   return (

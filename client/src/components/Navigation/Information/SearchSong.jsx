@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import styles from "./styles/SearchSong.module.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-import MusicList from "../../myMusic/subComponents/MusicList";
+import MusicList from "../../MyMusic/SubComponents/MusicList";
 
 export default function SearchSong() {
   const {

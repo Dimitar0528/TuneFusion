@@ -1,22 +1,23 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import LandingPage from "./landingPage/LandingPage";
-import AboutUs from "./navigation/Information/AboutUs";
-import SignInSignUp from "./login/SignUp";
-import Faq from "./navigation/Information/Faq";
-import MyMusic from "./myMusic/MyMusic";
+import LandingPage from "./LandingPage/LandingPage";
+import AboutUs from "./Navigation/Information/AboutUs";
+import SignInSignUp from "./Login/SignUp";
+import Faq from "./Navigation/Information/Faq";
+import MyMusic from "./MyMusic/MyMusic";
 import SongManagerHandler from "./SongManagerHandler";
 import ProtectedRouteHandler from "./ProtectedRouteHandler";
-import ContactUs from "./navigation/Information/ContactUs";
-import Header from "./navigation/Header";
-import Footer from "./navigation/Footer";
-import Account from "./account/Account";
+import ContactUs from "./Navigation/Information/ContactUs";
+import Header from "./Navigation/Header";
+import Footer from "./Navigation/Footer";
+import Account from "./Account/Account";
 import { useMusicPlayer } from "../contexts/MusicPlayerContext";
-import TFAVerification from "./login/TFA";
+import TFAVerification from "./Login/TFA";
 import ScrollToTopButton from "./ScrollToTopButton";
-import MusicPlayer from "./musicPlayer/MusicPlayer";
-import SearchSong from "./navigation/Information/SearchSong";
+import MusicPlayer from "./MusicPlayer/MusicPlayer";
+import SearchSong from "./Navigation/Information/SearchSong";
+import ArtistDescription from "./Artist/ArtistDescription";
 export default function App() {
   const { songs, user } = useMusicPlayer();
   const { userUUID, role } = user;
@@ -74,7 +75,10 @@ export default function App() {
             </ProtectedRouteHandler>
           }
         />
-
+        <Route
+          path="/artist/:artistName/description"
+          element={<ArtistDescription />}
+        />
         <Route path="*" element={<Navigate to={"/"} />} />
       </Routes>
 

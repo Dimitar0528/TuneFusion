@@ -12,7 +12,7 @@ export default function PlayerControls() {
     handlePlayBackSpeed,
     handlePreviousSong,
     shuffle,
-    toggleShufflePlayList,
+    handleShufflePlayList,
     lyrics,
     fetchLyrics,
     volume,
@@ -43,28 +43,37 @@ export default function PlayerControls() {
       const isInputFocused = ["input", "select", "textarea"].includes(
         targetTagName
       );
-
       if (isInputFocused) return;
 
-      if (e.key === "m" || e.key === "п") {
-        e.preventDefault();
-        if (volume > 0) {
-          setPreviousVolume(volume);
-          setVolume(0);
-        } else {
-          setVolume(previousVolume);
-        }
-      }
+      const { code, shiftKey, key } = e;
 
-      if (e.code === "Space") {
-        e.preventDefault();
-        handlePlayPause();
-      }
-      if (e.shiftKey && e.key === "N") {
-        handleNextSong();
-      }
-      if (e.shiftKey && e.key === "P") {
-        handlePreviousSong();
+      switch (true) {
+        case key === "m":
+          if (volume > 0) {
+            setPreviousVolume(volume);
+            setVolume(0);
+          } else {
+            setVolume(previousVolume);
+          }
+          break;
+        case code === "Space":
+          e.preventDefault();
+          handlePlayPause();
+          break;
+        case shiftKey && key === "N":
+          handleNextSong();
+          break;
+        case shiftKey && key === "P":
+          handlePreviousSong();
+          break;
+        case shiftKey && key === "R":
+          handleLoopSong();
+          break;
+        case shiftKey && key === "S":
+          handleShufflePlayList();
+          break;
+        default:
+          break;
       }
     };
 
@@ -92,11 +101,11 @@ export default function PlayerControls() {
       <i
         id="shuffle"
         className={`fa-solid ${shuffle ? "fa-repeat" : "fa-shuffle"}`}
-        title={`${shuffle ? "Disable" : "Enable"} Shuffle`}
-        onClick={toggleShufflePlayList}
+        title={`${shuffle ? "Disable" : "Enable"} Shuffle (Shift + S)`}
+        onClick={handleShufflePlayList}
         tabIndex={0}
         onKeyDown={(e) =>
-          handleKeyPressWhenTabbed(e, toggleShufflePlayList)
+          handleKeyPressWhenTabbed(e, handleShufflePlayList)
         }></i>
       <i
         id="prev"
@@ -123,7 +132,7 @@ export default function PlayerControls() {
       <i
         id="loop"
         className={`fa-solid ${isLooped ? "fa-rotate-right" : "fa-repeat"}`}
-        title={isLooped ? "Disable Repeat" : "Enable Repeat"}
+        title={`${isLooped ? "Disable Repeat" : "Enable Repeat"} (Shift + R) `}
         onClick={handleLoopSong}
         tabIndex={0}
         onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleLoopSong)}></i>

@@ -42,6 +42,12 @@
     pointer-events: none;
     transition: .5s;
     color: var(--accent-clr-light);
+
+    &:where(:hover, :focus-visible) {
+        opacity: 1;
+        color: var(--secondary-clr);
+        pointer-events: all;
+    }
 }
 
 .tr {
@@ -55,8 +61,22 @@
             opacity: 1;
             pointer-events: all;
         }
+
+        & .song-artist {
+            color: var(--accent-clr-light);
+        }
     }
 
+
+}
+
+.song-artist {
+    color: var(--primary-clr-dark);
+
+    &:where(:hover, :focus-visible) {
+        text-decoration: underline;
+        text-underline-offset: 5px;
+    }
 }
 
 .playlist-song-details {
@@ -93,10 +113,15 @@
 .music-table tr.playing {
     color: var(--accent-clr-light);
     background-color: hsl(from var(--primary-clr) h s 25%);
-        & .fa-regular {
-                opacity: 1;
-                pointer-events: all;
-            }
+
+    & .fa-regular {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    & .song-artist {
+        color: var(--accent-clr-light);
+    }
 }
 
 .music-table img {
