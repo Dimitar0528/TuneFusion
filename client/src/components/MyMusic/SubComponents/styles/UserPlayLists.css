@@ -17,6 +17,15 @@
     border-top: 1px solid #ccc;
     margin-inline: .5rem;
     color: var(--text-dark-clr);
+    background-color: #f7f7f7;
+    transition: .25s;
+    cursor: pointer;
+
+
+    &:where(:hover, :focus-visible) {
+        background-color: var(--primary-clr-dark);
+        color: var(--accent-clr-light);
+    }
 }
 
 .playlist:first-child {
@@ -27,19 +36,11 @@
     display: flex;
     justify-content: start;
     gap: 2rem;
-    transition: .25s;
-    background-color: #f7f7f7;
-    cursor: pointer;
-    padding: 1rem;
     align-items: center;
-
-    &:where(:hover, :focus-visible) {
-        background-color: var(--primary-clr-dark);
-        color: var(--accent-clr-light);
-    }
+    padding: 1rem;
 }
 
-.playlist-title.active {
+.playlist.active {
     background-color: var(--primary-clr-light-dark);
     color: var(--accent-clr-light);
 }

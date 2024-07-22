@@ -2,7 +2,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import LandingPage from "./LandingPage/LandingPage";
 import AboutUs from "./Navigation/Information/AboutUs";
-import SignInSignUp from "./Login/SignUp";
+import Login from "./Login/Login";
 import Faq from "./Navigation/Information/Faq";
 import MyMusic from "./MyMusic/MyMusic";
 import SongManagerHandler from "./SongManagerHandler";
@@ -50,7 +50,7 @@ export default function App() {
         <Route path="/sign-in">
           <Route
             path=""
-            element={userUUID ? <Navigate to="/" replace /> : <SignInSignUp />}
+            element={userUUID ? <Navigate to="/" replace /> : <Login />}
           />
           <Route
             path="otp"

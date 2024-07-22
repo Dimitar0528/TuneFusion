@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "./styles/SignUp.module.css";
 import showToast from "../../utils/showToast";
 
-export default function SignUp() {
+export default function Login() {
   const [signUpMode, setSignUpMode] = useState(false);
   const [errors, setErrors] = useState({});
   const [signUpFormData, setSignUpFormData] = useState({
@@ -83,8 +83,9 @@ export default function SignUp() {
           showToast(`Error: ${message.error}`, "error");
           return;
         }
-        localStorage.setItem("email", signUpFormData.email);
-        location.href = "/sign-in/otp";
+        // localStorage.setItem("email", signUpFormData.email);
+        // location.href = "/sign-in/otp";
+        location.href = "/sign-in"
       } catch (error) {
         showToast(`Error: ${error.message}`, "error");
       }

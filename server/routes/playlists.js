@@ -13,6 +13,17 @@ router.post('/create-playlist', async (req, res) => {
         ),
     });
     try {
+        const existingPlaylist = await PlayList.findOne({
+            where: {
+                name,
+                created_by: user.uuid
+            }
+        });
+
+        if (existingPlaylist) {
+            return res.status(400).json({ error: 'A playlist with this name already exists!' });
+        }
+        
         await PlayList.create({
             uuid,
             name,
@@ -27,6 +38,28 @@ router.post('/create-playlist', async (req, res) => {
         res.status(500).json({ error: 'Error creating playlist!' });
 
     }
+})
+router.delete('/delete-playlist/:playlistUUID', async (req, res) => {
+    const playlistUUID = req.params.playlistUUID;
+    try {
+        const hasPlayListSongs = await PlaylistSong.findAll({
+            where: { playlist_uuid: playlistUUID }
+        })
+        hasPlayListSongs && (await PlaylistSong.destroy({
+            where: { playlist_uuid: playlistUUID },
+        }));
+
+        await PlayList.destroy({
+            where: { uuid: playlistUUID }
+        })
+        res.status(200).json({ message: 'Playlist deleted successfully!' })
+
+    } catch (error) {
+        console.error('Error deleting playlist:', error);
+        res.status(500).json({ error: 'Error deleting playlist!' });
+
+    }
+
 })
 router.get('/:user_uuid', async (req, res) => {
     const userUUID = req.params.user_uuid;
@@ -110,20 +143,22 @@ router.post('/add-song', async (req, res) => {
 });
 
 router.delete('/remove-song', async (req, res) => {
-    const { songUUID, playlistName } = req.body;
-
+    const { songUUID, playlistName, userUUID } = req.body;
     try {
         const playlist = await PlayList.findOne({
-            where: { name: playlistName }
-
-        })
+            where: {
+                [Sequelize.Op.and]: [
+                    Sequelize.where(Sequelize.fn('LEFT', Sequelize.col('created_by'), 6), userUUID),
+                    { name: playlistName }
+                ]
+            }
+        });
         const result = await PlaylistSong.destroy({
             where: {
                 song_uuid: songUUID,
                 playlist_uuid: playlist.uuid
             }
         });
-
         if (result === 0) {
             return res.status(404).json({ error: 'Song or Playlist not found' });
         }

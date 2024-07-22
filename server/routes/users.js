@@ -52,7 +52,7 @@ router.put('/editAccount/:userid', async (req, res) => {
 
         const existingUserWithname = await User.findOne({ where: { name } });
         if (existingUserWithname && existingUserWithname.uuid !== user.uuid) {
-            return res.status(401).json({ error: 'name is already taken! Please enter a new one!' });
+            return res.status(401).json({ error: 'Username is already taken! Please enter a new one!' });
         }
 
         const adminUser = await User.findOne({ where: { role: 'admin' } });

@@ -1,0 +1,42 @@
+/* ArtistDescription.module.css */
+.container {
+    padding: 20px;
+}
+
+.header {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.image {
+    width: 200px;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.description {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.album,
+.single,
+.suggested-artist {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.album img,
+.single img,
+.suggested-artist img {
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.album p,
+.single p,
+.suggested-artist p {
+    margin: 0;
+}

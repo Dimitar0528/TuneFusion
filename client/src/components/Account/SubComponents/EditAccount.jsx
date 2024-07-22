@@ -116,11 +116,7 @@ export default function EditAccount({ user }) {
       showToast(responseData.error, "error");
     }
   };
-
-  const handleUserLogout = async () => {
-    if (!window.confirm("Are you sure you want to log out from your account?"))
-      return;
-
+  const logOutUser = async (callback) => {
     try {
       const response = await fetch("http://localhost:3000/api/auth/logout", {
         method: "GET",
@@ -134,13 +130,27 @@ export default function EditAccount({ user }) {
         const errorData = await response.json();
         showToast(`Error: ${errorData.error}`, "error");
       } else {
-        const responseData = await response.json();
-        showToast(responseData.message, "success", 1500, true);
+        if (typeof callback === "function") {
+          callback();
+        }
       }
     } catch (error) {
       console.error("Error:", error);
       showToast(`Error: ${error}`, "error");
     }
+  };
+
+  const handleUserLogout = async () => {
+    if (!window.confirm("Are you sure you want to log out from your account?"))
+      return;
+    logOutUser(
+      showToast(
+        "You have successfully logged out of your account!",
+        "success",
+        1500,
+        true
+      )
+    );
   };
 
   const handleUserDeleteAccount = async () => {
@@ -161,30 +171,13 @@ export default function EditAccount({ user }) {
       } else {
         const responseData = await response.json();
         showToast(responseData.message, "success", 1500, true);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      showToast(`Error: ${error}`, "error");
-    }
-    try {
-      const response = await fetch("http://localhost:3000/api/auth/logout", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        showToast(`Error: ${errorData.error}`, "error");
-      } else {
         localStorage.clear();
       }
     } catch (error) {
       console.error("Error:", error);
       showToast(`Error: ${error}`, "error");
     }
+    logOutUser();
   };
 
   return (

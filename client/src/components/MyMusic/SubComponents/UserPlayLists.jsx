@@ -2,22 +2,17 @@ import { useState } from "react";
 import "./styles/UserPlayLists.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../utils/showToast";
-import LoadinSpinner from "../../LoadingSpinner";
+import LoadingSpinner from "../../LoadingSpinner";
+
 export default function UserPlayLists({ playlists, refreshPlaylist }) {
   const {
+    activePlaylist,
     setActivePlaylist,
     user,
     handleKeyPressWhenTabbed,
     isPlaylistLoading,
   } = useMusicPlayer();
   const { userUUID } = user;
-  const [activeIndex, setActiveIndex] = useState(() => {
-    const storedActivePlaylist = JSON.parse(
-      localStorage.getItem("activePlaylist")
-    );
-    return storedActivePlaylist?.activeIndex;
-  });
-
   const [showDialog, setShowDialog] = useState(false);
   const [newPlaylist, setNewPlaylist] = useState({
     name: "",
@@ -25,16 +20,16 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
     img_src: "",
   });
 
-  const toggleActivePlayList = (index, playlist) => {
-    const newActiveIndex = activeIndex === index ? null : index;
-    setActiveIndex(newActiveIndex);
+  const toggleActivePlayList = (playlist) => {
+    const newActivePlaylist =
+      activePlaylist?.name === playlist.name ? null : playlist;
+    setActivePlaylist(newActivePlaylist);
 
-    if (newActiveIndex !== null) {
-      const playlistWithIndex = { ...playlist, activeIndex: newActiveIndex };
-      setActivePlaylist(playlistWithIndex);
+    if (newActivePlaylist) {
+      const playlistWithUuid = { ...playlist };
+      localStorage.setItem("activePlaylist", JSON.stringify(playlistWithUuid));
     } else {
       localStorage.removeItem("activePlaylist");
-      setActivePlaylist(null);
     }
   };
 
@@ -74,7 +69,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
     setNewPlaylist({
       name: "",
       description: "",
-      img_src: "", // Add this line
+      img_src: "",
     });
 
     handleCloseDialog();
@@ -95,6 +90,37 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
     return "https://cdn-icons-png.freepik.com/512/5644/5644664.png";
   };
 
+  const handleEditPlaylist = (playlistId) => {
+    // history.push(`/updatePlaylist/${playlistId}`);
+  };
+
+  const handleDeletePlaylist = async (e, playlist, index) => {
+    e.stopPropagation();
+    console.log(playlist, index);
+
+    if (!window.confirm("Are you sure you want to delete this playlist?"))
+      return;
+
+    const response = await fetch(
+      `http://localhost:3000/api/playlists/delete-playlist/${playlist.uuid}`,
+      {
+        method: "DELETE",
+      }
+    );
+    if (response.ok) {
+      const data = await response.json();
+      showToast(data.message, "success");
+      if (playlist.name === activePlaylist.name) {
+        localStorage.removeItem("activePlaylist");
+        setActivePlaylist(null);
+      }
+      refreshPlaylist();
+    } else {
+      const data = await response.json();
+      showToast(data.error, "error");
+    }
+  };
+
   return (
     <div className="playlists">
       <div className="playlist-header">
@@ -109,20 +135,22 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
           onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleCreatePlaylist)}
           title="Create playlist"></i>
       </div>
-      <LoadinSpinner isLoading={isPlaylistLoading} />
+      <LoadingSpinner isLoading={isPlaylistLoading} />
       {playlists.map((playlist, index) => (
-        <div key={index} className="playlist">
+        <div
+          key={playlist.uuid}
+          className={`playlist ${
+            activePlaylist?.name === playlist.name && "active"
+          }`}>
           <div
             tabIndex={0}
-            className={`playlist-title ${activeIndex === index && "active"}`}
-            onClick={() => toggleActivePlayList(index, playlist)}
+            className={`playlist-title`}
+            onClick={() => toggleActivePlayList(playlist)}
             onKeyDown={(e) =>
-              handleKeyPressWhenTabbed(e, () =>
-                toggleActivePlayList(index, playlist)
-              )
+              handleKeyPressWhenTabbed(e, () => toggleActivePlayList(playlist))
             }
             title={
-              activeIndex === index
+              activePlaylist?.name === playlist.name
                 ? "Deactivate playlist"
                 : "Set active playlist"
             }>
@@ -133,6 +161,22 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
               height={45}
             />{" "}
             <h3>{playlist.name}</h3>
+            {playlist.name !== "Liked Songs" && (
+              <div className="playlist-actions">
+                <button
+                  onClick={(e) => {
+                    handleEditPlaylist(e, playlist.uuid);
+                  }}>
+                  Edit
+                </button>
+                <button
+                  onClick={(e) => {
+                    handleDeletePlaylist(e, playlist, index);
+                  }}>
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
         </div>
       ))}
@@ -159,8 +203,6 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
                   onChange={handleChange}></textarea>
               </label>
               <label>
-                {" "}
-                {/* Add this block */}
                 Image URL: (optional)
                 <input
                   type="text"

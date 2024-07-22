@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import TableLayout from "../TableLayout";
+import showToast from "../../../utils/showToast";
 
 export default function ViewAllUsers() {
   const [users, setUsers] = useState([]);
@@ -17,6 +18,29 @@ export default function ViewAllUsers() {
     getUsers();
   }, []);
 
+  const handleDeleteUser = async (uuid) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/users/deleteUser/${uuid}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        showToast(`Error: ${errorData.error}`, "error");
+      } else {
+        const responseData = await response.json();
+        showToast(responseData.message, "success", 1500, true);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      showToast(`Error: ${error}`, "error");
+    }
+  };
+
   return (
     <TableLayout
       data={users}
@@ -32,7 +56,9 @@ export default function ViewAllUsers() {
           <td data-th="Phone Number">{user.phone_number}</td>
           <td data-th="Actions">
             <div className="cta-admin-buttons">
-              <button>Delete</button>
+              <button onClick={() => handleDeleteUser(user.uuid)}>
+                Delete
+              </button>
             </div>
           </td>
         </tr>

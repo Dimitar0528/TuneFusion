@@ -2,7 +2,7 @@ import express from 'express';
 import Genius from 'genius-lyrics';
 import { Song, PlaylistSong } from '../db/models/index.js'
 import gis from 'async-g-i-s';
-import { searchMusics, getSuggestions } from 'node-youtube-music';
+import { searchMusics, getSuggestions, getArtist, searchArtists } from 'node-youtube-music';
 
 const router = express.Router();
 const Client = new Genius.Client();
@@ -135,13 +135,19 @@ router.get('/search/:query', async (req, res) => {
             };
         }));
 
-        res.json(songList);
+        res.status(200).json(songList);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
     }
 });
 
+router.get('/artist/:artistName', async (req, res) => {
+    const artistName = req.params.artistName
+    const artists = await searchArtists(artistName);
+    const artist = await getArtist(artists[0].artistId);
+    res.status(200).json(artist);
+})
 
 router.get('/:artist/:song', async (req, res) => {
     const { artist, song } = req.params;

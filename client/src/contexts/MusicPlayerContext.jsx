@@ -30,6 +30,13 @@ export function MusicPlayerProvider({ children }) {
   const [currentSongUUID, setCurrentSongUUID] = useState(
     () => JSON.parse(localStorage.getItem("currentSongUUID")) || ""
   );
+
+  const { songs, loading: isSongLoading } = useFetchSongs();
+
+  if (currentSongUUID === "" && songs.length > 0) {
+    setCurrentSongUUID(extractUUIDPrefix(songs[0].uuid));
+  }
+
   const [volume, setVolume] = useState(
     () => Number(JSON.parse(localStorage.getItem("audioVolume"))) || 0.3
   );
@@ -42,7 +49,6 @@ export function MusicPlayerProvider({ children }) {
   const playerRef = useRef();
   const musicListRef = useRef();
 
-  const { songs, loading: isSongLoading } = useFetchSongs();
   const { user } = useFetchUserToken();
   const {
     playlists,
