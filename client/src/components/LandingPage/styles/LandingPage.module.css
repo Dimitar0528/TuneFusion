@@ -8,7 +8,7 @@
 .genre,
 .client {
   padding-block: .75rem;
-  background-color: hsl(from var(--primary-clr-dark) h s l / .85);
+  background-color: var(--primary-clr-light-dark)
 }
 
 .section__container {
@@ -44,7 +44,7 @@
   cursor: pointer;
 
   &:where(:where(:hover, :focus-visible), :focus-visible) {
-    background-color: hsl(from var(--secondary-clr) h s 80%);
+    background-color: var(--secondary-clr-light)
   }
 }
 
@@ -99,7 +99,6 @@ nav {
   transform: translateY(-130%);
   border-radius: 1rem;
   z-index: 99;
-  box-shadow: 4px 4px 6px hsl(0, 0%, 0%);
 }
 
 .nav__links.open {
@@ -115,7 +114,8 @@ nav {
   }
 }
 
-.nav__links .nav__link:where(:hover, :focus-visible) {
+.nav__links .nav__link:where(:hover, :focus-visible),
+.footer__links .nav__link:where(:hover, :focus-visible) {
   color: var(--secondary-clr);
 }
 
@@ -279,7 +279,7 @@ nav {
   border-radius: 100%;
 
   &:where(:where(:hover, :focus-visible), :focus-visible) {
-    background-color: hsl(from var(--secondary-clr) h s 80%);
+    background-color: var(--secondary-clr-light)
   }
 }
 
@@ -429,7 +429,7 @@ nav {
 
 footer {
   background-color: var(--accent-clr-dark);
-  padding-bottom: 5rem;
+  padding-bottom: 4.5rem;
 }
 
 .footer__links {

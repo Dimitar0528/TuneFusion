@@ -47,7 +47,7 @@ export default function SearchSong() {
       ) : (
         <MusicList
           songs={searchSongs}
-          title={`Search results for ${searchTerm}`}
+          title={`Search results for ${searchTerm}:  [Total Songs found: ${searchSongs.length} ]`}
           musicListRef={musicListRef}
           playlists={playlists}
           refreshPlaylist={refreshPlaylistHandler}

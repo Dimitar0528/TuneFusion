@@ -16,6 +16,7 @@
 .playlist {
     border-top: 1px solid #ccc;
     margin-inline: .5rem;
+    color: var(--text-dark-clr);
 }
 
 .playlist:first-child {
@@ -39,7 +40,7 @@
 }
 
 .playlist-title.active {
-    background-color: var(--primary-clr);
+    background-color: var(--primary-clr-light-dark);
     color: var(--accent-clr-light);
 }
 

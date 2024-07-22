@@ -42,7 +42,7 @@ export function MusicPlayerProvider({ children }) {
   const playerRef = useRef();
   const musicListRef = useRef();
 
-  const { songs } = useFetchSongs();
+  const { songs, loading: isSongLoading } = useFetchSongs();
   const { user } = useFetchUserToken();
   const {
     playlists,
@@ -165,6 +165,7 @@ export function MusicPlayerProvider({ children }) {
     const nextIndex = (currentIndex + 1) % playBackSpeeds.length;
 
     setPlayBackSpeed(playBackSpeeds[nextIndex]);
+    showToast(`Playback speed set to: ${playBackSpeeds[nextIndex]}`, "success");
   };
   const contextValue = {
     songs,
@@ -180,6 +181,7 @@ export function MusicPlayerProvider({ children }) {
     shuffle,
     islyricsLoading,
     isPlaylistLoading,
+    isSongLoading,
     isCollapsed,
     volume,
     setVolume,

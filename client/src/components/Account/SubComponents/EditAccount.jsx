@@ -166,7 +166,6 @@ export default function EditAccount({ user }) {
       console.error("Error:", error);
       showToast(`Error: ${error}`, "error");
     }
-
     try {
       const response = await fetch("http://localhost:3000/api/auth/logout", {
         method: "GET",
@@ -179,6 +178,8 @@ export default function EditAccount({ user }) {
       if (!response.ok) {
         const errorData = await response.json();
         showToast(`Error: ${errorData.error}`, "error");
+      } else {
+        localStorage.clear();
       }
     } catch (error) {
       console.error("Error:", error);

@@ -52,6 +52,7 @@
 
 .tr {
     transition: .2s;
+    color: var(--text-dark-clr);
 
     &:where(:hover, :focus-visible) {
         background-color: var(--primary-clr-dark);
@@ -112,7 +113,8 @@
 
 .music-table tr.playing {
     color: var(--accent-clr-light);
-    background-color: hsl(from var(--primary-clr) h s 25%);
+
+    background-color: var(--primary-clr-light-dark);
 
     & .fa-regular {
         opacity: 1;
@@ -165,7 +167,7 @@
     cursor: pointer;
 
     &:where(:hover, :focus-visible) {
-        background-color: hsl(from var(--secondary-clr) h s 85%);
+        background-color: var(--secondary-clr-light);
     }
 }
 
@@ -220,7 +222,7 @@ select {
 
     & p:not(:empty) {
         font-weight: 600;
-        background-color: var(--secondary-clr);
+        background-color: var(--secondary-clr-light);
         padding: .25rem;
         border-radius: 1rem;
     }

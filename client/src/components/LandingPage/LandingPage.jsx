@@ -5,7 +5,7 @@ import styles from "./styles/LandingPage.module.css";
 import GenreCard from "./SubComponents/GenreCard";
 import FeatureCard from "./SubComponents/FeatureCard";
 import ClientCard from "./SubComponents/ClientCard";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 export default function LandingPage({ userUUID }) {
   const navigate = useNavigate();
   useEffect(() => {
@@ -97,12 +97,12 @@ export default function LandingPage({ userUUID }) {
                   <i className="ri-arrow-right-line"></i>
                 </span>
               </button>
-              <a href="/information/aboutus">
+              <Link to="/information/aboutus">
                 See More
                 <span>
                   <i className="ri-arrow-right-line"></i>
                 </span>
-              </a>
+              </Link>
             </div>
             <div className={styles["header__stats"]}>
               <div className={styles["header__stats__card"]}>

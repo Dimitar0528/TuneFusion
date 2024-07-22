@@ -14,7 +14,8 @@ input {
 .label {
     font-size: 1.4rem;
     font-weight: bold;
-    background-color: hsl(from var(--primary-clr) h s 80%);
+    background-color: var(--primary-clr-light-dark);
+    color: var(--accent-clr-light);
 
     padding: .25rem;
     border-radius: 1rem;

@@ -38,7 +38,7 @@ textarea {
 }
 
 .contact-form {
-    background-color: var(--primary-clr);
+    background-color: var(--primary-clr-light-dark);
     position: relative;
 }
 

@@ -48,7 +48,7 @@ export default function PlayerControls() {
       const { code, shiftKey, key } = e;
 
       switch (true) {
-        case key === "m":
+        case key === "m" || key === "M":
           if (volume > 0) {
             setPreviousVolume(volume);
             setVolume(0);
@@ -60,16 +60,16 @@ export default function PlayerControls() {
           e.preventDefault();
           handlePlayPause();
           break;
-        case shiftKey && key === "N":
+        case (shiftKey && key === "n") || key === "N":
           handleNextSong();
           break;
-        case shiftKey && key === "P":
+        case (shiftKey && key === "p") || key === "P":
           handlePreviousSong();
           break;
-        case shiftKey && key === "R":
+        case (shiftKey && key === "r") || key === "R":
           handleLoopSong();
           break;
-        case shiftKey && key === "S":
+        case (shiftKey && key === "s") || key === "S":
           handleShufflePlayList();
           break;
         default:

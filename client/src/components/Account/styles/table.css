@@ -22,7 +22,7 @@
     border: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
     background-color: #fff;
-    color: inherit;
+    color: var(--text-dark-clr);
 }
 
 .rwd-table th {
@@ -123,7 +123,7 @@
     }
 
     & button:where(:hover, :focus-visible) {
-        background-color: hsl(from var(--secondary-clr) h s 80%)
+        background-color: var(--secondary-clr-light)
     }
 }
 
@@ -151,7 +151,7 @@
 }
 
 .pagination li.active a {
-    background-color: var(--primary-clr);
+    background-color: var(--primary-clr-light-dark);
     color: white;
     border-color: var(--primary-clr-dark);
 }

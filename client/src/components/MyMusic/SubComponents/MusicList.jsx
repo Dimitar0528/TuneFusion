@@ -18,6 +18,7 @@ export default function MusicList({
   styles,
 }) {
   const {
+    user,
     currentSongUUID,
     setCurrentSongUUID,
     isSongLoading,
@@ -132,6 +133,7 @@ export default function MusicList({
           body: JSON.stringify({
             songUUID: song.uuid,
             playlistName: playlistName,
+            userUUID: user.userUUID,
           }),
         }
       );
@@ -153,10 +155,11 @@ export default function MusicList({
     }
   };
 
-  const likedSongsPlaylist = playlists.filter((playlist) => {
-    return playlist.name === "Liked Songs";
-  });
   const handleToggleLikedSong = async (song) => {
+    const likedSongsPlaylist = playlists.filter((playlist) => {
+      return playlist.name === "Liked Songs";
+    });
+    console.log(likedSongsPlaylist[0]?.name);
     const songUUID = extractUUIDPrefix(song.uuid);
     const isLiked = likedSongs.includes(songUUID);
     let updatedLikedSongs;
@@ -322,37 +325,34 @@ export default function MusicList({
                   style={{ cursor: "pointer" }}></i>
                 {formatTime(song.duration)}
               </td>
-              {activePlaylist?.name !== "Liked Songs" ? (
-                activePlaylist ? (
-                  <td>
-                    <i
-                      tabIndex={0}
-                      className="fa-solid fa-circle-minus"
-                      onClick={() =>
-                        handleRemoveSongFromPlaylist(song, activePlaylist.name)
-                      }
-                      onKeyDown={(e) =>
-                        handleKeyPressWhenTabbed(e, () => {
-                          handleRemoveSongFromPlaylist(song);
-                        })
-                      }
-                      title="Remove from playlist"></i>
-                  </td>
-                ) : (
-                  <td>
-                    <i
-                      tabIndex={0}
-                      className="fa-solid fa-plus"
-                      onClick={() => handleAddSongToPlayList(song)}
-                      onKeyDown={(e) =>
-                        handleKeyPressWhenTabbed(e, () => {
-                          handleAddSongToPlayList(song);
-                        })
-                      }
-                      title="Add to playlist"></i>
-                  </td>
-                )
-              ) : null}
+              <td>
+                <i
+                  tabIndex={0}
+                  className="fa-solid fa-plus"
+                  onClick={() => handleAddSongToPlayList(song)}
+                  onKeyDown={(e) =>
+                    handleKeyPressWhenTabbed(e, () => {
+                      handleAddSongToPlayList(song);
+                    })
+                  }
+                  title="Add to playlist"></i>
+              </td>
+              {activePlaylist && activePlaylist.name !== "Liked Songs" && (
+                <td>
+                  <i
+                    tabIndex={0}
+                    className="fa-solid fa-circle-minus"
+                    onClick={() =>
+                      handleRemoveSongFromPlaylist(song, activePlaylist.name)
+                    }
+                    onKeyDown={(e) =>
+                      handleKeyPressWhenTabbed(e, () => {
+                        handleRemoveSongFromPlaylist(song);
+                      })
+                    }
+                    title="Remove from playlist"></i>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

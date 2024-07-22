@@ -8,11 +8,13 @@
 
 :root {
     --primary-clr: hsl(295, 22%, 54%);
-    --primary-clr-dark: hsl(213, 14%, 12%);
+    --primary-clr-light-dark: hsl(from var(--primary-clr) h s 25%);
+    --primary-clr-dark: hsl(213, 14%, 18%);
     --secondary-clr: hsl(339, 100%, 73%);
+    --secondary-clr-light: hsl(from var(--secondary-clr) h s 85%);
     --text-dark-clr: hsl(213, 14%, 12%);
     --text-light-clr: hsl(0, 0%, 95%);
-    --accent-clr-dark: hsl(213, 14%, 2%);
+    --accent-clr-dark: hsl(210, 20%, 10%);
     --accent-clr-light: hsl(0, 0%, 100%);
     --bg: linear-gradient(var(--secondary-clr) 5%, var(--primary-clr) 90%);
     --gradient-1: linear-gradient(to bottom, var(--primary-clr), #1d2127);
@@ -82,10 +84,10 @@ body {
 }
 
 .scrollButton {
-    background-color: var(--card-text-clr);
+    background-color: hsl(from var(--card-text-clr) h s 50%);
     border: none;
     border-radius: 50%;
-    padding: 10px;
+    padding: .69rem;
     color: var(--accent-clr-light);
     cursor: pointer;
     transition: .3s;
@@ -102,7 +104,6 @@ body {
 
 .scrollButton:hover {
     background-color: var(--card-text-light-clr);
-    color: var(--accent-clr-light);
 }
 
 .loading {
