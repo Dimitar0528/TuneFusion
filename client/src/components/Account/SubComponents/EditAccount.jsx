@@ -148,6 +148,7 @@ export default function EditAccount({ user }) {
         "You have successfully logged out of your account!",
         "success",
         1500,
+        true,
         true
       )
     );
@@ -170,7 +171,7 @@ export default function EditAccount({ user }) {
         showToast(`Error: ${errorData.error}`, "error");
       } else {
         const responseData = await response.json();
-        showToast(responseData.message, "success", 1500, true);
+        showToast(responseData.message, "success", 1500, true, true);
         localStorage.clear();
       }
     } catch (error) {

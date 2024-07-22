@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 
-export default function showToast(message, type, autoClose = 1800, triggerRefresh = false) {
+export default function showToast(message, type, autoClose = 1800, triggerRefresh = false, triggerFullReload = false) {
     toast(message, {
         type: type,
         position: 'top-right',
@@ -15,7 +15,7 @@ export default function showToast(message, type, autoClose = 1800, triggerRefres
     });
     if (triggerRefresh) {
         setTimeout(() => {
-            location.reload();
+            triggerFullReload ? location.href = location.origin : location.reload();
         }, autoClose + 500);
     }
 }

@@ -1,15 +1,13 @@
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-import LoadingSpinner from "../../LoadingSpinner";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 export default function SongDetails() {
-  const { islyricsLoading, lyrics, currentSong } = useMusicPlayer();
-
+  let { islyricsLoading, lyrics, currentSong } = useMusicPlayer();
   return (
     <>
       <div className="img-area text-center">
         {islyricsLoading ? (
-          <LoadingSpinner
-            isLoading={islyricsLoading}
-          />
+          <Skeleton borderRadius={'1rem'}  height={405} />
         ) : lyrics ? (
           <div className="lyrics">{lyrics ? <pre>{lyrics}</pre> : null}</div>
         ) : (

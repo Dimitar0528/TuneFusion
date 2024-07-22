@@ -2,7 +2,8 @@ import { useState } from "react";
 import "./styles/UserPlayLists.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../utils/showToast";
-import LoadingSpinner from "../../LoadingSpinner";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 export default function UserPlayLists({ playlists, refreshPlaylist }) {
   const {
@@ -43,7 +44,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
 
   const handleSavePlaylist = async () => {
     if (newPlaylist.name.trim() === "") {
-      alert("Please enter a playlist name.");
+      showToast("Please enter a playlist name.", "warning");
       return;
     }
     const reqObj = {
@@ -94,10 +95,8 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
     // history.push(`/updatePlaylist/${playlistId}`);
   };
 
-  const handleDeletePlaylist = async (e, playlist, index) => {
+  const handleDeletePlaylist = async (e, playlist) => {
     e.stopPropagation();
-    console.log(playlist, index);
-
     if (!window.confirm("Are you sure you want to delete this playlist?"))
       return;
 
@@ -120,6 +119,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
       showToast(data.error, "error");
     }
   };
+  const numberOfSkeletons = playlists.length ? playlists.length : 6;
 
   return (
     <div className="playlists">
@@ -135,51 +135,65 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
           onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleCreatePlaylist)}
           title="Create playlist"></i>
       </div>
-      <LoadingSpinner isLoading={isPlaylistLoading} />
-      {playlists.map((playlist, index) => (
-        <div
-          key={playlist.uuid}
-          className={`playlist ${
-            activePlaylist?.name === playlist.name && "active"
-          }`}>
-          <div
-            tabIndex={0}
-            className={`playlist-title`}
-            onClick={() => toggleActivePlayList(playlist)}
-            onKeyDown={(e) =>
-              handleKeyPressWhenTabbed(e, () => toggleActivePlayList(playlist))
-            }
-            title={
-              activePlaylist?.name === playlist.name
-                ? "Deactivate playlist"
-                : "Set active playlist"
-            }>
-            <img
-              src={getPlaylistImage(playlist)}
-              alt={playlist.name}
-              width={45}
-              height={45}
-            />{" "}
-            <h3>{playlist.name}</h3>
-            {playlist.name !== "Liked Songs" && (
-              <div className="playlist-actions">
-                <button
-                  onClick={(e) => {
-                    handleEditPlaylist(e, playlist.uuid);
-                  }}>
-                  Edit
-                </button>
-                <button
-                  onClick={(e) => {
-                    handleDeletePlaylist(e, playlist, index);
-                  }}>
-                  Delete
-                </button>
+      {isPlaylistLoading
+        ? Array.from({ length: numberOfSkeletons }).map((_, index) => (
+            <div key={index} className="playlist">
+              <div className="playlist-title">
+                <Skeleton circle={true} height={45} width={45} />
+                <Skeleton width={100} />
+                <div className="playlist-actions">
+                  <Skeleton width={60} height={20} />
+                  <Skeleton width={60} height={20} />
+                </div>
               </div>
-            )}
-          </div>
-        </div>
-      ))}
+            </div>
+          ))
+        : playlists.map((playlist) => (
+            <div
+              key={playlist.uuid}
+              className={`playlist ${
+                activePlaylist?.name === playlist.name && "active"
+              }`}>
+              <div
+                tabIndex={0}
+                className={`playlist-title`}
+                onClick={() => toggleActivePlayList(playlist)}
+                onKeyDown={(e) =>
+                  handleKeyPressWhenTabbed(e, () =>
+                    toggleActivePlayList(playlist)
+                  )
+                }
+                title={
+                  activePlaylist?.name === playlist.name
+                    ? "Deactivate playlist"
+                    : "Set active playlist"
+                }>
+                <img
+                  src={getPlaylistImage(playlist)}
+                  alt={playlist.name}
+                  width={45}
+                  height={45}
+                />{" "}
+                <h3>{playlist.name}</h3>
+                {playlist.name !== "Liked Songs" && (
+                  <div className="playlist-actions">
+                    <button
+                      onClick={(e) => {
+                        handleEditPlaylist(playlist.uuid);
+                      }}>
+                      Edit
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        handleDeletePlaylist(e, playlist);
+                      }}>
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
 
       {showDialog && (
         <dialog open className="modal">

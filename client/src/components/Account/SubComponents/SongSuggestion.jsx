@@ -1,9 +1,12 @@
 import { useState } from "react";
 import showToast from "../../../utils/showToast";
 import Table from "../TableLayout";
-import styles from "../styles/Account.module.css"; // Import the CSS module
+import styles from "../styles/Account.module.css";
 import "../styles/table.css";
 import { formatTime } from "../../../utils/formatTime";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 export default function SongSuggestion() {
   const [artist, setArtist] = useState("");
   const [songs, setSongs] = useState([]);
@@ -39,7 +42,6 @@ export default function SongSuggestion() {
   const handleAddToDB = async (song) => {
     try {
       setIsLoading(true);
-      setSongs([]);
       const response = await fetch("http://localhost:3000/api/songs/addsong", {
         method: "POST",
         headers: {
@@ -90,47 +92,83 @@ export default function SongSuggestion() {
           {isLoading ? "Searching..." : "Search"}
         </button>
       </form>
-      {isLoading && (
-        <i
-          style={{ fontSize: "11rem", color: "white", marginBlock: "1rem" }}
-          className="fas fa-spinner fa-spin"></i>
-      )}
-      {songs.length > 0 && (
-        <Table
-          data={songs}
-          hasDbSearch={false}
-          columns={[
-            "Image",
-            "Title",
-            "Artist",
-            "Audio Source",
-            "Duration",
-            "Actions",
-          ]}
-          itemsPerPage={songsPerPage}
-          renderRow={(song) => (
-            <tr key={song.uuid}>
-              <td data-th="Image">
-                <img
-                  src={song.img_src}
-                  alt={`${song.artist} cover`}
-                  className="song-image"
-                />
-              </td>
-              <td data-th="Title">{song.name}</td>
-              <td data-th="Artist">{song.artist}</td>
-              <td data-th="Audio Source">{song.audio_src}</td>
-              <td data-th="Duration">{formatTime(song.duration)}</td>
-              <td data-th="Actions">
-                <div className="cta-admin-buttons">
-                  <button onClick={() => handleAddToDB(song)}>
-                    Add to database
-                  </button>
-                </div>
-              </td>
-            </tr>
-          )}
-        />
+      {isLoading ? (
+        <div style={{ marginTop: "2rem" }}>
+          <table className="rwd-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>Audio Source</th>
+                <th>Duration</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...Array(songsPerPage)].map((_, index) => (
+                <tr key={index}>
+                  <td>
+                    <Skeleton height={40} width={40} />
+                  </td>
+                  <td>
+                    <Skeleton height={20} width={150} />
+                  </td>
+                  <td>
+                    <Skeleton height={20} width={100} />
+                  </td>
+                  <td>
+                    <Skeleton height={20} width={200} />
+                  </td>
+                  <td>
+                    <Skeleton height={20} width={100} />
+                  </td>
+                  <td>
+                    <Skeleton height={30} width={120} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        songs.length > 0 && (
+          <Table
+            data={songs}
+            hasDbSearch={false}
+            columns={[
+              "Image",
+              "Title",
+              "Artist",
+              "Audio Source",
+              "Duration",
+              "Actions",
+            ]}
+            itemsPerPage={songsPerPage}
+            renderRow={(song) => (
+              <tr key={song.uuid}>
+                <td data-th="Image">
+                  <img
+                    src={song.img_src}
+                    alt={`${song.artist} cover`}
+                    className="song-image"
+                  />
+                </td>
+                <td data-th="Title">{song.name}</td>
+                <td data-th="Artist">{song.artist}</td>
+                <td data-th="Audio Source">{song.audio_src}</td>
+                <td data-th="Duration">{formatTime(song.duration)}</td>
+                <td data-th="Actions">
+                  <div className="cta-admin-buttons">
+                    <button onClick={() => handleAddToDB(song)}>
+                      Add to database
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            )}
+          />
+        )
       )}
     </div>
   );
