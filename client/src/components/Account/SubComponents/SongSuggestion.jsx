@@ -41,7 +41,6 @@ export default function SongSuggestion() {
 
   const handleAddToDB = async (song) => {
     try {
-      setIsLoading(true);
       const response = await fetch("http://localhost:3000/api/songs/addsong", {
         method: "POST",
         headers: {
@@ -55,7 +54,6 @@ export default function SongSuggestion() {
       } else {
         const responseData = await response.json();
         showToast(responseData.message, "success", 1500, true);
-        setIsLoading(false);
       }
     } catch (error) {
       showToast(`Error: ${error.message}`, "error");
@@ -85,7 +83,7 @@ export default function SongSuggestion() {
           className={styles["artist-input"]}
           value={artist}
           onChange={handleInputChange}
-          placeholder="Enter artist name"
+          placeholder="Enter artist name or genre"
           required
         />
         <button className="addbtn btn6" type="submit" disabled={isLoading}>

@@ -23,7 +23,8 @@ export default function Header({ btnText, goToLocation, userUUID }) {
       );
     };
 
-    const handleNavLinksClick = () => {
+    const handleNavLinksClick = (e) => {
+      if (e.target.tagName === "INPUT") return;
       navLinks.classList.remove(styles["open"]);
       menuBtnIcon.setAttribute("class", "ri-menu-line");
     };

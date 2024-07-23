@@ -15,6 +15,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
   } = useMusicPlayer();
   const { userUUID } = user;
   const [showDialog, setShowDialog] = useState(false);
+  const [editingPlaylist, setEditingPlaylist] = useState();
   const [newPlaylist, setNewPlaylist] = useState({
     name: "",
     description: "",
@@ -35,6 +36,23 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
   };
 
   const handleCreatePlaylist = () => {
+    setEditingPlaylist(null);
+    setNewPlaylist({
+      name: "",
+      description: "",
+      img_src: "",
+    });
+    setShowDialog(true);
+  };
+
+  const handleEditPlaylist = (e, playlist) => {
+    e.stopPropagation();
+    setEditingPlaylist(playlist);
+    setNewPlaylist({
+      name: playlist.name,
+      description: playlist.description || "",
+      img_src: playlist.img_src || "",
+    });
     setShowDialog(true);
   };
 
@@ -47,18 +65,34 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
       showToast("Please enter a playlist name.", "warning");
       return;
     }
+
     const reqObj = {
       ...newPlaylist,
       created_by: userUUID,
     };
-    const response = await fetch(
-      "http://localhost:3000/api/playlists/create-playlist",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(reqObj),
-      }
-    );
+
+    let response;
+    if (editingPlaylist) {
+
+      response = await fetch(
+        `http://localhost:3000/api/playlists/update-playlist/${editingPlaylist.name}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(reqObj),
+        }
+      );
+    } else {
+      response = await fetch(
+        "http://localhost:3000/api/playlists/create-playlist",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(reqObj),
+        }
+      );
+    }
+
     if (response.ok) {
       const data = await response.json();
       showToast(data.message, "success");
@@ -67,6 +101,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
       const data = await response.json();
       showToast(data.error, "error");
     }
+
     setNewPlaylist({
       name: "",
       description: "",
@@ -89,10 +124,6 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
     if (playlist.Songs && playlist.Songs.length > 0)
       return playlist.Songs[playlist.Songs.length - 1].img_src;
     return "https://cdn-icons-png.freepik.com/512/5644/5644664.png";
-  };
-
-  const handleEditPlaylist = (playlistId) => {
-    // history.push(`/updatePlaylist/${playlistId}`);
   };
 
   const handleDeletePlaylist = async (e, playlist) => {
@@ -119,7 +150,6 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
       showToast(data.error, "error");
     }
   };
-  const numberOfSkeletons = playlists.length ? playlists.length : 6;
 
   return (
     <div className="playlists">
@@ -136,7 +166,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
           title="Create playlist"></i>
       </div>
       {isPlaylistLoading
-        ? Array.from({ length: numberOfSkeletons }).map((_, index) => (
+        ? Array.from({ length: 6 }).map((_, index) => (
             <div key={index} className="playlist">
               <div className="playlist-title">
                 <Skeleton circle={true} height={45} width={45} />
@@ -176,19 +206,33 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
                 />{" "}
                 <h3>{playlist.name}</h3>
                 {playlist.name !== "Liked Songs" && (
-                  <div className="playlist-actions">
-                    <button
-                      onClick={(e) => {
-                        handleEditPlaylist(playlist.uuid);
-                      }}>
-                      Edit
-                    </button>
-                    <button
+                  <div className="action-btns">
+                    <i
+                      tabIndex={0}
+                      title="Edit Playlist"
+                      className="fa-solid fa-pen-to-square"
+                      onClick={(е) => {
+                        handleEditPlaylist(е, playlist);
+                      }}
+                      onKeyDown={(e) =>
+                        handleKeyPressWhenTabbed(e, () =>
+                          handleEditPlaylist(e, playlist)
+                        )
+                      }
+                    />
+
+                    <i
+                      tabIndex={0}
+                      title="Delete PlayList"
+                      className="fa-solid fa-delete-left"
                       onClick={(e) => {
                         handleDeletePlaylist(e, playlist);
-                      }}>
-                      Delete
-                    </button>
+                      }}
+                      onKeyDown={(e) =>
+                        handleKeyPressWhenTabbed(e, () =>
+                          handleDeletePlaylist(e, playlist)
+                        )
+                      }></i>
                   </div>
                 )}
               </div>
@@ -198,7 +242,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
       {showDialog && (
         <dialog open className="modal">
           <div className="playlist-dialog">
-            <h2>Create New Playlist</h2>
+            <h2>{editingPlaylist ? "Edit Playlist" : "Create New Playlist"}</h2>
             <form method="dialog">
               <label>
                 Playlist Name:

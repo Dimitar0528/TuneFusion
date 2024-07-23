@@ -3,13 +3,12 @@
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.18);
-    width: 420px;
+    width: clamp(390px, 28rem, 100%);
     text-align: center;
     border: 1px solid #ccc;
     border-radius: 5px;
     overflow-x: hidden;
     isolation: isolate;
-    height: 75dvh;
 }
 
 
@@ -21,20 +20,25 @@
     transition: .25s;
     cursor: pointer;
 
+    &:last-child {
+        margin-bottom: 1.5rem;
+    }
+
 
     &:where(:hover, :focus-visible) {
         background-color: var(--primary-clr-dark);
         color: var(--accent-clr-light);
+
+        & .action-btns {
+            background-color: var(--accent-clr-light);
+        }
     }
 }
 
-.playlist:first-child {
-    border-top: none;
-}
 
 .playlist-title {
     display: flex;
-    justify-content: start;
+    justify-content: space-between;
     gap: 2rem;
     align-items: center;
     padding: 1rem;
@@ -43,6 +47,10 @@
 .playlist.active {
     background-color: var(--primary-clr-light-dark);
     color: var(--accent-clr-light);
+
+    & .action-btns {
+        background-color: var(--accent-clr-light);
+    }
 }
 
 .playlist-dialog {

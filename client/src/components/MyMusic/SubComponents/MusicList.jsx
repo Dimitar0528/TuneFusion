@@ -31,6 +31,7 @@ export default function MusicList({
     setCurrentPage,
     handleKeyPressWhenTabbed,
   } = useMusicPlayer();
+
   const [selectedPlaylist, setSelectedPlaylist] = useState();
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState();
@@ -242,8 +243,10 @@ export default function MusicList({
           <div className="playlist-description">
             <p>{activePlaylist?.description}</p>
             <p>
-              {activePlaylist?.Songs.length} songs ,{" "}
-              <span>Total duration: {formatTime(totalDuration)}</span>
+              {activePlaylist?.Songs.length === 1
+                ? `${activePlaylist?.Songs.length} song`
+                : `${activePlaylist?.Songs.length} songs`}{" "}
+              ,<span>Duration: {formatTime(totalDuration)}</span>
             </p>
           </div>
         )
@@ -260,7 +263,7 @@ export default function MusicList({
             </tr>
           </thead>
           <tbody>
-            {Array(5)
+            {Array(8)
               .fill(null)
               .map((_, index) => (
                 <tr key={index}>
@@ -312,7 +315,8 @@ export default function MusicList({
                 }
                 onMouseEnter={() => setHoveredSongUUID(song.uuid)}
                 onMouseLeave={() => setHoveredSongUUID(null)}
-                onDoubleClick={() => handleMusicListSong(song)}>
+                onDoubleClick={() => handleMusicListSong(song)}
+                onTouchStart={() => handleMusicListSong(song)}>
                 <td>
                   {hoveredSongUUID === song.uuid ? (
                     <i

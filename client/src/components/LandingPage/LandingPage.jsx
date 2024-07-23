@@ -110,11 +110,11 @@ export default function LandingPage({ userUUID }) {
             </div>
             <div className={styles["header__stats"]}>
               <div className={styles["header__stats__card"]}>
-                <h4>180K</h4>
+                <h4>69K</h4>
                 <p>Listeners</p>
               </div>
               <div className={styles["header__stats__card"]}>
-                <h4>69K</h4>
+                <h4>420K</h4>
                 <p>Songs</p>
               </div>
             </div>

@@ -55,7 +55,7 @@ export default function ProgressArea() {
         progressBarRef.current.style.width = `${newProgress * 100}%`;
       }
     },
-    [isDragging, playerRef, progressAreaRef, setCurrentTime,progressBarRef]
+    [isDragging, playerRef, progressAreaRef, setCurrentTime, progressBarRef]
   );
 
   const handleProgressBarClick = (e) => {

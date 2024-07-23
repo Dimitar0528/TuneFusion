@@ -83,9 +83,9 @@ export default function Login() {
           showToast(`Error: ${message.error}`, "error");
           return;
         }
-        // localStorage.setItem("email", signUpFormData.email);
-        // location.href = "/sign-in/otp";
-        location.href = "/sign-in"
+        localStorage.setItem("email", signUpFormData.email);
+        location.href = "/sign-in/otp";
+        // location.href = "/sign-in"
       } catch (error) {
         showToast(`Error: ${error.message}`, "error");
       }

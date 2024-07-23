@@ -84,7 +84,7 @@ body {
 }
 
 .scrollButton {
-    background-color: hsl(from var(--card-text-clr) h s 50%);
+    background-color: var(--primary-clr-light-dark);
     border: none;
     border-radius: 50%;
     padding: .69rem;
@@ -103,7 +103,8 @@ body {
 }
 
 .scrollButton:hover {
-    background-color: var(--card-text-light-clr);
+    background-color: var(--secondary-clr-light);
+    color: var(--accent-clr-dark);
 }
 
 .action-btns {

@@ -7,11 +7,27 @@
 }
 
 .body {
-    min-height: 90dvh;
     display: flex;
     justify-content: space-between;
-    margin-inline: .5rem;
+    margin-inline: .8rem;
+    gap: 2rem;
     align-items: start;
+    margin-bottom: 2rem;
+
+    @media (width < 969px) {
+        flex-direction: column;
+
+        & .playlists {
+            width: clamp(310px, 60rem, 100%);
+            height: auto;
+        }
+
+        & .playlist-description {
+            flex-direction: column;
+            text-align: center;
+        }
+
+    }
 }
 
 .text-center {
@@ -246,7 +262,7 @@ label {
     transition: .5s;
 
     &:where(:hover, :focus-visible) {
-        outline: 1px solid var(--card-text-light-clr);
+        outline: 1px solid var(--secondary-clr);
         outline-offset: 3px;
         background: linear-gradient(var(--secondary-clr) 100%, var(--primary-clr) 0%);
         background-clip: text;
@@ -313,7 +329,6 @@ label {
     opacity: 1;
     display: block;
 
-    & #volume {}
 }
 
 #volume-button:where(:focus-visible) #volume {

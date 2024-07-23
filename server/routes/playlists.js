@@ -23,7 +23,7 @@ router.post('/create-playlist', async (req, res) => {
         if (existingPlaylist) {
             return res.status(400).json({ error: 'A playlist with this name already exists!' });
         }
-        
+
         await PlayList.create({
             uuid,
             name,
@@ -105,6 +105,31 @@ router.get('/:user_uuid', async (req, res) => {
     }
 });
 
+router.put('/update-playlist/:playlistName', async (req, res) => {
+    const playListName = req.params.playlistName;
+    const body = req.body;
+    try {
+        const playlist = await PlayList.findOne({ where: { name: playListName } });
+
+        if (!playlist) {
+            return res.status(404).json({ error: "Playlist not found" });
+        }
+
+        await PlayList.update(
+            {
+                name: body.name || playlist.name,
+                description: body.description || playlist.description,
+                img_src: body.img_src || playlist.img_src,
+            },
+            { where: { uuid: playlist.uuid } }
+        );
+
+        return res.status(200).json({ message: "Playlist updated successfully!" });
+    } catch (error) {
+        console.error('Error updating playlist:', error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+})
 router.post('/add-song', async (req, res) => {
     const { songUUID, playlistUUID } = req.body;
     try {

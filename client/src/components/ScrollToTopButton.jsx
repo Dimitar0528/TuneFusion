@@ -30,7 +30,8 @@ export default function ScrollToTopButton() {
     <div className="scrollToTop">
       <button
         onClick={scrollToTop}
-        className={`scrollButton ${isVisible ? "show" : ""}`}>
+        className={`scrollButton ${isVisible ? "show" : ""}`}
+        title="Scroll to top">
         <i className="ri-arrow-up-line"></i>
       </button>
     </div>

@@ -1,6 +1,6 @@
 .music-list {
     width: clamp(310px, 60rem, 100%);
-    max-height: clamp(480px, 36vw, 80vh);
+    max-height: clamp(680px, 36vw, 80vh);
     margin-left: auto;
     background-color: var(--accent-clr-light);
     box-shadow: 0 -5px 10px rgba(0, 0, 0, .1);
@@ -12,8 +12,7 @@
 
 .header {
     padding-inline: .5rem;
-    position: sticky;
-    top: 0;
+
     background-color: var(--primary-clr-dark);
     color: var(--accent-clr-light);
     margin-bottom: 1rem;
@@ -227,6 +226,7 @@ select {
     justify-content: space-between;
     margin-inline: 1rem;
     margin-block: .5rem;
+    gap: 1rem;
 
     & p:not(:empty) {
         font-weight: 600;
