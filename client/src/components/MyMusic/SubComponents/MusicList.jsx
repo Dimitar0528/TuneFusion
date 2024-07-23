@@ -16,6 +16,7 @@ export default function MusicList({
   activePlaylist,
   playlists,
   refreshPlaylist,
+  styles,
 }) {
   const {
     user,
@@ -208,7 +209,7 @@ export default function MusicList({
   };
 
   return (
-    <div ref={musicListRef} className="music-list">
+    <div ref={musicListRef} className="music-list" style={styles}>
       <div className="header">
         <div className="row list">
           {isSongLoading ? (
@@ -382,33 +383,37 @@ export default function MusicList({
                   {formatTime(song.duration)}
                 </td>
                 <td>
-                  <i
-                    tabIndex={0}
-                    className="fa-solid fa-plus"
-                    onClick={() => handleAddSongToPlayList(song)}
-                    onKeyDown={(e) =>
-                      handleKeyPressWhenTabbed(e, () => {
-                        handleAddSongToPlayList(song);
-                      })
-                    }
-                    title="Add to playlist"></i>
-                </td>
-                {activePlaylist && activePlaylist.name !== "Liked Songs" && (
-                  <td>
+                  <div className="action-btns">
                     <i
                       tabIndex={0}
-                      className="fa-solid fa-circle-minus"
-                      onClick={() =>
-                        handleRemoveSongFromPlaylist(song, activePlaylist.name)
-                      }
+                      className="fa-solid fa-plus"
+                      onClick={() => handleAddSongToPlayList(song)}
                       onKeyDown={(e) =>
                         handleKeyPressWhenTabbed(e, () => {
-                          handleRemoveSongFromPlaylist(song);
+                          handleAddSongToPlayList(song);
                         })
                       }
-                      title="Remove from playlist"></i>
-                  </td>
-                )}
+                      title="Add to playlist"></i>
+                    {activePlaylist &&
+                      activePlaylist.name !== "Liked Songs" && (
+                        <i
+                          tabIndex={0}
+                          className="fa-solid fa-delete-left"
+                          onClick={() =>
+                            handleRemoveSongFromPlaylist(
+                              song,
+                              activePlaylist.name
+                            )
+                          }
+                          onKeyDown={(e) =>
+                            handleKeyPressWhenTabbed(e, () => {
+                              handleRemoveSongFromPlaylist(song);
+                            })
+                          }
+                          title="Remove from playlist"></i>
+                      )}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

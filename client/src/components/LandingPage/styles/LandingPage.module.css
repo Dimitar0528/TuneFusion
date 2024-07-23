@@ -366,21 +366,14 @@ nav {
   padding: 5rem 1rem;
 }
 
-.swiper {
-  margin-top: 4rem;
-  width: 100%;
-}
-
-.swiper-slide {
-  max-width: 100%;
-}
-
 .client__card {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   padding: 1.5rem;
-  max-width: 100%;
+  max-width: 90%;
+  margin-inline: auto;
   background-image: var(--gradient-1);
   border-radius: 1rem;
+  cursor: pointer;
 }
 
 .client__ratings {

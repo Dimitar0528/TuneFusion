@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, lazy } from "react";
 import { useSearchParams } from "react-router-dom";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./styles/SearchSong.module.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-import MusicList from "../../MyMusic/SubComponents/MusicList";
+
+const MusicList = lazy(() => import("../../MyMusic/SubComponents/MusicList"));
 
 export default function SearchSong() {
   const {
@@ -17,22 +20,29 @@ export default function SearchSong() {
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("q");
   const [searchSongs, setSearchSongs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (searchTerm) {
       let filteredSongs;
-      searchTerm === "All-Songs"
-        ? (filteredSongs = songs)
-        : (filteredSongs = songs.filter(
-            (song) =>
-              song.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              song.name.toLowerCase().includes(searchTerm?.toLowerCase())
-          ));
+      if (searchTerm === "All-Songs") {
+        filteredSongs = songs;
+      } else {
+        filteredSongs = songs.filter(
+          (song) =>
+            song.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            song.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
       setSearchSongs(filteredSongs);
       setFilteredSongs(filteredSongs);
       localStorage.removeItem("activePlaylist");
       setActivePlaylist(null);
+      setLoading(false);
+    } else {
+      setLoading(false);
     }
+
     return () => {
       setFilteredSongs(songs.slice(0, 20));
       setCurrentPage(0);
@@ -42,18 +52,28 @@ export default function SearchSong() {
   return (
     <div className={styles.searchContainer}>
       <h1>Search Results for &quot;{searchTerm}&quot;</h1>
-      {searchSongs.length === 0 ? (
-        <p>No results found.</p>
-      ) : (
-        <MusicList
-          songs={searchSongs}
-          title={`Search results for ${searchTerm}:  [Total Songs found: ${searchSongs.length} ]`}
-          musicListRef={musicListRef}
-          playlists={playlists}
-          refreshPlaylist={refreshPlaylistHandler}
-          styles={{ width: "95%", marginInline: "auto", maxHeight: "100vh" }}
-        />
-      )}
+      {
+        <Suspense
+          fallback={
+            <div
+              style={{
+                width: "95%",
+                marginInline: "auto",
+                maxHeight: "100vh",
+              }}>
+              <Skeleton height={800} count={1} />
+            </div>
+          }>
+          <MusicList
+            songs={searchSongs}
+            title={`Search results for ${searchTerm}:  [Total Songs found: ${searchSongs.length} ]`}
+            musicListRef={musicListRef}
+            playlists={playlists}
+            refreshPlaylist={refreshPlaylistHandler}
+            styles={{ width: "95%", marginInline: "auto", maxHeight: "100vh" }}
+          />
+        </Suspense>
+      }
     </div>
   );
 }

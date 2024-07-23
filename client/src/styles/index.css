@@ -105,3 +105,11 @@ body {
 .scrollButton:hover {
     background-color: var(--card-text-light-clr);
 }
+
+.action-btns {
+    transition: .25s;
+    display: flex;
+    gap: 1rem;
+    padding: .25rem;
+    width: fit-content;
+}

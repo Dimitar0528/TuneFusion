@@ -173,7 +173,7 @@ textarea.input {
     opacity: 0;
     transition: 0.3s;
     height: 5px;
-    background-color: var(--primary-clr);
+    background-color: var(--primary-clr-light-dark);
     top: 50%;
     transform: translateY(-50%);
 }

@@ -60,8 +60,12 @@ export default function LandingPage({ userUUID }) {
     });
 
     new Swiper(".swiper", {
-      slidesPerView: "auto",
+      slidesPerView: 1,
       spaceBetween: 20,
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
     });
   }, []);
 
@@ -247,6 +251,8 @@ export default function LandingPage({ userUUID }) {
               occupation="Event Planner"
             />
           </div>
+          <div className="swiper-button-next"></div>
+          <div className="swiper-button-prev"></div>
         </div>
       </section>
     </div>

@@ -7,7 +7,7 @@ export default function SongDetails() {
     <>
       <div className="img-area text-center">
         {islyricsLoading ? (
-          <Skeleton borderRadius={'1rem'}  height={405} />
+          <Skeleton borderRadius={"1rem"} height={405} />
         ) : lyrics ? (
           <div className="lyrics">{lyrics ? <pre>{lyrics}</pre> : null}</div>
         ) : (
