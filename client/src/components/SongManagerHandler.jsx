@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styles from "../styles/SongManagerHandler.module.css"; // Import CSS module
+import styles from "../styles/SongManagerHandler.module.css";
 import { useParams } from "react-router-dom";
 import showToast from "../utils/showToast";
 
@@ -97,7 +97,7 @@ export default function SongManagerHandler({ action }) {
   return (
     <>
       <h1 className={styles.h1}>
-        {action === "updatesong" ? "Update song" : "Add a new song"}
+        {action === "updatesong" ? "Edit song" : "Add a new song"}
       </h1>
       <form className={styles.songForm} onSubmit={handleSubmit}>
         <div className={styles.formGroup}>

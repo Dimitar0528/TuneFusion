@@ -7,8 +7,8 @@ export default function ClientCard({
   name,
   occupation,
 }) {
-  const maxStars = 5; // Total number of stars
-  const activeStars = Math.min(rating, maxStars); // Number of active stars (limited to maxStars)
+  const maxStars = 5;
+  const activeStars = Math.min(rating, maxStars);
 
   return (
     <div className="swiper-slide">

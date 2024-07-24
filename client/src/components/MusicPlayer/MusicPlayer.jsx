@@ -36,7 +36,7 @@ export default function MusicPlayer({ userRole, userUUID }) {
         {userRole === "admin" && (
           <i
             className="fa-solid fa-pen-to-square"
-            title="Update Song"
+            title="Edit Song"
             onClick={() => {
               navigate(`/updatesong/${currentSong.name}`);
             }}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styles from "./styles/EditAccount.module.css"; // Import CSS module
+import styles from "./styles/EditAccount.module.css";
 import { useNavigate } from "react-router-dom";
 import showToast from "../../../utils/showToast";
 

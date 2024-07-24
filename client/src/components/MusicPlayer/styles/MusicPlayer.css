@@ -86,7 +86,11 @@ label {
         rotate: 0deg;
     }
 
-    @media (max-width: 850px) {
+    .name {
+        width: clamp(100px, 20vw, 20rem);
+    }
+
+    @media (width < 850px) {
         display: grid;
         grid-template-columns: 1fr;
         max-height: 175px;
@@ -114,9 +118,10 @@ label {
 
         .name,
         .artist {
-            max-width: 80vw;
+            width: 80vw;
             margin-inline: auto;
         }
+
     }
 }
 
@@ -144,12 +149,59 @@ label {
     transition-behavior: allow-discrete;
 }
 
+
 .top-section {
     & h2 {
         margin-inline: auto;
         color: black;
     }
 
+}
+
+@keyframes slide {
+    0% {
+        transform: translateX(10%);
+    }
+
+    50% {
+        transform: translateX(-55%);
+    }
+
+    100% {
+        transform: translateX(10%);
+    }
+}
+
+.name {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    margin-inline: auto;
+}
+
+.name::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.name.animate span {
+    display: inline-block;
+    animation: slide 18s linear infinite;
+}
+
+.artist {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: clamp(100px, 19vw, 20rem);
+    margin-inline: auto;
 }
 
 .top-section,
@@ -184,26 +236,7 @@ label {
 }
 
 .song-details {
-    color: var(--card-text-light-clr);
     margin-block: .5rem;
-}
-
-.name {
-    font-size: 1.2rem;
-    font-weight: bold;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: clamp(100px, 20vw, 20rem);
-    margin-inline: auto;
-}
-
-.artist {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: clamp(100px, 15vw, 20rem);
-    margin-inline: auto;
 }
 
 .progress-area {

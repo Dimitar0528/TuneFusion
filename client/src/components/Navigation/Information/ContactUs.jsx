@@ -35,7 +35,6 @@ export default function ContactUs() {
       input.addEventListener("blur", blurFunc);
     });
 
-    // Cleanup function to remove event listeners
     return () => {
       inputs.forEach((input) => {
         input.removeEventListener("focus", focusFunc);
