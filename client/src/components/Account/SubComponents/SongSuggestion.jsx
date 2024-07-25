@@ -6,8 +6,9 @@ import "../styles/table.css";
 import { formatTime } from "../../../utils/formatTime";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-
+import { useCreateSong } from "../../../hooks/useSongs";
 export default function SongSuggestion() {
+  const createSong = useCreateSong();
   const [artist, setArtist] = useState("");
   const [songs, setSongs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,26 +39,8 @@ export default function SongSuggestion() {
       setIsLoading(false);
     }
   };
-
   const handleAddToDB = async (song) => {
-    try {
-      const response = await fetch("http://localhost:3000/api/songs/addsong", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(song),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        showToast(`Error: ${errorData.error}`, "error");
-      } else {
-        const responseData = await response.json();
-        showToast(responseData.message, "success", 1500, true);
-      }
-    } catch (error) {
-      showToast(`Error: ${error.message}`, "error");
-    }
+    await createSong(song);
   };
 
   return (

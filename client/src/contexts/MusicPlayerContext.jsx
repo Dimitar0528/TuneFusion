@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useRef } from "react";
 import showToast from "../utils/showToast";
 import extractUUIDPrefix from "../utils/extractUUIDPrefix";
 
-import useFetchSongs from "../hooks/fetch-get-hooks/useFetchSongs";
+import { useGetAllSongs } from "../hooks/useSongs";
 import useFetchUserToken from "../hooks/fetch-get-hooks/useFetchUser";
 import useFetchUserPlaylists from "../hooks/fetch-get-hooks/useFetchUserPlaylists";
 import useLocalStorage from "../hooks/useLocalStorage";
@@ -31,7 +31,7 @@ export function MusicPlayerProvider({ children }) {
     () => JSON.parse(localStorage.getItem("currentSongUUID")) || ""
   );
 
-  const { songs, loading: isSongLoading } = useFetchSongs();
+  const [songs, isSongLoading] = useGetAllSongs();
 
   if (currentSongUUID === "" && songs.length > 0) {
     setCurrentSongUUID(extractUUIDPrefix(songs[0].uuid));

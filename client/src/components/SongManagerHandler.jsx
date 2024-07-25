@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styles from "../styles/SongManagerHandler.module.css";
 import { useParams } from "react-router-dom";
 import showToast from "../utils/showToast";
-
+import { useCreateSong, useGetSong, useUpdateSong } from "../hooks/useSongs";
 export default function SongManagerHandler({ action }) {
   const { name } = useParams();
   const [formData, setFormData] = useState({
@@ -13,13 +13,9 @@ export default function SongManagerHandler({ action }) {
     duration: "",
   });
   const [errors, setErrors] = useState({});
-
+  const [song] = useGetSong(name);
   useEffect(() => {
-    async function getSong() {
-      const response = await fetch(`http://localhost:3000/api/songs/${name}`, {
-        method: "GET",
-      });
-      const song = await response.json();
+    if (action === "updatesong" && song) {
       setFormData({
         name: song.name || "",
         artist: song.artist || "",
@@ -28,10 +24,7 @@ export default function SongManagerHandler({ action }) {
         duration: song.duration || "",
       });
     }
-    if (action === "updatesong") {
-      getSong();
-    }
-  }, [action, name]);
+  }, [action, song]);
 
   const validateForm = () => {
     const { name, artist, img_src, audio_src, duration } = formData;
@@ -57,40 +50,16 @@ export default function SongManagerHandler({ action }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const updateSong = useUpdateSong();
+    const createSong = useCreateSong();
     if (validateForm()) {
-      try {
-        const url =
-          action === "updatesong"
-            ? `http://localhost:3000/api/songs/updateSong/${name}`
-            : "http://localhost:3000/api/songs/addsong";
-        const method = action === "updatesong" ? "PUT" : "POST";
-
-        await fetch(url, {
-          method,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-
-        showToast(
-          `Song ${action === "updatesong" ? "updated" : "added"} successfully!`,
-          "success",
-          1500,
-          true
-        );
-        setErrors({});
-      } catch (error) {
-        console.error(
-          `Error ${action === "updatesong" ? "updating" : "adding"} song:`,
-          error
-        );
-        showToast(
-          `Failed to ${action === "updatesong" ? "update" : "add"} song`,
-          "error"
-        );
+      if (action === "updatesong") {
+        await updateSong(name, formData);
+      } else {
+        await createSong(formData);
       }
+
+      setErrors({});
     }
   };
 
