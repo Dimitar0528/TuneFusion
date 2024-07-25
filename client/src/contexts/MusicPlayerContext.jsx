@@ -2,13 +2,12 @@ import { createContext, useContext, useState, useRef } from "react";
 import showToast from "../utils/showToast";
 import extractUUIDPrefix from "../utils/extractUUIDPrefix";
 
-import { useGetAllSongs } from "../hooks/useSongs";
+import { useGetAllSongs, useGetSongLyrics } from "../hooks/CRUD-hooks/useSongs";
 import useFetchUserToken from "../hooks/fetch-get-hooks/useFetchUser";
 import useFetchUserPlaylists from "../hooks/fetch-get-hooks/useFetchUserPlaylists";
 import useLocalStorage from "../hooks/useLocalStorage";
 import useStoredActivePlaylist from "../hooks/useStoredActivePlaylist";
 import useUpdateActivePlaylist from "../hooks/useUpdateActivePlaylist";
-import useFetchSongLyrics from "../hooks/fetch-get-hooks/useFetchSongLyrics";
 
 const MusicPlayerContext = createContext();
 
@@ -63,12 +62,8 @@ export function MusicPlayerProvider({ children }) {
     (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
   );
 
-  const {
-    lyrics,
-    loading: islyricsLoading,
-    fetchLyrics,
-    setLyrics,
-  } = useFetchSongLyrics(currentSong);
+  const [lyrics, islyricsLoading, fetchLyrics, clearLyrics] =
+    useGetSongLyrics(currentSong);
 
   useStoredActivePlaylist(playlists, setActivePlaylist);
 
@@ -95,12 +90,12 @@ export function MusicPlayerProvider({ children }) {
       );
       setCurrentSongUUID(extractUUIDPrefix(filteredSongs[randomIndex].uuid));
       setIsPlaying(true);
-      setLyrics("");
+      clearLyrics();
     } else {
       const nextIndex = (currentIndex + 1) % filteredSongs.length;
       setCurrentSongUUID(extractUUIDPrefix(filteredSongs[nextIndex].uuid));
       setIsPlaying(true);
-      setLyrics("");
+      clearLyrics();
     }
     setCurrentTime(0);
   };
@@ -123,7 +118,7 @@ export function MusicPlayerProvider({ children }) {
       (currentIndex - 1 + filteredSongs.length) % filteredSongs.length;
     setCurrentSongUUID(extractUUIDPrefix(filteredSongs[prevIndex].uuid));
     setIsPlaying(true);
-    setLyrics("");
+    clearLyrics();
     setCurrentTime(0);
   };
 
@@ -183,7 +178,7 @@ export function MusicPlayerProvider({ children }) {
     isPlaying,
     setIsPlaying,
     lyrics,
-    setLyrics,
+    clearLyrics,
     shuffle,
     islyricsLoading,
     isPlaylistLoading,

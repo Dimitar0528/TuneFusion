@@ -5,7 +5,8 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { Link } from "react-router-dom";
 
 export default function SongDetails() {
-  let { islyricsLoading, lyrics, currentSong } = useMusicPlayer();
+  const { islyricsLoading, lyrics, currentSong, isCollapsed } =
+    useMusicPlayer();
   const nameRef = useRef();
   const checkIfTextOverflowing = () => {
     const nameElement = nameRef.current;
@@ -19,7 +20,7 @@ export default function SongDetails() {
     checkIfTextOverflowing();
     window.addEventListener("resize", checkIfTextOverflowing);
     return () => window.removeEventListener("resize", checkIfTextOverflowing);
-  }, [currentSong?.name]);
+  }, [currentSong?.name, isCollapsed]);
 
   return (
     <>

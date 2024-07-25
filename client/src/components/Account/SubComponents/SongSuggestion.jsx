@@ -6,41 +6,36 @@ import "../styles/table.css";
 import { formatTime } from "../../../utils/formatTime";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useCreateSong } from "../../../hooks/useSongs";
+import {
+  useCreateSong,
+  useGetSongSuggestions,
+} from "../../../hooks/CRUD-hooks/useSongs";
+
 export default function SongSuggestion() {
   const createSong = useCreateSong();
-  const [artist, setArtist] = useState("");
-  const [songs, setSongs] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [query, setQuery] = useState("");
+  const [songs, loading, fetchSuggestedSongs] = useGetSongSuggestions();
   const songsPerPage = 10;
 
   const handleInputChange = (e) => {
-    setArtist(e.target.value);
+    setQuery(e.target.value);
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setSongs([]);
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/songs/search/${artist}`
-      );
-      if (!response.ok) {
-        const errorData = await response.json();
-        showToast(`Error: ${errorData.error}`, "error");
-      } else {
-        const data = await response.json();
-        setSongs(data);
-      }
-    } catch (error) {
-      showToast(`Error: ${error.message}`, "error");
-    } finally {
-      setIsLoading(false);
+    if (query.trim() === "") {
+      showToast("Query cannot be empty", "error");
+      return;
     }
+    fetchSuggestedSongs(query);
   };
+
   const handleAddToDB = async (song) => {
-    await createSong(song);
+    try {
+      await createSong(song);
+    } catch (error) {
+      showToast(`Error adding song: ${error.message}`, "error");
+    }
   };
 
   return (
@@ -64,16 +59,16 @@ export default function SongSuggestion() {
         <input
           type="search"
           className={styles["artist-input"]}
-          value={artist}
+          value={query}
           onChange={handleInputChange}
           placeholder="Enter artist name or genre"
           required
         />
-        <button className="addbtn btn6" type="submit" disabled={isLoading}>
-          {isLoading ? "Searching..." : "Search"}
+        <button className="addbtn btn6" type="submit" disabled={loading}>
+          {loading ? "Searching..." : "Search"}
         </button>
       </form>
-      {isLoading ? (
+      {loading ? (
         <div style={{ marginTop: "2rem" }}>
           <table className="rwd-table">
             <thead>

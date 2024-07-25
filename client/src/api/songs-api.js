@@ -14,12 +14,20 @@ const deleteSong = (songId) => request.del(`${BASE_URL}/deleteSong/${songId}`)
 
 const updateSong = (songName, data) => request.put(`${BASE_URL}/updateSong/${songName}`, data)
 
+const getSongLyrics = (songArtist, songName) => request.get(`${BASE_URL}/${songArtist}/${songName}`)
+
+const getSongSuggestions = (query) => request.get(`${BASE_URL}/search/${query}`);
+
+const getArtistDescription = (artistName) => request.get(`${BASE_URL}/artist/${artistName}`)
 const songsAPI = {
     getSong,
     getAllSongs,
     createSong,
     deleteSong,
-    updateSong
+    updateSong,
+    getSongLyrics,
+    getSongSuggestions,
+    getArtistDescription
 }
 
 export default songsAPI;

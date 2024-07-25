@@ -3,8 +3,7 @@ import TableLayout from "../TableLayout";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 import { formatTime } from "../../../utils/formatTime";
-import { useDeleteSong } from "../../../hooks/useSongs";
-
+import { useDeleteSong } from "../../../hooks/CRUD-hooks/useSongs";
 export default function ViewAllSongs() {
   const deleteSong = useDeleteSong();
 

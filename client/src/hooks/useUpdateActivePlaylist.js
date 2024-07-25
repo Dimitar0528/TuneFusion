@@ -13,7 +13,7 @@ const useActivePlaylistEffect = (activePlaylist, songs, setFilteredSongs) => {
         } else {
             setFilteredSongs(songs.slice(0, 20));
         }
-    }, [activePlaylist, songs, setFilteredSongs,]);
+    }, [activePlaylist, songs, setFilteredSongs]);
 };
 
 export default useActivePlaylistEffect;

@@ -23,7 +23,7 @@ export default function MusicList({
     currentSongUUID,
     setCurrentSongUUID,
     isSongLoading,
-    setLyrics,
+    clearLyrics,
     setIsPlaying,
     musicListRef,
     isPlaying,
@@ -66,7 +66,7 @@ export default function MusicList({
   const handleMusicListSong = (song) => {
     handleCurrentPlayingSong(extractUUIDPrefix(song.uuid));
     setIsPlaying(true);
-    setLyrics("");
+    clearLyrics();
     extractUUIDPrefix(song.uuid) === currentSongUUID &&
       isPlaying &&
       setIsPlaying(false);

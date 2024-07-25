@@ -3,38 +3,17 @@ import { Link, useParams } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./styles/ArtistDescription.module.css";
-
+import { useGetArtistDescription } from "../../hooks/CRUD-hooks/useSongs";
 export default function ArtistDescription() {
   const { artistName } = useParams();
-  const [isLoading, setIsLoading] = useState(false);
-  const [artist, setArtist] = useState([]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    async function getArtistDescription() {
-      setIsLoading(true);
-      const response = await fetch(
-        `http://localhost:3000/api/songs/artist/${artistName}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const data = await response.json();
-      setArtist(data);
-
-      setIsLoading(false);
-    }
-    getArtistDescription();
-  }, [artistName]);
-
+  const [artist, isArtistLoading] = useGetArtistDescription(artistName);
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>
-        {isLoading ? <Skeleton width={200} /> : `About ${artistName}`}
+        {isArtistLoading ? <Skeleton width={200} /> : `About ${artistName}`}
       </h1>
       <div className={styles["img-area"]}>
-        {isLoading ? (
+        {isArtistLoading ? (
           <Skeleton height={385} width={930} />
         ) : (
           artist?.thumbnails?.length > 0 && (
@@ -47,7 +26,7 @@ export default function ArtistDescription() {
         )}
       </div>
       <div className={styles.description}>
-        {isLoading ? (
+        {isArtistLoading ? (
           <Skeleton count={4} />
         ) : (
           <p className={styles.description}>{artist.description}</p>
@@ -56,7 +35,7 @@ export default function ArtistDescription() {
 
       <h2>Albums</h2>
       <div className={styles.albumList}>
-        {isLoading
+        {isArtistLoading
           ? Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className={styles.album}>
                 <Skeleton circle={true} height={40} width={40} />
@@ -84,7 +63,7 @@ export default function ArtistDescription() {
 
       <h2>Singles</h2>
       <div className={styles.singleList}>
-        {isLoading
+        {isArtistLoading
           ? Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className={styles.single}>
                 <Skeleton circle={true} height={40} width={40} />
@@ -112,7 +91,7 @@ export default function ArtistDescription() {
 
       <h2>Suggested Artists</h2>
       <div className={styles.suggestedArtists}>
-        {isLoading
+        {isArtistLoading
           ? Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className={styles["suggested-artist"]}>
                 <Skeleton circle={true} height={40} width={40} />
