@@ -52,7 +52,7 @@ router.put('/editAccount/:userid', async (req, res) => {
 
         const existingUserWithname = await User.findOne({ where: { name } });
         if (existingUserWithname && existingUserWithname.uuid !== user.uuid) {
-            return res.status(401).json({ error: 'Username is already taken! Please enter a new one!' });
+            return res.status(409).json({ error: 'Username is already taken! Please enter a new one!' });
         }
 
         const adminUser = await User.findOne({ where: { role: 'admin' } });
@@ -114,25 +114,24 @@ router.delete('/deleteUser/:userUUID', async (req, res) => {
             where: { created_by: userUUID },
         });
 
-        if (hasPlaylists.length >= 0) {
-            const playlistUUIDs = hasPlaylists.map(playlist => playlist.dataValues.uuid);
+        const playlistUUIDs = hasPlaylists.map(playlist => playlist.dataValues.uuid);
 
-            await PlayList.destroy({
-                where: {
-                    uuid: playlistUUIDs,
-                },
-            });
-            const hasPlayListSongs = await PlaylistSong.findAll({
-                where: { playlist_uuid: playlistUUIDs }
-            })
-            hasPlayListSongs && (await PlaylistSong.destroy({
-                where: { playlist_uuid: playlistUUIDs },
-            }));
-            await User.destroy({
-                where: { uuid: userUUID },
-            });
-            res.status(200).json({ message: 'Account deleted successfully.' });
-        }
+        await PlayList.destroy({
+            where: {
+                uuid: playlistUUIDs,
+            },
+        });
+        const hasPlayListSongs = await PlaylistSong.findAll({
+            where: { playlist_uuid: playlistUUIDs }
+        })
+        hasPlayListSongs && (await PlaylistSong.destroy({
+            where: { playlist_uuid: playlistUUIDs },
+        }));
+        await User.destroy({
+            where: { uuid: userUUID },
+        });
+        res.status(200).json({ message: 'Account deleted successfully.' });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'An error occurred while deleting the user' });

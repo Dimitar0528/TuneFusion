@@ -50,7 +50,7 @@ User.init(
     },
   },
   {
-    sequelize: sequelizeInstance, // Pass the initialized sequelize connection
+    sequelize: sequelizeInstance,
     modelName: "User",
     tableName: "users",
   }

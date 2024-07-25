@@ -1,23 +1,51 @@
-/* ArtistDescription.module.css */
 .container {
+    width: max(340px, 90vw);
+    margin: 2rem auto;
     padding: 20px;
+    color: #fff;
+    background-color: #121212;
+    font-family: 'Roboto', sans-serif;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .header {
-    font-size: 24px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #1db954;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.img-area {
+    display: flex;
+    justify-content: center;
     margin-bottom: 20px;
 }
 
 .image {
-    width: 200px;
-    height: auto;
-    border-radius: 10px;
+    max-width: 100%;
+    width: 80%;
     margin-bottom: 20px;
 }
 
 .description {
-    font-size: 16px;
+    font-size: 1.1rem;
     margin-bottom: 20px;
+    text-align: center;
+    line-height: 1.5;
+    color: #ccc;
+    word-wrap:break-word;
+}
+
+.albumList,
+.singleList,
+.suggestedArtists {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
+    gap: 1rem;
+    margin-bottom: 40px;
 }
 
 .album,
@@ -25,18 +53,62 @@
 .suggested-artist {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    background-color: #181818;
+    padding: 10px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.album:hover,
+.single:hover,
+.suggested-artist:hover {
+    background-color: #282828;
 }
 
 .album img,
 .single img,
 .suggested-artist img {
-    margin-right: 10px;
-    border-radius: 5px;
+    border-radius: 50%;
+    margin-right: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.album div,
+.single div,
+.suggested-artist div {
+    display: flex;
+    flex-direction: column;
 }
 
 .album p,
 .single p,
 .suggested-artist p {
     margin: 0;
+    color: #fff;
+}
+
+.album p:first-child,
+.single p:first-child,
+.suggested-artist p:first-child {
+    font-weight: bold;
+    color: #1db954;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.album p:last-child,
+.single p:last-child,
+.suggested-artist p:last-child {
+    color: #b3b3b3;
+    font-size: 0.9rem;
+}
+
+.suggested-artist p a {
+    color: #1db954;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.suggested-artist p a:hover {
+    color: #1ed760;
+    text-decoration: underline;
 }

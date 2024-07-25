@@ -15,13 +15,13 @@ export default function SearchSong() {
     playlists,
     setCurrentPage,
     setActivePlaylist,
+    activePlaylist,
     refreshPlaylistHandler,
   } = useMusicPlayer();
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("q");
   const [searchSongs, setSearchSongs] = useState([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     if (searchTerm) {
       let filteredSongs;
@@ -36,15 +36,15 @@ export default function SearchSong() {
       }
       setSearchSongs(filteredSongs);
       setFilteredSongs(filteredSongs);
-      localStorage.removeItem("activePlaylist");
-      setActivePlaylist(null);
       setLoading(false);
     } else {
       setLoading(false);
     }
 
     return () => {
-      setFilteredSongs(songs.slice(0, 20));
+      activePlaylist
+        ? setFilteredSongs(activePlaylist.Songs)
+        : setFilteredSongs(songs.slice(0, 20));
       setCurrentPage(0);
     };
   }, [searchTerm, songs, setFilteredSongs, setActivePlaylist, setCurrentPage]);

@@ -1,8 +1,8 @@
 import express from 'express';
 import Genius from 'genius-lyrics';
-import { Song, PlaylistSong } from '../db/models/index.js'
+import { Song, PlaylistSong, } from '../db/models/index.js'
 import gis from 'async-g-i-s';
-import { searchMusics, getSuggestions, getArtist, searchArtists } from 'node-youtube-music';
+import { searchMusics, getSuggestions, getArtist, searchArtists, listMusicsFromAlbum, searchAlbums } from 'node-youtube-music';
 
 const router = express.Router();
 const Client = new Genius.Client();
@@ -141,12 +141,31 @@ router.get('/search/:query', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+function trimDescription(description) {
+    const attributionText = 'From Wikipedia';
+    const index = description?.indexOf(attributionText);
 
+    if (index !== -1) {
+        return description?.substring(0, index).trim();
+    }
+
+    return description;
+}
 router.get('/artist/:artistName', async (req, res) => {
-    const artistName = req.params.artistName
-    const artists = await searchArtists(artistName);
-    const artist = await getArtist(artists[0].artistId);
-    res.status(200).json(artist);
+    try {
+        const artistName = req.params.artistName
+        const artists = await searchArtists(artistName);
+        const artist = await getArtist(artists[0].artistId);
+        const trimmedDescription = trimDescription(artist.description);
+        const newArtist = {
+            ...artist,
+            description: trimmedDescription,
+        }
+        res.status(200).json(newArtist);
+    } catch (error) {
+        console.error('Error fetching artist data:', error);
+        res.status(500).json({ message: 'An error occurred while fetching artist data' });
+    }
 })
 
 router.get('/:artist/:song', async (req, res) => {

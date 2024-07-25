@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { Link } from "react-router-dom";
 
 export default function SongDetails() {
   let { islyricsLoading, lyrics, currentSong } = useMusicPlayer();
@@ -40,7 +41,11 @@ export default function SongDetails() {
         <p className="name" ref={nameRef}>
           <span>{currentSong?.name}</span>
         </p>
-        <p className="artist">{currentSong?.artist}</p>
+        <Link
+          to={`/artist/${currentSong?.artist}/description`}
+          className="artist | song-artist">
+          {currentSong?.artist}
+        </Link>
       </div>
     </>
   );

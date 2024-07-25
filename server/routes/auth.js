@@ -14,7 +14,7 @@ router.post('/register', async (req, res) => {
         const existingUser = await User.findOne({ where: { name } });
 
         if (existingUser) {
-            return res.status(400).json({ error: 'name already taken!' });
+            return res.status(409).json({ error: 'Username already taken!' });
         }
 
         const adminUser = await User.findOne({ where: { role: 'admin' } });

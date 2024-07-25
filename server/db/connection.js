@@ -20,13 +20,13 @@ const closeDatabaseConnection = async () => {
 process.on('exit', async () => {
     console.log('Received exit signal. Closing database connection...');
     await closeDatabaseConnection();
-    process.exit(0); // Exit the application
+    process.exit(0);
 });
 
 process.on('SIGINT', async () => {
     console.log('Received SIGINT signal. Closing database connection...');
     await closeDatabaseConnection();
-    process.exit(0); // Exit the application
+    process.exit(0);
 });
 
 try {

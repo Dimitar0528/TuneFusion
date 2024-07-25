@@ -7,7 +7,6 @@ const useActivePlaylistEffect = (activePlaylist, songs, setFilteredSongs) => {
                 "activePlaylist",
                 JSON.stringify({
                     name: activePlaylist?.name,
-                    activeIndex: activePlaylist?.activeIndex,
                 })
             );
             setFilteredSongs(activePlaylist.Songs);
