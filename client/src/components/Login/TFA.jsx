@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styles from "./styles/TFA.module.css";
+
 export default function TFAVerification() {
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const email = localStorage.getItem("email");
+  const otpSent = useRef(false); // Ref to keep track of whether OTP has been sent
 
   useEffect(() => {
     const controller = new AbortController();
@@ -24,8 +26,9 @@ export default function TFAVerification() {
           localStorage.setItem("otp", data.otp);
           console.log(data.otp);
           alert(
-            "A two-factor authentication (2FA) code has been sent to the provided email address! Please enter it in the input below and then click Verify my account buton in order to complete the verification!"
+            "A two-factor authentication (2FA) code has been sent to the provided email address! Please enter it in the input below and then click Verify my account button in order to complete the verification!"
           );
+          otpSent.current = true; // Set the flag to true after OTP is sent
         }
       } catch (error) {
         if (error.name !== "AbortError") {
@@ -34,7 +37,9 @@ export default function TFAVerification() {
       }
     };
 
-    sendOTP();
+    if (!otpSent.current) {
+      sendOTP();
+    }
 
     return () => {
       controller.abort();

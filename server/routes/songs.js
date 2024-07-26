@@ -34,7 +34,7 @@ router.get('/:name', async (req, res) => {
         return res.status(200).json(song);
     } catch (error) {
         console.error('Error fetching song:', error);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: "An error occurred while fetching song" });
     }
 });
 
@@ -59,7 +59,7 @@ router.post('/addsong', async (req, res) => {
             duration: duration
         });
 
-        res.status(200).json({ message: "Song added to database!" });
+        res.status(200).json({ message: "Song added to database successfully!" });
     } catch (error) {
         console.error('Error creating song:', error);
         res.status(500).json({ error: 'Internal Server Error' });
