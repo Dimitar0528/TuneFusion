@@ -1,14 +1,14 @@
-async function requester(method, url, data) {
+async function requester(method, url, data, credentials) {
     const options = {}
-    if (method !== "GET") {
-        options.method = method
-    }
+    if (method !== "GET") options.method = method
     if (data) {
         options.headers = {
             'Content-Type': 'application/json'
         }
         options.body = JSON.stringify(data)
     }
+    if (credentials) options.credentials = credentials
+
     const response = await fetch(url, options)
     const result = await response.json();
 

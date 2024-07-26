@@ -1,19 +1,26 @@
 import { useState } from "react";
 import styles from "./styles/SignUp.module.css";
-import showToast from "../../utils/showToast";
+import { useForm } from "../../hooks/useForm";
+import {
+  validateSignIn,
+  validateSignUp,
+  useRegisterUser,
+  useLoginUser,
+} from "../../hooks/CRUD-hooks/useAuth";
+const signUpInitialValues = {
+  name: "",
+  email: "",
+  password: "",
+};
+const signInInitialValues = {
+  name: "",
+  password: "",
+};
 
 export default function Login() {
+  const registerUser = useRegisterUser();
+  const loginUser = useLoginUser();
   const [signUpMode, setSignUpMode] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [signUpFormData, setSignUpFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [signInFormData, setSignInFormData] = useState({
-    name: "",
-    password: "",
-  });
 
   const handleSignUpClick = () => {
     setSignUpMode(true);
@@ -23,106 +30,27 @@ export default function Login() {
     setSignUpMode(false);
   };
 
-  const handleSignUpInputChange = (e) => {
-    const { name, value } = e.target;
-    setSignUpFormData({ ...signUpFormData, [name]: value });
+  const handleSignUpSubmit = async (formData) => {
+    await registerUser(formData);
   };
 
-  const handleSignInInputChange = (e) => {
-    const { name, value } = e.target;
-    setSignInFormData({ ...signInFormData, [name]: value });
+  const handleSignInSubmit = async (formData) => {
+    await loginUser(formData);
   };
 
-  const validateSignUp = () => {
-    const newErrors = {};
-    const { name, email, password } = signUpFormData;
+  const {
+    values: signUpFormData,
+    errors: signUpErrors,
+    changeHandler: signUpChangeHandler,
+    submitHandler: signUpSubmitHandler,
+  } = useForm(signUpInitialValues, handleSignUpSubmit, validateSignUp);
 
-    if (!name) newErrors.name = "Name is required.";
-    if (!email) newErrors.email = "Email is required.";
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Email is invalid.";
-    if (!password) newErrors.password = "Password is required.";
-    else if (password.length < 8)
-      newErrors.password = "Password must be at least 8 characters.";
-    else if (!/[A-Z]/.test(password))
-      newErrors.password =
-        "Password must contain at least 1 capitalized letter";
-    else if (!/[0-9]/.test(password))
-      newErrors.password = "Password must contain at least 1 number";
-
-    return newErrors;
-  };
-
-  const validateSignIn = () => {
-    const newErrors = {};
-    const { name, password } = signInFormData;
-
-    if (!name) newErrors.name = "Name is required.";
-    if (!password) newErrors.password = "Password is required.";
-
-    return newErrors;
-  };
-
-  const handleSignUpSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validateSignUp();
-    if (Object.keys(validationErrors).length === 0) {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/api/auth/register`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(signUpFormData),
-          }
-        );
-
-        if (!response.ok) {
-          const message = await response.json();
-          showToast(`Error: ${message.error}`, "error");
-          return;
-        }
-        localStorage.setItem("email", signUpFormData.email);
-        location.href = "/sign-in/otp";
-        // location.href = "/sign-in"
-      } catch (error) {
-        showToast(`Error: ${error.message}`, "error");
-      }
-    } else {
-      setErrors(validationErrors);
-    }
-  };
-
-  const handleSignInSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validateSignIn();
-    if (Object.keys(validationErrors).length === 0) {
-      try {
-        const response = await fetch(`http://localhost:3000/api/auth/login`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(signInFormData),
-        });
-
-        if (!response.ok) {
-          const message = await response.json();
-          showToast(`Error: ${message.error}`, "error");
-          return;
-        }
-        const data = await response.json();
-        const { user_uuid } = data;
-        location.href = `/musicplayer/${user_uuid.slice(0, 6)}`;
-      } catch (error) {
-        showToast(`Error: ${error.message}`, "error");
-      }
-    } else {
-      setErrors(validationErrors);
-    }
-  };
+  const {
+    values: signInFormData,
+    errors: signInErrors,
+    changeHandler: signInChangeHandler,
+    submitHandler: signInSubmitHandler,
+  } = useForm(signInInitialValues, handleSignInSubmit, validateSignIn);
 
   return (
     <div
@@ -133,7 +61,7 @@ export default function Login() {
         <div className={styles["signin-signup"]}>
           <form
             className={styles["sign-in-form"]}
-            onSubmit={handleSignInSubmit}>
+            onSubmit={signInSubmitHandler}>
             <h2 className={styles.title}>Sign in</h2>
             <label className={styles.label} htmlFor="username">
               Username
@@ -146,10 +74,12 @@ export default function Login() {
                 placeholder="John Doe"
                 name="name"
                 value={signInFormData.name}
-                onChange={handleSignInInputChange}
+                onChange={signInChangeHandler}
               />
             </div>
-            {errors.name && <p className={styles.error}>{errors.name}</p>}
+            {signInErrors.name && (
+              <p className={styles.error}>{signInErrors.name}</p>
+            )}
 
             <label className={styles.label} htmlFor="password">
               Password
@@ -162,12 +92,13 @@ export default function Login() {
                 placeholder="Secure1234"
                 name="password"
                 value={signInFormData.password}
-                onChange={handleSignInInputChange}
+                onChange={signInChangeHandler}
               />
             </div>
-            {errors.password && (
-              <p className={styles.error}>{errors.password}</p>
+            {signInErrors.password && (
+              <p className={styles.error}>{signInErrors.password}</p>
             )}
+
             <input
               type="submit"
               value="Login"
@@ -194,7 +125,7 @@ export default function Login() {
 
           <form
             className={styles["sign-up-form"]}
-            onSubmit={handleSignUpSubmit}>
+            onSubmit={signUpSubmitHandler}>
             <h2 className={styles.title}>Sign up</h2>
             <label className={styles.label} htmlFor="signUpUsername">
               Username
@@ -207,10 +138,12 @@ export default function Login() {
                 placeholder="John Doe"
                 name="name"
                 value={signUpFormData.name}
-                onChange={handleSignUpInputChange}
+                onChange={signUpChangeHandler}
               />
             </div>
-            {errors.name && <p className={styles.error}>{errors.name}</p>}
+            {signUpErrors.name && (
+              <p className={styles.error}>{signUpErrors.name}</p>
+            )}
 
             <label className={styles.label} htmlFor="signUpEmail">
               Email Address
@@ -223,10 +156,12 @@ export default function Login() {
                 placeholder="john_doe@hotmail.com"
                 name="email"
                 value={signUpFormData.email}
-                onChange={handleSignUpInputChange}
+                onChange={signUpChangeHandler}
               />
             </div>
-            {errors.email && <p className={styles.error}>{errors.email}</p>}
+            {signUpErrors.email && (
+              <p className={styles.error}>{signUpErrors.email}</p>
+            )}
 
             <label className={styles.label} htmlFor="signUpPassword">
               Password
@@ -239,11 +174,11 @@ export default function Login() {
                 placeholder="Secure1234"
                 name="password"
                 value={signUpFormData.password}
-                onChange={handleSignUpInputChange}
+                onChange={signUpChangeHandler}
               />
             </div>
-            {errors.password && (
-              <p className={styles.error}>{errors.password}</p>
+            {signUpErrors.password && (
+              <p className={styles.error}>{signUpErrors.password}</p>
             )}
 
             <input type="submit" className={styles.btn} value="Sign up" />
