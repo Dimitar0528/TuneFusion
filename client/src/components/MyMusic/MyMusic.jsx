@@ -3,14 +3,14 @@ import UserPlayLists from "./SubComponents/UserPlayLists";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 
 export default function MyMusic() {
-  const { filteredSongs, activePlaylist, playlists, refreshPlaylistHandler } =
+  const { filteredSongs, activePlaylist, playlists, triggerRefreshHandler } =
     useMusicPlayer();
 
   return (
     <div className="body">
       <UserPlayLists
         playlists={playlists}
-        refreshPlaylist={refreshPlaylistHandler}
+        triggerRefreshHandler={triggerRefreshHandler}
       />
 
       <MusicList
@@ -22,7 +22,7 @@ export default function MyMusic() {
         songs={filteredSongs}
         activePlaylist={activePlaylist}
         playlists={playlists}
-        refreshPlaylist={refreshPlaylistHandler}
+        triggerRefreshHandler={triggerRefreshHandler}
       />
     </div>
   );

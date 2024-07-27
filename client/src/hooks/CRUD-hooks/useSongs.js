@@ -3,11 +3,11 @@ import songsAPI from "../../api/songs-api";
 import showToast from "../../utils/showToast";
 
 export function useCreateSong() {
-    const gameCreateHandler = async (songData) => {
+    const songCreateHandler = async (songData) => {
         const result = await songsAPI.createSong(songData);
         result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success', 1500, true)
     }
-    return gameCreateHandler;
+    return songCreateHandler;
 }
 
 export function useGetAllSongs() {

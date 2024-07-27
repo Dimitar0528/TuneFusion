@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 
-const useFetchUserPlaylists = (userUUID) => {
+const useFetchUserPlaylists = (userUUID, refreshFlag) => {
     const [playlists, setPlaylists] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [refreshPlaylist, setRefreshPlaylist] = useState(false);
-
     useEffect(() => {
         if (!userUUID) return;
 
@@ -23,18 +20,14 @@ const useFetchUserPlaylists = (userUUID) => {
                 setPlaylists(data);
                 setLoading(false);
             } catch (error) {
-                setError(error.message);
                 setLoading(false);
             }
         };
 
         fetchPlaylists();
-    }, [userUUID, refreshPlaylist]);
+    }, [userUUID, refreshFlag]);
 
-    const refreshPlaylistHandler = () => {
-        setRefreshPlaylist((prev) => !prev);
-    };
-    return { playlists, loading, error, refreshPlaylistHandler };
+    return [playlists, loading];
 };
 
 

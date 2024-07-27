@@ -5,7 +5,7 @@ import showToast from "../../../utils/showToast";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-export default function UserPlayLists({ playlists, refreshPlaylist }) {
+export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
   const {
     activePlaylist,
     setActivePlaylist,
@@ -73,7 +73,6 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
 
     let response;
     if (editingPlaylist) {
-
       response = await fetch(
         `http://localhost:3000/api/playlists/update-playlist/${editingPlaylist.name}`,
         {
@@ -96,7 +95,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
     if (response.ok) {
       const data = await response.json();
       showToast(data.message, "success");
-      refreshPlaylist();
+      triggerRefreshHandler();
     } else {
       const data = await response.json();
       showToast(data.error, "error");
@@ -144,7 +143,7 @@ export default function UserPlayLists({ playlists, refreshPlaylist }) {
         localStorage.removeItem("activePlaylist");
         setActivePlaylist(null);
       }
-      refreshPlaylist();
+      triggerRefreshHandler();
     } else {
       const data = await response.json();
       showToast(data.error, "error");

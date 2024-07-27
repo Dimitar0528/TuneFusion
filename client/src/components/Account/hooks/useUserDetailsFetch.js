@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-export default function useUserDetailsFetch(userUUID) {
+export default function useUserDetailsFetch(userUUID, refreshFlag) {
     const [user, setUser] = useState({});
     const navigate = useNavigate();
 
@@ -20,6 +20,6 @@ export default function useUserDetailsFetch(userUUID) {
             setUser(data);
         }
         getUser();
-    }, [userUUID, navigate]);
-    return { user }
+    }, [userUUID, refreshFlag]);
+    return [user]
 }

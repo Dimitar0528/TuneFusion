@@ -15,7 +15,7 @@ export default function MusicList({
   title,
   activePlaylist,
   playlists,
-  refreshPlaylist,
+  triggerRefreshHandler,
   styles,
 }) {
   const {
@@ -108,7 +108,7 @@ export default function MusicList({
       if (response.ok) {
         showToast("Song added to playlist successfully", "success");
         handleModalClose();
-        refreshPlaylist();
+        triggerRefreshHandler();
       } else {
         const errorData = await response.json();
         showToast(`Error: ${errorData.error}`, "error");
@@ -142,7 +142,7 @@ export default function MusicList({
       if (response.ok) {
         const data = await response.json();
         showToast(data.message, "success");
-        refreshPlaylist();
+        triggerRefreshHandler();
       } else {
         const errorData = await response.json();
         showToast(`Error: ${errorData.error}`, "error");
@@ -190,7 +190,7 @@ export default function MusicList({
           showToast(data.message, "success");
           updatedLikedSongs = [...likedSongs, songUUID];
           setLikedSongs(updatedLikedSongs);
-          refreshPlaylist();
+          triggerRefreshHandler();
         } else {
           const errorData = await response.json();
           showToast(`Error: ${errorData.error}`, "error");

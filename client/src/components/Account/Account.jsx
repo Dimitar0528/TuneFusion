@@ -8,10 +8,12 @@ import { useParams } from "react-router-dom";
 import useUserDetailsFetch from "./hooks/useUserDetailsFetch";
 import useTabs from "./hooks/useTabs";
 import useTabEventListeners from "./hooks/useTabEventListeners";
+import { useRefresh } from "../../hooks/useRefresh";
 export default function Account() {
   const { userUUID } = useParams();
+  const [refreshFlag, triggerRefreshHandler] = useRefresh();
 
-  const { user } = useUserDetailsFetch(userUUID);
+  const [user] = useUserDetailsFetch(userUUID, refreshFlag);
   const tabs = ["Song Suggestions", "Songs", "Account", "PlayLists", "Users"];
   const {
     activeTab,
@@ -38,7 +40,12 @@ export default function Account() {
   const renderTabContent = (tab) => {
     switch (tab) {
       case "Account":
-        return <EditAccount user={user} />;
+        return (
+          <EditAccount
+            user={user}
+            triggerRefreshHandler={triggerRefreshHandler}
+          />
+        );
       case "Songs":
         return user.role === "admin" && <ViewAllSongs />;
       case "PlayLists":

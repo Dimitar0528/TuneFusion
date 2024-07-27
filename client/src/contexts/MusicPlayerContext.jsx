@@ -9,11 +9,12 @@ import useFetchUserPlaylists from "../hooks/fetch-get-hooks/useFetchUserPlaylist
 import useLocalStorage from "../hooks/useLocalStorage";
 import useStoredActivePlaylist from "../hooks/useStoredActivePlaylist";
 import useUpdateActivePlaylist from "../hooks/useUpdateActivePlaylist";
-
+import { useRefresh } from "../hooks/useRefresh";
 const MusicPlayerContext = createContext();
 
 export function MusicPlayerProvider({ children }) {
   const [filteredSongs, setFilteredSongs] = useState([]);
+  const [refreshFlag, triggerRefreshHandler] = useRefresh();
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [shuffle, setShuffle] = useState(false);
@@ -48,12 +49,10 @@ export function MusicPlayerProvider({ children }) {
   const musicListRef = useRef();
 
   const [user] = useGetUserAuthToken();
-  const {
-    playlists,
-    loading: isPlaylistLoading,
-    refreshPlaylistHandler,
-  } = useFetchUserPlaylists(user?.userUUID);
-
+  const [playlists, isPlaylistLoading] = useFetchUserPlaylists(
+    user?.userUUID,
+    refreshFlag
+  );
   const currentSong = songs.find(
     (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
   );
@@ -201,7 +200,7 @@ export function MusicPlayerProvider({ children }) {
     currentTime,
     setCurrentTime,
     playlists,
-    refreshPlaylistHandler,
+    triggerRefreshHandler,
     activePlaylist,
     setActivePlaylist,
     currentPage,

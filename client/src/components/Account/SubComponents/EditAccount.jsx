@@ -3,6 +3,7 @@ import styles from "./styles/EditAccount.module.css";
 import { useNavigate } from "react-router-dom";
 import showToast from "../../../utils/showToast";
 import { useLogoutUser } from "../../../hooks/CRUD-hooks/useAuth";
+import { validateEditAccount } from "../../../hooks/CRUD-hooks/useUsers";
 import { useForm } from "../../../hooks/useForm";
 const initialUserData = {
   name: "",
@@ -12,7 +13,7 @@ const initialUserData = {
   phone_number: "",
   gender: "",
 };
-export default function EditAccount({ user }) {
+export default function EditAccount({ user, triggerRefreshHandler }) {
   const {
     uuid,
     name,
@@ -27,12 +28,6 @@ export default function EditAccount({ user }) {
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-
-  const validate = (values) => {
-    const errors = {};
-    // Add any custom validation logic here if needed
-    return errors;
-  };
 
   const onSubmit = async (formData) => {
     if (
@@ -63,6 +58,7 @@ export default function EditAccount({ user }) {
     if (response.ok) {
       const responseData = await response.json();
       showToast(responseData.message, "success");
+      triggerRefreshHandler();
     } else {
       const responseData = await response.json();
       showToast(`Error: ${responseData.error}`, "error");
@@ -74,7 +70,7 @@ export default function EditAccount({ user }) {
     changeHandler,
     submitHandler,
     setValuesWrapper,
-  } = useForm(initialUserData, onSubmit, validate);
+  } = useForm(initialUserData, onSubmit, validateEditAccount);
 
   useEffect(() => {
     setValuesWrapper({
