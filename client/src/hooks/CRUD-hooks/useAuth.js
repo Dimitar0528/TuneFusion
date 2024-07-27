@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 import authAPI from "../../api/auth-api";
 import showToast from "../../utils/showToast";
+import extractUUIDPrefix from "../../utils/extractUUIDPrefix";
 
 export const validateSignUp = (values) => {
     const newErrors = {};
@@ -52,4 +53,35 @@ export function useLoginUser() {
         location.href = `/musicplayer/${user_uuid.slice(0, 6)}`;
     }
     return loginUserHandler;
+}
+
+export function useLogoutUser() {
+    const logoutUserHandler = async (callback) => {
+        await authAPI.logOutUser();
+        if (typeof callback === "function") {
+            callback();
+        }
+    }
+    return logoutUserHandler;
+}
+
+export function useGetUserAuthToken() {
+    const [user, setUser] = useState({
+        userUUID: "",
+        role: "",
+    });
+    useEffect(() => {
+        const getUserToken = async () => {
+            const result = await authAPI.getUserAuthToken();
+            const userUUID = extractUUIDPrefix(result.id)
+            setUser({
+                userUUID,
+                role: result.role,
+            });
+
+        };
+
+        getUserToken();
+    }, []);
+    return [user]
 }

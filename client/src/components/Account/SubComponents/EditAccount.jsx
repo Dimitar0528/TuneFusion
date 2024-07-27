@@ -2,7 +2,16 @@ import { useState, useEffect } from "react";
 import styles from "./styles/EditAccount.module.css";
 import { useNavigate } from "react-router-dom";
 import showToast from "../../../utils/showToast";
-
+import { useLogoutUser } from "../../../hooks/CRUD-hooks/useAuth";
+import { useForm } from "../../../hooks/useForm";
+const initialUserData = {
+  name: "",
+  first_name: "",
+  last_name: "",
+  email_address: "",
+  phone_number: "",
+  gender: "",
+};
 export default function EditAccount({ user }) {
   const {
     uuid,
@@ -13,39 +22,19 @@ export default function EditAccount({ user }) {
     phone_number,
     gender,
   } = user;
-
+  const logoutUser = useLogoutUser();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: "",
-    first_name: "",
-    last_name: "",
-    email_address: "",
-    phone_number: "",
-    gender: "",
-  });
-
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
 
-  useEffect(() => {
-    setFormData({
-      name: name ?? "",
-      first_name: first_name ?? "",
-      last_name: last_name ?? "",
-      email_address: email_address ?? "",
-      phone_number: phone_number ?? "",
-      gender: gender ?? "",
-    });
-  }, [uuid, name, first_name, last_name, email_address, phone_number, gender]);
-
-  const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((oldFormData) => ({ ...oldFormData, [id]: value }));
+  const validate = (values) => {
+    const errors = {};
+    // Add any custom validation logic here if needed
+    return errors;
   };
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (formData) => {
     if (
       formData.name === name &&
       formData.first_name === first_name &&
@@ -74,12 +63,29 @@ export default function EditAccount({ user }) {
     if (response.ok) {
       const responseData = await response.json();
       showToast(responseData.message, "success");
-      navigate(`/account/${uuid.slice(0, 6)}`);
     } else {
       const responseData = await response.json();
       showToast(`Error: ${responseData.error}`, "error");
     }
   };
+
+  const {
+    values: formData,
+    changeHandler,
+    submitHandler,
+    setValuesWrapper,
+  } = useForm(initialUserData, onSubmit, validate);
+
+  useEffect(() => {
+    setValuesWrapper({
+      name: name ?? "",
+      first_name: first_name ?? "",
+      last_name: last_name ?? "",
+      email_address: email_address ?? "",
+      phone_number: phone_number ?? "",
+      gender: gender ?? "",
+    });
+  }, [uuid, name, first_name, last_name, email_address, phone_number, gender]);
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -116,34 +122,11 @@ export default function EditAccount({ user }) {
       showToast(responseData.error, "error");
     }
   };
-  const logOutUser = async (callback) => {
-    try {
-      const response = await fetch("http://localhost:3000/api/auth/logout", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        showToast(`Error: ${errorData.error}`, "error");
-      } else {
-        if (typeof callback === "function") {
-          callback();
-        }
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      showToast(`Error: ${error}`, "error");
-    }
-  };
 
   const handleUserLogout = async () => {
     if (!window.confirm("Are you sure you want to log out from your account?"))
       return;
-    logOutUser(
+    logoutUser(
       showToast(
         "You have successfully logged out of your account!",
         "success",
@@ -178,7 +161,7 @@ export default function EditAccount({ user }) {
       console.error("Error:", error);
       showToast(`Error: ${error}`, "error");
     }
-    logOutUser();
+    logoutUser();
   };
 
   return (
@@ -186,17 +169,18 @@ export default function EditAccount({ user }) {
       <form
         name="edit-form"
         className={styles.editContainer}
-        onSubmit={handleFormSubmit}>
+        onSubmit={submitHandler}>
         <h1 className={styles.editTitle}>Edit my account</h1>
         <div className={styles.grid}>
           <div className={`${styles.formGroup} ${styles.a}`}>
             <label htmlFor="name">Username</label>
             <input
               id="name"
+              name="name"
               type="text"
               placeholder="example"
               value={formData.name}
-              onChange={handleInputChange}
+              onChange={changeHandler}
               required
             />
           </div>
@@ -204,10 +188,11 @@ export default function EditAccount({ user }) {
             <label htmlFor="first_name">First Name</label>
             <input
               id="first_name"
+              name="first_name"
               type="text"
               placeholder="John"
               value={formData.first_name}
-              onChange={handleInputChange}
+              onChange={changeHandler}
               required
             />
           </div>
@@ -215,10 +200,11 @@ export default function EditAccount({ user }) {
             <label htmlFor="last_name">Last Name</label>
             <input
               id="last_name"
+              name="last_name"
               type="text"
               placeholder="Doe"
               value={formData.last_name}
-              onChange={handleInputChange}
+              onChange={changeHandler}
               required
             />
           </div>
@@ -226,10 +212,11 @@ export default function EditAccount({ user }) {
             <label htmlFor="email_address">Email Address</label>
             <input
               id="email_address"
+              name="email_address"
               type="text"
               placeholder="john_doe@hotmail.com"
               value={formData.email_address}
-              onChange={handleInputChange}
+              onChange={changeHandler}
               required
             />
           </div>
@@ -237,10 +224,11 @@ export default function EditAccount({ user }) {
             <label htmlFor="phone_number">Phone Number</label>
             <input
               id="phone_number"
+              name="phone_number"
               type="tel"
               placeholder="0877696969"
               value={formData.phone_number}
-              onChange={handleInputChange}
+              onChange={changeHandler}
               required
             />
           </div>
@@ -252,7 +240,7 @@ export default function EditAccount({ user }) {
               name="gender"
               id="gender"
               value={formData.gender}
-              onChange={handleInputChange}>
+              onChange={changeHandler}>
               <option value=""></option>
               <option value="male">Male</option>
               <option value="female">Female</option>

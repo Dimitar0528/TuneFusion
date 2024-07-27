@@ -143,6 +143,10 @@ nav {
   max-width: 400px;
   margin-inline: auto;
   border-radius: 15rem;
+
+  @media(width < 768px) {
+    max-width: 370px;
+  }
 }
 
 .header__container h1 {
@@ -563,6 +567,10 @@ footer {
   border-radius: 4px 0 0 4px;
   outline: none;
   accent-color: var(--secondary-clr);
+
+  @media (width < 768px) {
+    max-width: 200px;
+  }
 }
 
 .search__button {

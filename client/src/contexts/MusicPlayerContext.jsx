@@ -3,7 +3,8 @@ import showToast from "../utils/showToast";
 import extractUUIDPrefix from "../utils/extractUUIDPrefix";
 
 import { useGetAllSongs, useGetSongLyrics } from "../hooks/CRUD-hooks/useSongs";
-import useFetchUserToken from "../hooks/fetch-get-hooks/useFetchUser";
+import { useGetUserAuthToken } from "../hooks/CRUD-hooks/useAuth";
+
 import useFetchUserPlaylists from "../hooks/fetch-get-hooks/useFetchUserPlaylists";
 import useLocalStorage from "../hooks/useLocalStorage";
 import useStoredActivePlaylist from "../hooks/useStoredActivePlaylist";
@@ -37,18 +38,16 @@ export function MusicPlayerProvider({ children }) {
   }
 
   const [volume, setVolume] = useState(
-    () => Number(JSON.parse(localStorage.getItem("audioVolume"))) || 0.3
+    () => Number(JSON.parse(localStorage.getItem("audioVolume"))) || 0.15
   );
   const [currentTime, setCurrentTime] = useState(
     () => Number(JSON.parse(localStorage.getItem("currentTime"))) || 0
   );
 
-  const progressAreaRef = useRef();
-  const progressBarRef = useRef();
   const playerRef = useRef();
   const musicListRef = useRef();
 
-  const { user } = useFetchUserToken();
+  const [user] = useGetUserAuthToken();
   const {
     playlists,
     loading: isPlaylistLoading,
@@ -186,8 +185,6 @@ export function MusicPlayerProvider({ children }) {
     isCollapsed,
     volume,
     setVolume,
-    progressAreaRef,
-    progressBarRef,
     playerRef,
     musicListRef,
     fetchLyrics,

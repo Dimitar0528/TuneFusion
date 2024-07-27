@@ -3,7 +3,9 @@ import { useState } from "react";
 export const useForm = (initialValues, onSubmit, validate) => {
     const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState({});
-
+    const setValuesWrapper = (values) => {
+        setValues(values);
+    }
     const changeHandler = (e) => {
         setValues({
             ...values,
@@ -26,5 +28,6 @@ export const useForm = (initialValues, onSubmit, validate) => {
         errors,
         changeHandler,
         submitHandler,
+        setValuesWrapper
     };
 };

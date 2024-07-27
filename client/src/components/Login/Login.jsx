@@ -98,7 +98,6 @@ export default function Login() {
             {signInErrors.password && (
               <p className={styles.error}>{signInErrors.password}</p>
             )}
-
             <input
               type="submit"
               value="Login"

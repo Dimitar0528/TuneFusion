@@ -7,18 +7,16 @@ const registerUser = async (userData) => request.post(`${BASE_URL}/register`, us
 
 const loginUser = async (userData) => request.post(`${BASE_URL}/login`, userData, 'include');
 
-const logOutUser = () => request.get(`${BASE_URL}/logout`)
+const logOutUser = () => request.get(`${BASE_URL}/logout`, undefined, 'include')
 
-const getUserAuthToken = () => request.get(`${BASE_URL}/getToken`)
+const getUserAuthToken = () => request.get(`${BASE_URL}/getToken`, undefined, 'include')
 
-const sendOTPCode = (userData) => request.post(`${BASE_URL}/sentOTP`, userData)
 
 const authAPI = {
     registerUser,
     loginUser,
     logOutUser,
     getUserAuthToken,
-    sendOTPCode
 }
 
 export default authAPI;

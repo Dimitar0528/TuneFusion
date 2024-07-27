@@ -1,11 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import ReactPlayer from "react-player/lazy";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatTime } from "../../../utils/formatTime";
 export default function ProgressArea() {
   const {
-    progressAreaRef,
-    progressBarRef,
     playerRef,
     currentSong,
     isPlaying,
@@ -19,6 +17,8 @@ export default function ProgressArea() {
   } = useMusicPlayer();
 
   const [isDragging, setIsDragging] = useState(false);
+  const progressAreaRef = useRef();
+  const progressBarRef = useRef();
 
   const handleMusicPlayerProgress = (state) => {
     if (!isDragging) {
