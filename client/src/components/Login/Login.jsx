@@ -77,9 +77,7 @@ export default function Login() {
                 onChange={signInChangeHandler}
               />
             </div>
-            {signInErrors.name && (
-              <p className={styles.error}>{signInErrors.name}</p>
-            )}
+            {signInErrors.name && <p className="error">{signInErrors.name}</p>}
 
             <label className={styles.label} htmlFor="password">
               Password
@@ -96,7 +94,7 @@ export default function Login() {
               />
             </div>
             {signInErrors.password && (
-              <p className={styles.error}>{signInErrors.password}</p>
+              <p className="error">{signInErrors.password}</p>
             )}
             <input
               type="submit"
@@ -140,9 +138,7 @@ export default function Login() {
                 onChange={signUpChangeHandler}
               />
             </div>
-            {signUpErrors.name && (
-              <p className={styles.error}>{signUpErrors.name}</p>
-            )}
+            {signUpErrors.name && <p className="error">{signUpErrors.name}</p>}
 
             <label className={styles.label} htmlFor="signUpEmail">
               Email Address
@@ -159,7 +155,7 @@ export default function Login() {
               />
             </div>
             {signUpErrors.email && (
-              <p className={styles.error}>{signUpErrors.email}</p>
+              <p className="error">{signUpErrors.email}</p>
             )}
 
             <label className={styles.label} htmlFor="signUpPassword">
@@ -177,7 +173,7 @@ export default function Login() {
               />
             </div>
             {signUpErrors.password && (
-              <p className={styles.error}>{signUpErrors.password}</p>
+              <p className="error">{signUpErrors.password}</p>
             )}
 
             <input type="submit" className={styles.btn} value="Sign up" />

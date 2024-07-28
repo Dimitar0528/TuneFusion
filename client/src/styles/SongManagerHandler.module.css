@@ -1,4 +1,3 @@
-
 .songForm {
     max-width: 500px;
     margin: 2rem auto;
@@ -6,7 +5,8 @@
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    @media(width < 530px){
+
+    @media(width < 530px) {
         margin-inline: 1rem;
     }
 }
@@ -37,12 +37,6 @@
     font-size: 14px;
 }
 
-.error {
-    display: block;
-    margin-top: 5px;
-    color: red;
-    font-size: 1.4rem;
-}
 
 .submitButton {
     width: 100%;

@@ -82,7 +82,7 @@ export default function SongManagerHandler({ action }) {
             onChange={handleInputChange}
             placeholder="Lose Yourself"
           />
-          {errors.name && <span className={styles.error}>{errors.name}</span>}
+          {errors.name && <span className="error">{errors.name}</span>}
         </div>
         <div className={styles.formGroup}>
           <label>Artist:</label>
@@ -93,9 +93,7 @@ export default function SongManagerHandler({ action }) {
             onChange={handleInputChange}
             placeholder="Eminem"
           />
-          {errors.artist && (
-            <span className={styles.error}>{errors.artist}</span>
-          )}
+          {errors.artist && <span className="error">{errors.artist}</span>}
         </div>
         <div className={styles.formGroup}>
           <label>Image URL:</label>
@@ -106,9 +104,7 @@ export default function SongManagerHandler({ action }) {
             onChange={handleInputChange}
             placeholder="https://upload.wikimedia.org/wikipedia/en/d/d6/Lose_Yourself.jpg"
           />
-          {errors.img_src && (
-            <span className={styles.error}>{errors.img_src}</span>
-          )}
+          {errors.img_src && <span className="error">{errors.img_src}</span>}
         </div>
         <div className={styles.formGroup}>
           <label>Audio URL:</label>
@@ -120,7 +116,7 @@ export default function SongManagerHandler({ action }) {
             placeholder="https://www.youtube.com/watch?v=zlJ0Aj9y67c"
           />
           {errors.audio_src && (
-            <span className={styles.error}>{errors.audio_src}</span>
+            <span className="error">{errors.audio_src}</span>
           )}
         </div>
 
@@ -133,9 +129,7 @@ export default function SongManagerHandler({ action }) {
             onChange={handleInputChange}
             placeholder="321"
           />
-          {errors.duration && (
-            <span className={styles.error}>{errors.duration}</span>
-          )}
+          {errors.duration && <span className="error">{errors.duration}</span>}
         </div>
 
         <button className={styles.submitButton} type="submit">

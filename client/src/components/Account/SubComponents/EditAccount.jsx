@@ -3,8 +3,9 @@ import styles from "./styles/EditAccount.module.css";
 import { useNavigate } from "react-router-dom";
 import showToast from "../../../utils/showToast";
 import { useLogoutUser } from "../../../hooks/CRUD-hooks/useAuth";
-import { validateEditAccount } from "../../../hooks/CRUD-hooks/useUsers";
 import { useForm } from "../../../hooks/useForm";
+import { validateEditAccount } from "../../../hooks/CRUD-hooks/useUsers";
+
 const initialUserData = {
   name: "",
   first_name: "",
@@ -13,7 +14,8 @@ const initialUserData = {
   phone_number: "",
   gender: "",
 };
-export default function EditAccount({ user, triggerRefreshHandler }) {
+
+export default function EditAccount({ user }) {
   const {
     uuid,
     name,
@@ -58,7 +60,6 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
     if (response.ok) {
       const responseData = await response.json();
       showToast(responseData.message, "success");
-      triggerRefreshHandler();
     } else {
       const responseData = await response.json();
       showToast(`Error: ${responseData.error}`, "error");
@@ -70,6 +71,7 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
     changeHandler,
     submitHandler,
     setValuesWrapper,
+    errors,
   } = useForm(initialUserData, onSubmit, validateEditAccount);
 
   useEffect(() => {
@@ -179,6 +181,7 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
               onChange={changeHandler}
               required
             />
+            {errors.name && <p className="error">{errors.name}</p>}
           </div>
           <div className={`${styles.formGroup} ${styles.b}`}>
             <label htmlFor="first_name">First Name</label>
@@ -191,6 +194,7 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
               onChange={changeHandler}
               required
             />
+            {errors.first_name && <p className="error">{errors.first_name}</p>}
           </div>
           <div className={`${styles.formGroup} ${styles.c}`}>
             <label htmlFor="last_name">Last Name</label>
@@ -203,6 +207,7 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
               onChange={changeHandler}
               required
             />
+            {errors.last_name && <p className="error">{errors.last_name}</p>}
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="email_address">Email Address</label>
@@ -215,6 +220,9 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
               onChange={changeHandler}
               required
             />
+            {errors.email_address && (
+              <p className="error">{errors.email_address}</p>
+            )}
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="phone_number">Phone Number</label>
@@ -227,6 +235,9 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
               onChange={changeHandler}
               required
             />
+            {errors.phone_number && (
+              <p className="error">{errors.phone_number}</p>
+            )}
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="gender">

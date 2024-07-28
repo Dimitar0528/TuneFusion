@@ -21,10 +21,6 @@ input {
     border-radius: 1rem;
 }
 
-.error {
-    color: red;
-}
-
 .container {
     position: relative;
     width: 100%;
