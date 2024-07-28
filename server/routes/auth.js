@@ -72,7 +72,7 @@ router.post('/login', async (req, res) => {
             httpOnly: true,
             secure: true,
             maxAge: 86400000,
-            sameSite: 'None',
+            sameSite: 'Strict',
             path: '/',
         };
 

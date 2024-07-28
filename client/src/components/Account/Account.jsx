@@ -5,15 +5,15 @@ import SongSuggestion from "./SubComponents/SongSuggestion";
 import ViewAllSongs from "./SubComponents/ViewAllSongs";
 import { useParams } from "react-router-dom";
 
-import useUserDetailsFetch from "./hooks/useUserDetailsFetch";
 import useTabs from "./hooks/useTabs";
 import useTabEventListeners from "./hooks/useTabEventListeners";
 import { useRefresh } from "../../hooks/useRefresh";
+import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
 export default function Account() {
   const { userUUID } = useParams();
   const [refreshFlag, triggerRefreshHandler] = useRefresh();
 
-  const [user] = useUserDetailsFetch(userUUID, refreshFlag);
+  const [user] = useGetUserDetails(userUUID, refreshFlag);
   const tabs = ["Song Suggestions", "Songs", "Account", "PlayLists", "Users"];
   const {
     activeTab,
@@ -56,7 +56,14 @@ export default function Account() {
           </div>
         );
       case "Users":
-        return user.role === "admin" && <ViewAllUsers />;
+        return (
+          user.role === "admin" && (
+            <ViewAllUsers
+              refreshFlag={refreshFlag}
+              triggerRefreshHandler={triggerRefreshHandler}
+            />
+          )
+        );
       case "Song Suggestions":
         return user.role === "admin" && <SongSuggestion />;
       default:

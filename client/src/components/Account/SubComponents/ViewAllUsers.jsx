@@ -1,44 +1,23 @@
-import { useEffect, useState } from "react";
 import TableLayout from "../TableLayout";
+import { useGetAllUsers } from "../../../hooks/CRUD-hooks/useUsers";
+import {
+  useDeleteUser,
+  useChangeUserRole,
+} from "../../../hooks/CRUD-hooks/useUsers";
 import showToast from "../../../utils/showToast";
-
-export default function ViewAllUsers() {
-  const [users, setUsers] = useState([]);
+export default function ViewAllUsers({ refreshFlag, triggerRefreshHandler }) {
+  const deleteUser = useDeleteUser();
+  const changeUserRole = useChangeUserRole();
   const usersPerPage = 10;
-
-  useEffect(() => {
-    async function getUsers() {
-      const response = await fetch("http://localhost:3000/api/users", {
-        method: "GET",
-        credentials: "include",
-      });
-      const users = await response.json();
-      setUsers(users);
-    }
-    getUsers();
-  }, []);
+  const [users] = useGetAllUsers(refreshFlag);
 
   const handleDeleteUser = async (uuid) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/users/deleteUser/${uuid}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        showToast(`Error: ${errorData.error}`, "error");
-      } else {
-        const responseData = await response.json();
-        showToast(responseData.message, "success", 1500, true);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      showToast(`Error: ${error}`, "error");
-    }
+    const displayMessage = () => {
+      showToast("Account deleted successfully!", "success");
+      triggerRefreshHandler();
+    };
+    deleteUser(uuid, displayMessage);
   };
 
   return (

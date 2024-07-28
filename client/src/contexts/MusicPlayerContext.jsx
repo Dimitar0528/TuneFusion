@@ -26,7 +26,7 @@ export function MusicPlayerProvider({ children }) {
   const [currentPage, setCurrentPage] = useState(0);
 
   const [isCollapsed, setIsCollapsed] = useState(
-    () => JSON.parse(localStorage.getItem("isCollapsed")) || false
+    () => JSON.parse(localStorage.getItem("isCollapsed")) ?? true
   );
   const [currentSongUUID, setCurrentSongUUID] = useState(
     () => JSON.parse(localStorage.getItem("currentSongUUID")) || ""
@@ -200,6 +200,7 @@ export function MusicPlayerProvider({ children }) {
     currentTime,
     setCurrentTime,
     playlists,
+    refreshFlag,
     triggerRefreshHandler,
     activePlaylist,
     setActivePlaylist,

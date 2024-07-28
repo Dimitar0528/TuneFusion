@@ -71,7 +71,9 @@ router.put('/editAccount/:userid', async (req, res) => {
             where: { uuid: user.uuid },
         });
 
-        return res.status(200).json({ message: 'Account details updated successfully!' });
+        return res.status(200).json({
+            message: 'Account details updated successfully!',
+        });
 
     } catch (error) {
         console.error('Error updating account details:', error);
@@ -80,7 +82,7 @@ router.put('/editAccount/:userid', async (req, res) => {
 });
 router.put('/resetPassword/:user_email_address', async (req, res) => {
     const userEmail = req.params.user_email_address;
-    const { password } = req.body;
+    const { newPassword } = req.body;
     try {
         const user = await User.findOne({ where: { email_address: userEmail } });
 
@@ -88,13 +90,13 @@ router.put('/resetPassword/:user_email_address', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = await bcrypt.compare(newPassword, user.password);
 
         if (passwordMatch) {
             return res.status(401).json({ error: 'The new password cannot be the same as the old one!' });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
         await User.update(
             { password: hashedPassword },
             { where: { uuid: user.uuid } }

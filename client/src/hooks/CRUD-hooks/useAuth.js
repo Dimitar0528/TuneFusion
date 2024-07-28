@@ -37,10 +37,10 @@ export function useRegisterUser() {
     const registerUserHandler = async (userData) => {
         const result = await authAPI.registerUser(userData);
         if (result.error) return showToast(`Error: ${result.error}`, "error")
-        localStorage.setItem("email", userData.email);
+        // localStorage.setItem("email", userData.email);
 
-        location.href = "/sign-in/otp";
-        // location.href = '/sign-in'
+        // location.href = "/sign-in/otp";
+        location.href = '/sign-in'
     }
     return registerUserHandler;
 }
