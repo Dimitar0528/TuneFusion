@@ -117,6 +117,7 @@ export default function MusicList({
       updatedLikedSongs = likedSongs.filter((uuid) => uuid !== songUUID);
       setLikedSongs(updatedLikedSongs);
       handleRemoveSongFromPlaylist(song, likedSongsPlaylist[0].name);
+      localStorage.setItem("likedSongs", JSON.stringify(updatedLikedSongs));
     } else {
       const reqObj = {
         songUUID: song.uuid,
@@ -125,10 +126,10 @@ export default function MusicList({
       const callback = () => {
         updatedLikedSongs = [...likedSongs, songUUID];
         setLikedSongs(updatedLikedSongs);
+        localStorage.setItem("likedSongs", JSON.stringify(updatedLikedSongs));
       };
       addSongToPlaylist(reqObj, callback, triggerRefreshHandler);
     }
-    localStorage.setItem("likedSongs", JSON.stringify(updatedLikedSongs));
   };
   return (
     <div ref={musicListRef} className="music-list" style={styles}>

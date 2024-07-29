@@ -7,11 +7,13 @@ import {
   useRegisterUser,
   useLoginUser,
 } from "../../hooks/CRUD-hooks/useAuth";
+import { useTogglePasswordVisibility } from "../../hooks/useTogglePasswordVisibility";
 const signUpInitialValues = {
   name: "",
   email: "",
   password: "",
 };
+
 const signInInitialValues = {
   name: "",
   password: "",
@@ -21,13 +23,17 @@ export default function Login() {
   const registerUser = useRegisterUser();
   const loginUser = useLoginUser();
   const [signUpMode, setSignUpMode] = useState(false);
-
+  const [showPassword, showPasswordHandler] = useTogglePasswordVisibility();
   const handleSignUpClick = () => {
     setSignUpMode(true);
+    signUpSetValuesWrapper(signUpInitialValues);
+    showPasswordHandler(false);
   };
 
   const handleSignInClick = () => {
     setSignUpMode(false);
+    signInSetValuesWrapper(signInInitialValues);
+    showPasswordHandler(false);
   };
 
   const handleSignUpSubmit = async (formData) => {
@@ -43,6 +49,7 @@ export default function Login() {
     errors: signUpErrors,
     changeHandler: signUpChangeHandler,
     submitHandler: signUpSubmitHandler,
+    setValuesWrapper: signUpSetValuesWrapper,
   } = useForm(signUpInitialValues, handleSignUpSubmit, validateSignUp);
 
   const {
@@ -50,6 +57,7 @@ export default function Login() {
     errors: signInErrors,
     changeHandler: signInChangeHandler,
     submitHandler: signInSubmitHandler,
+    setValuesWrapper: signInSetValuesWrapper,
   } = useForm(signInInitialValues, handleSignInSubmit, validateSignIn);
 
   return (
@@ -66,7 +74,7 @@ export default function Login() {
             <label className={styles.label} htmlFor="username">
               Username
             </label>
-            <div className={styles["input-field"]}>
+            <div className="input-field">
               <i className="fas fa-user"></i>
               <input
                 id="username"
@@ -82,16 +90,21 @@ export default function Login() {
             <label className={styles.label} htmlFor="password">
               Password
             </label>
-            <div className={styles["input-field"]}>
+            <div className="input-field">
               <i className="fas fa-lock"></i>
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Secure1234"
                 name="password"
                 value={signInFormData.password}
                 onChange={signInChangeHandler}
               />
+              <i
+                className={`fas eye ${
+                  showPassword ? "fa-eye-slash" : "fa-eye"
+                }`}
+                onClick={() => showPasswordHandler()}></i>
             </div>
             {signInErrors.password && (
               <p className="error">{signInErrors.password}</p>
@@ -127,7 +140,7 @@ export default function Login() {
             <label className={styles.label} htmlFor="signUpUsername">
               Username
             </label>
-            <div className={styles["input-field"]}>
+            <div className="input-field">
               <i className="fas fa-user"></i>
               <input
                 id="signUpUsername"
@@ -143,7 +156,7 @@ export default function Login() {
             <label className={styles.label} htmlFor="signUpEmail">
               Email Address
             </label>
-            <div className={styles["input-field"]}>
+            <div className="input-field">
               <i className="fas fa-envelope"></i>
               <input
                 id="signUpEmail"
@@ -161,16 +174,21 @@ export default function Login() {
             <label className={styles.label} htmlFor="signUpPassword">
               Password
             </label>
-            <div className={styles["input-field"]}>
+            <div className="input-field">
               <i className="fas fa-lock"></i>
               <input
                 id="signUpPassword"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Secure1234"
                 name="password"
                 value={signUpFormData.password}
                 onChange={signUpChangeHandler}
               />
+              <i
+                className={`fas eye ${
+                  showPassword ? "fa-eye-slash" : "fa-eye"
+                }`}
+                onClick={() => showPasswordHandler()}></i>
             </div>
             {signUpErrors.password && (
               <p className="error">{signUpErrors.password}</p>

@@ -14,7 +14,7 @@ export default function Account() {
   const [refreshFlag, triggerRefreshHandler] = useRefresh();
 
   const [user] = useGetUserDetails(userUUID, refreshFlag);
-  const tabs = ["Song Suggestions", "Songs", "Account", "PlayLists", "Users"];
+  const tabs = ["Song Suggestions", "Songs", "Users", "Account"];
   const {
     activeTab,
     setActiveTab,
@@ -48,13 +48,6 @@ export default function Account() {
         );
       case "Songs":
         return user.role === "admin" && <ViewAllSongs />;
-      case "PlayLists":
-        return (
-          <div>
-            <h1>PlayLists Page</h1>
-            <p>This is the PlayLists section.</p>
-          </div>
-        );
       case "Users":
         return (
           user.role === "admin" && (

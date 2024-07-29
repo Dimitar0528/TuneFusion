@@ -12,7 +12,7 @@ import {
   useDeleteUser,
   useResetPassword,
 } from "../../../hooks/CRUD-hooks/useUsers";
-
+import { useTogglePasswordVisibility } from "../../../hooks/useTogglePasswordVisibility";
 const initialUserData = {
   name: "",
   first_name: "",
@@ -37,6 +37,7 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
     phone_number,
     gender,
   } = user;
+  const [showPassword, showPasswordHandler] = useTogglePasswordVisibility();
 
   const logoutUser = useLogoutUser();
   const editUser = useEditUser();
@@ -245,35 +246,51 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
         <dialog open className={styles["password-modal"]}>
           <div className={styles["modal-content"]}>
             <h2>Reset Password</h2>
-            <p>
+            <p style={{ marginBottom: "1rem" }}>
               The same rules apply for new password: To be at least 8 characters
               long and to have at least one capitalized letter and number
             </p>
             <form onSubmit={passwordSubmitHandler}>
               <label htmlFor="newPassword">New Password:</label>
-              <input
-                type="password"
-                id="newPassword"
-                name="newPassword"
-                value={passwordData.newPassword}
-                onChange={passwordChangeHandler}
-                autoComplete="off"
-                required
-              />
+              <div className="input-field">
+                <i className="fas fa-lock"></i>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="newPassword"
+                  name="newPassword"
+                  value={passwordData.newPassword}
+                  onChange={passwordChangeHandler}
+                  autoComplete="off"
+                  required
+                />
+                <i
+                  className={`fas eye ${
+                    showPassword ? "fa-eye-slash" : "fa-eye"
+                  }`}
+                  onClick={() => showPasswordHandler()}></i>
+              </div>
               {passwordErrors.newPassword && (
                 <p className="error">{passwordErrors.newPassword}</p>
               )}
               <br />
               <label htmlFor="repeatPassword">Repeat New Password:</label>
-              <input
-                type="password"
-                id="repeatPassword"
-                name="repeatPassword"
-                value={passwordData.repeatPassword}
-                onChange={passwordChangeHandler}
-                autoComplete="off"
-                required
-              />
+              <div className="input-field">
+                <i className="fas fa-lock"></i>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="repeatPassword"
+                  name="repeatPassword"
+                  value={passwordData.repeatPassword}
+                  onChange={passwordChangeHandler}
+                  autoComplete="off"
+                  required
+                />
+                <i
+                  className={`fas eye ${
+                    showPassword ? "fa-eye-slash" : "fa-eye"
+                  }`}
+                  onClick={() => showPasswordHandler()}></i>
+              </div>
               {passwordErrors.repeatPassword && (
                 <p className="error">{passwordErrors.repeatPassword}</p>
               )}

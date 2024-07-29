@@ -1,13 +1,9 @@
 import TableLayout from "../TableLayout";
 import { useGetAllUsers } from "../../../hooks/CRUD-hooks/useUsers";
-import {
-  useDeleteUser,
-  useChangeUserRole,
-} from "../../../hooks/CRUD-hooks/useUsers";
+import { useDeleteUser } from "../../../hooks/CRUD-hooks/useUsers";
 import showToast from "../../../utils/showToast";
 export default function ViewAllUsers({ refreshFlag, triggerRefreshHandler }) {
   const deleteUser = useDeleteUser();
-  const changeUserRole = useChangeUserRole();
   const usersPerPage = 10;
   const [users] = useGetAllUsers(refreshFlag);
 
