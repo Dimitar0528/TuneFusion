@@ -9,7 +9,10 @@ import showToast from "../../../utils/showToast";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Link } from "react-router-dom";
-
+import {
+  useAddSongToPlaylist,
+  useRemoveSongFromPlaylist,
+} from "../../../hooks/CRUD-hooks/usePlaylists";
 export default function MusicList({
   songs,
   title,
@@ -31,7 +34,8 @@ export default function MusicList({
     setCurrentPage,
     handleKeyPressWhenTabbed,
   } = useMusicPlayer();
-
+  const addSongToPlaylist = useAddSongToPlaylist();
+  const removeSongFromPlaylist = useRemoveSongFromPlaylist();
   const [selectedPlaylist, setSelectedPlaylist] = useState();
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState();
@@ -39,14 +43,11 @@ export default function MusicList({
     const storedLikedSongs = localStorage.getItem("likedSongs");
     return storedLikedSongs ? JSON.parse(storedLikedSongs) : [];
   });
-
   const [hoveredSongUUID, setHoveredSongUUID] = useState();
   const itemsPerPage = 20;
-
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
   };
-
   const offset = currentPage * itemsPerPage;
   const currentSongs = songs.slice(offset, offset + itemsPerPage);
   const pageCount = Math.ceil(songs.length / itemsPerPage);
@@ -89,126 +90,46 @@ export default function MusicList({
   const handleAddSongConfirm = async () => {
     if (!selectedPlaylist && !selectedSong)
       return showToast("Please select a playlist first", "warning");
-
-    try {
-      const response = await fetch(
-        "http://localhost:3000/api/playlists/add-song",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            songUUID: selectedSong.uuid,
-            playlistUUID: selectedPlaylist,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        showToast("Song added to playlist successfully", "success");
-        handleModalClose();
-        triggerRefreshHandler();
-      } else {
-        const errorData = await response.json();
-        showToast(`Error: ${errorData.error}`, "error");
-      }
-    } catch (error) {
-      console.error("Error adding song to playlist:", error);
-      showToast(
-        "An error occurred while adding the song to the playlist.",
-        "error"
-      );
-    }
+    const reqObj = {
+      songUUID: selectedSong.uuid,
+      playlistUUID: selectedPlaylist,
+    };
+    addSongToPlaylist(reqObj, () => handleModalClose(), triggerRefreshHandler);
   };
 
   const handleRemoveSongFromPlaylist = async (song, playlistName) => {
-    try {
-      const response = await fetch(
-        "http://localhost:3000/api/playlists/remove-song",
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            songUUID: song.uuid,
-            playlistName: playlistName,
-            userUUID: user.userUUID,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        showToast(data.message, "success");
-        triggerRefreshHandler();
-      } else {
-        const errorData = await response.json();
-        showToast(`Error: ${errorData.error}`, "error");
-      }
-    } catch (error) {
-      console.error("Error removing song from playlist:", error);
-      showToast(
-        "An error occurred while removing the song from the playlist.",
-        "error"
-      );
-    }
+    const reqObj = {
+      songUUID: song.uuid,
+      playlistName: playlistName,
+      userUUID: user.userUUID,
+    };
+    removeSongFromPlaylist(reqObj, triggerRefreshHandler);
   };
 
   const handleToggleLikedSong = async (song) => {
     const likedSongsPlaylist = playlists.filter((playlist) => {
       return playlist.name === "Liked Songs";
     });
-    console.log(likedSongsPlaylist[0]?.name);
     const songUUID = extractUUIDPrefix(song.uuid);
     const isLiked = likedSongs.includes(songUUID);
     let updatedLikedSongs;
-
     if (isLiked) {
       updatedLikedSongs = likedSongs.filter((uuid) => uuid !== songUUID);
       setLikedSongs(updatedLikedSongs);
       handleRemoveSongFromPlaylist(song, likedSongsPlaylist[0].name);
     } else {
-      try {
-        const response = await fetch(
-          "http://localhost:3000/api/playlists/add-song",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              songUUID: song.uuid,
-              playlistUUID: likedSongsPlaylist[0].uuid,
-            }),
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          showToast(data.message, "success");
-          updatedLikedSongs = [...likedSongs, songUUID];
-          setLikedSongs(updatedLikedSongs);
-          triggerRefreshHandler();
-        } else {
-          const errorData = await response.json();
-          showToast(`Error: ${errorData.error}`, "error");
-          return;
-        }
-      } catch (error) {
-        console.error("Error adding song to liked songs playlist:", error);
-        showToast(
-          "An error occurred while adding the song to the liked songs playlist.",
-          "error"
-        );
-        return;
-      }
+      const reqObj = {
+        songUUID: song.uuid,
+        playlistUUID: likedSongsPlaylist[0].uuid,
+      };
+      const callback = () => {
+        updatedLikedSongs = [...likedSongs, songUUID];
+        setLikedSongs(updatedLikedSongs);
+      };
+      addSongToPlaylist(reqObj, callback, triggerRefreshHandler);
     }
-
     localStorage.setItem("likedSongs", JSON.stringify(updatedLikedSongs));
   };
-
   return (
     <div ref={musicListRef} className="music-list" style={styles}>
       <div className="header">

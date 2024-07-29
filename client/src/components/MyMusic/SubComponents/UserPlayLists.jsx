@@ -4,6 +4,18 @@ import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import showToast from "../../../utils/showToast";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useForm } from "../../../hooks/useForm";
+import {
+  validatePlaylist,
+  useCreatePlaylist,
+  useEditPlaylist,
+  useDeletePlaylist,
+} from "../../../hooks/CRUD-hooks/usePlaylists";
+const initialPlaylistValues = {
+  name: "",
+  description: "",
+  img_src: "",
+};
 
 export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
   const {
@@ -15,12 +27,31 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
   } = useMusicPlayer();
   const { userUUID } = user;
   const [showDialog, setShowDialog] = useState(false);
-  const [editingPlaylist, setEditingPlaylist] = useState();
-  const [newPlaylist, setNewPlaylist] = useState({
-    name: "",
-    description: "",
-    img_src: "",
-  });
+  const [editingPlaylist, setEditingPlaylist] = useState(null);
+  const createPlaylist = useCreatePlaylist();
+  const editPlaylist = useEditPlaylist();
+  const deletePlaylist = useDeletePlaylist();
+
+  const onSubmit = async (values) => {
+    const reqObj = {
+      ...values,
+      created_by: userUUID,
+    };
+    if (editingPlaylist) {
+      editPlaylist(editingPlaylist.name, reqObj, triggerRefreshHandler);
+    } else {
+      createPlaylist(reqObj, triggerRefreshHandler);
+    }
+    handleCloseDialog();
+  };
+
+  const {
+    values: newPlaylist,
+    errors,
+    changeHandler,
+    submitHandler,
+    setValuesWrapper,
+  } = useForm(initialPlaylistValues, onSubmit, validatePlaylist);
 
   const toggleActivePlayList = (playlist) => {
     const newActivePlaylist =
@@ -37,18 +68,14 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
 
   const handleCreatePlaylist = () => {
     setEditingPlaylist(null);
-    setNewPlaylist({
-      name: "",
-      description: "",
-      img_src: "",
-    });
+    setValuesWrapper(initialPlaylistValues);
     setShowDialog(true);
   };
 
   const handleEditPlaylist = (e, playlist) => {
     e.stopPropagation();
     setEditingPlaylist(playlist);
-    setNewPlaylist({
+    setValuesWrapper({
       name: playlist.name,
       description: playlist.description || "",
       img_src: playlist.img_src || "",
@@ -60,68 +87,10 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     setShowDialog(false);
   };
 
-  const handleSavePlaylist = async () => {
-    if (newPlaylist.name.trim() === "") {
-      showToast("Please enter a playlist name.", "warning");
-      return;
-    }
-
-    const reqObj = {
-      ...newPlaylist,
-      created_by: userUUID,
-    };
-
-    let response;
-    if (editingPlaylist) {
-      response = await fetch(
-        `http://localhost:3000/api/playlists/update-playlist/${editingPlaylist.name}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(reqObj),
-        }
-      );
-    } else {
-      response = await fetch(
-        "http://localhost:3000/api/playlists/create-playlist",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(reqObj),
-        }
-      );
-    }
-
-    if (response.ok) {
-      const data = await response.json();
-      showToast(data.message, "success");
-      triggerRefreshHandler();
-    } else {
-      const data = await response.json();
-      showToast(data.error, "error");
-    }
-
-    setNewPlaylist({
-      name: "",
-      description: "",
-      img_src: "",
-    });
-
-    handleCloseDialog();
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewPlaylist((prevPlaylist) => ({
-      ...prevPlaylist,
-      [name]: value,
-    }));
-  };
-
   const getPlaylistImage = (playlist) => {
     if (playlist.img_src) return playlist.img_src;
     if (playlist.Songs && playlist.Songs.length > 0)
-      return playlist.Songs[playlist.Songs.length - 1].img_src;
+      return playlist.Songs.at(-1).img_src;
     return "https://cdn-icons-png.freepik.com/512/5644/5644664.png";
   };
 
@@ -129,25 +98,13 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     e.stopPropagation();
     if (!window.confirm("Are you sure you want to delete this playlist?"))
       return;
-
-    const response = await fetch(
-      `http://localhost:3000/api/playlists/delete-playlist/${playlist.uuid}`,
-      {
-        method: "DELETE",
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      showToast(data.message, "success");
+    const callback = () => {
       if (playlist.name === activePlaylist.name) {
         localStorage.removeItem("activePlaylist");
         setActivePlaylist(null);
       }
-      triggerRefreshHandler();
-    } else {
-      const data = await response.json();
-      showToast(data.error, "error");
-    }
+    };
+    deletePlaylist(playlist.uuid, callback, triggerRefreshHandler);
   };
 
   return (
@@ -170,9 +127,9 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
               <div className="playlist-title">
                 <Skeleton circle={true} height={45} width={45} />
                 <Skeleton width={100} />
-                <div className="playlist-actions">
-                  <Skeleton width={60} height={20} />
-                  <Skeleton width={60} height={20} />
+                <div style={{ display: "flex", gap: "1rem" }}>
+                  <Skeleton width={30} height={20} />
+                  <Skeleton width={30} height={20} />
                 </div>
               </div>
             </div>
@@ -242,22 +199,23 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
         <dialog open className="modal">
           <div className="playlist-dialog">
             <h2>{editingPlaylist ? "Edit Playlist" : "Create New Playlist"}</h2>
-            <form method="dialog">
+            <form method="dialog" onSubmit={submitHandler}>
               <label>
                 Playlist Name:
                 <input
                   type="text"
                   name="name"
                   value={newPlaylist.name}
-                  onChange={handleChange}
+                  onChange={changeHandler}
                 />
+                {errors.name && <p className="error">{errors.name}</p>}
               </label>
               <label>
                 Description: (optional)
                 <textarea
                   name="description"
                   value={newPlaylist.description}
-                  onChange={handleChange}></textarea>
+                  onChange={changeHandler}></textarea>
               </label>
               <label>
                 Image URL: (optional)
@@ -265,13 +223,11 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
                   type="text"
                   name="img_src"
                   value={newPlaylist.img_src}
-                  onChange={handleChange}
+                  onChange={changeHandler}
                 />
               </label>
               <div className="dialog-actions">
-                <button type="button" onClick={handleSavePlaylist}>
-                  Save
-                </button>
+                <button type="submit">Save</button>
                 <button type="button" onClick={handleCloseDialog}>
                   Cancel
                 </button>

@@ -4,12 +4,11 @@ import extractUUIDPrefix from "../utils/extractUUIDPrefix";
 
 import { useGetAllSongs, useGetSongLyrics } from "../hooks/CRUD-hooks/useSongs";
 import { useGetUserAuthToken } from "../hooks/CRUD-hooks/useAuth";
-
-import useFetchUserPlaylists from "../hooks/fetch-get-hooks/useFetchUserPlaylists";
 import useLocalStorage from "../hooks/useLocalStorage";
 import useStoredActivePlaylist from "../hooks/useStoredActivePlaylist";
 import useUpdateActivePlaylist from "../hooks/useUpdateActivePlaylist";
 import { useRefresh } from "../hooks/useRefresh";
+import { useGetUserPlaylists } from "../hooks/CRUD-hooks/usePlaylists";
 const MusicPlayerContext = createContext();
 
 export function MusicPlayerProvider({ children }) {
@@ -49,7 +48,7 @@ export function MusicPlayerProvider({ children }) {
   const musicListRef = useRef();
 
   const [user] = useGetUserAuthToken();
-  const [playlists, isPlaylistLoading] = useFetchUserPlaylists(
+  const [playlists, isPlaylistLoading] = useGetUserPlaylists(
     user?.userUUID,
     refreshFlag
   );

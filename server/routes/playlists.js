@@ -21,7 +21,7 @@ router.post('/create-playlist', async (req, res) => {
         });
 
         if (existingPlaylist) {
-            return res.status(400).json({ error: 'A playlist with this name already exists!' });
+            return res.status(400).json({ error: 'You have already created a playlist with the same name!' });
         }
 
         await PlayList.create({
@@ -39,6 +39,7 @@ router.post('/create-playlist', async (req, res) => {
 
     }
 })
+
 router.delete('/delete-playlist/:playlistUUID', async (req, res) => {
     const playlistUUID = req.params.playlistUUID;
     try {
@@ -61,8 +62,9 @@ router.delete('/delete-playlist/:playlistUUID', async (req, res) => {
     }
 
 })
-router.get('/:user_uuid', async (req, res) => {
-    const userUUID = req.params.user_uuid;
+
+router.get('/:userUUID', async (req, res) => {
+    const userUUID = req.params.userUUID;
     try {
         const playlists = await PlayList.findAll({
             where: Sequelize.where(
@@ -130,6 +132,7 @@ router.put('/update-playlist/:playlistName', async (req, res) => {
         return res.status(500).json({ error: "Internal Server Error" });
     }
 })
+
 router.post('/add-song', async (req, res) => {
     const { songUUID, playlistUUID } = req.body;
     try {
@@ -152,7 +155,7 @@ router.post('/add-song', async (req, res) => {
         });
 
         if (existingEntry) {
-            return res.status(400).json({ error: 'Song is already in the playlist' });
+            return res.status(400).json({ error: 'Song is already in the selected playlist!' });
         }
 
         await PlaylistSong.create({
@@ -188,7 +191,7 @@ router.delete('/remove-song', async (req, res) => {
             return res.status(404).json({ error: 'Song or Playlist not found' });
         }
 
-        res.status(200).json({ message: 'Song removed from playlist successfully' });
+        res.status(200).json({ message: 'Song removed from playlist successfully!' });
     } catch (error) {
         console.error('Error removing song from playlist:', error);
         res.status(500).json({ error: 'Internal Server Error' });
