@@ -249,7 +249,7 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 1rem;
-    margin: 1.5rem 1rem;
+    margin: 1rem;
 }
 
 .sort-controls input[type="search"] {

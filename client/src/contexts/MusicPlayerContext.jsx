@@ -13,7 +13,8 @@ const MusicPlayerContext = createContext();
 
 export function MusicPlayerProvider({ children }) {
   const [filteredSongs, setFilteredSongs] = useState([]);
-  const [refreshFlag, triggerRefreshHandler] = useRefresh();
+  const [refreshPlaylistsFlag, triggerRefreshPlaylistsHandler] = useRefresh();
+  const [refreshSongsFlag, triggerRefreshSongsHandler] = useRefresh();
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [shuffle, setShuffle] = useState(false);
@@ -21,7 +22,6 @@ export function MusicPlayerProvider({ children }) {
   const [playBackSpeed, setPlayBackSpeed] = useState(1);
 
   const [activePlaylist, setActivePlaylist] = useState();
-  const [currentPlayingPlaylist, setCurrentPlayingPlaylist] = useState();
 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -32,7 +32,7 @@ export function MusicPlayerProvider({ children }) {
     () => JSON.parse(localStorage.getItem("currentSongUUID")) || ""
   );
 
-  const [songs, isSongLoading] = useGetAllSongs();
+  const [songs, isSongLoading] = useGetAllSongs(refreshSongsFlag);
 
   if (currentSongUUID === "" && songs.length > 0) {
     setCurrentSongUUID(extractUUIDPrefix(songs[0].uuid));
@@ -51,7 +51,7 @@ export function MusicPlayerProvider({ children }) {
   const [user] = useGetUserAuthToken();
   const [playlists, isPlaylistLoading] = useGetUserPlaylists(
     user?.userUUID,
-    refreshFlag
+    refreshPlaylistsFlag
   );
   const currentSong = songs.find(
     (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
@@ -69,11 +69,7 @@ export function MusicPlayerProvider({ children }) {
 
   useLocalStorage("currentTime", Math.round(currentTime));
 
-  useUpdateActivePlaylist(
-    currentPlayingPlaylist || activePlaylist,
-    songs,
-    setFilteredSongs
-  );
+  useUpdateActivePlaylist(activePlaylist, songs, setFilteredSongs);
 
   const handlePlayPause = () => {
     if (currentTime > 0) {
@@ -171,13 +167,6 @@ export function MusicPlayerProvider({ children }) {
     showToast(`Playback speed set to: ${playBackSpeeds[nextIndex]}`, "success");
   };
 
-  const handleSongSelection = (song, playlist) => {
-    setCurrentPlayingPlaylist(playlist);
-    setCurrentSongUUID(extractUUIDPrefix(song.uuid));
-    setIsPlaying(true);
-    setCurrentTime(0);
-  };
-
   const contextValue = {
     songs,
     filteredSongs,
@@ -212,18 +201,17 @@ export function MusicPlayerProvider({ children }) {
     currentTime,
     setCurrentTime,
     playlists,
-    refreshFlag,
-    triggerRefreshHandler,
+    refreshPlaylistsFlag,
+    refreshSongsFlag,
+    triggerRefreshPlaylistsHandler,
+    triggerRefreshSongsHandler,
     activePlaylist,
     setActivePlaylist,
-    currentPlayingPlaylist,
-    setCurrentPlayingPlaylist,
     currentPage,
     setCurrentPage,
     user,
     handleKeyPressWhenTabbed,
     showMusicList,
-    handleSongSelection,
   };
 
   return (

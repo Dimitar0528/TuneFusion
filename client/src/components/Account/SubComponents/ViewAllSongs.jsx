@@ -4,7 +4,7 @@ import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 import { formatTime } from "../../../utils/formatTime";
 import { useDeleteSong } from "../../../hooks/CRUD-hooks/useSongs";
-export default function ViewAllSongs() {
+export default function ViewAllSongs({ triggerRefreshHandler }) {
   const deleteSong = useDeleteSong();
 
   const { songs, currentSongUUID, setCurrentSongUUID, setCurrentTime } =
@@ -22,7 +22,7 @@ export default function ViewAllSongs() {
       setCurrentSongUUID(extractUUIDPrefix(songs[nextIndex].uuid));
       setCurrentTime(0);
     }
-    await deleteSong(uuid);
+    await deleteSong(uuid, triggerRefreshHandler);
   };
 
   return (

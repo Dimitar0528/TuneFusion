@@ -7,13 +7,15 @@ import { useParams } from "react-router-dom";
 
 import useTabs from "./hooks/useTabs";
 import useTabEventListeners from "./hooks/useTabEventListeners";
-import { useRefresh } from "../../hooks/useRefresh";
+import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
+import { useRefresh } from "../../hooks/useRefresh";
 export default function Account() {
   const { userUUID } = useParams();
-  const [refreshFlag, triggerRefreshHandler] = useRefresh();
-
-  const [user] = useGetUserDetails(userUUID, refreshFlag);
+  const { triggerRefreshSongsHandler } = useMusicPlayer();
+  const [refreshUserFlag, triggerRefreshUserHandler] = useRefresh();
+  const [refreshUsersFlag, triggerRefreshUsersHandler] = useRefresh();
+  const [user] = useGetUserDetails(userUUID, refreshUserFlag);
   const tabs = ["Song Suggestions", "Songs", "Users", "Account"];
   const {
     activeTab,
@@ -43,22 +45,32 @@ export default function Account() {
         return (
           <EditAccount
             user={user}
-            triggerRefreshHandler={triggerRefreshHandler}
+            triggerRefreshHandler={triggerRefreshUserHandler}
           />
         );
       case "Songs":
-        return user.role === "admin" && <ViewAllSongs />;
+        return (
+          user.role === "admin" && (
+            <ViewAllSongs triggerRefreshHandler={triggerRefreshSongsHandler} />
+          )
+        );
       case "Users":
         return (
           user.role === "admin" && (
             <ViewAllUsers
-              refreshFlag={refreshFlag}
-              triggerRefreshHandler={triggerRefreshHandler}
+              refreshFlag={refreshUsersFlag}
+              triggerRefreshHandler={triggerRefreshUsersHandler}
             />
           )
         );
       case "Song Suggestions":
-        return user.role === "admin" && <SongSuggestion />;
+        return (
+          user.role === "admin" && (
+            <SongSuggestion
+              triggerRefreshHandler={triggerRefreshSongsHandler}
+            />
+          )
+        );
       default:
         return (
           <div>

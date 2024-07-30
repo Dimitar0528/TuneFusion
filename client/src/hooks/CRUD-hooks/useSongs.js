@@ -3,24 +3,28 @@ import songsAPI from "../../api/songs-api";
 import showToast from "../../utils/showToast";
 
 export function useCreateSong() {
-    const songCreateHandler = async (songData) => {
+    const songCreateHandler = async (songData, triggerRefreshHandler) => {
         const result = await songsAPI.createSong(songData);
-        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success', 1500, true)
+        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success');
+        triggerRefreshHandler();
     }
     return songCreateHandler;
 }
 
-export function useGetAllSongs() {
+export function useGetAllSongs(refreshFlag) {
     const [songs, setSongs] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        (async () => {
-            const result = await songsAPI.getAllSongs();;
+        const fetchSongs = async () => {
+            const result = await songsAPI.getAllSongs();
+            if (result.error) return showToast(`Error: ${result.error}`, "error")
             setSongs(result);
             setLoading(false)
-        })();
-    }, []);
+        }
+        fetchSongs()
+    }, [refreshFlag]);
+
     return [songs, loading];
 }
 
@@ -101,9 +105,10 @@ export function useUpdateSong() {
 }
 
 export function useDeleteSong() {
-    const songDeleteHandler = async (songId) => {
+    const songDeleteHandler = async (songId, triggerRefreshHandler) => {
         const result = await songsAPI.deleteSong(songId)
-        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success', 1500, true)
+        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success');
+        triggerRefreshHandler();
     }
     return songDeleteHandler;
 }

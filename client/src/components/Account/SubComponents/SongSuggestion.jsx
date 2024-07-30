@@ -11,7 +11,7 @@ import {
   useGetSongSuggestions,
 } from "../../../hooks/CRUD-hooks/useSongs";
 
-export default function SongSuggestion() {
+export default function SongSuggestion({ triggerRefreshHandler }) {
   const createSong = useCreateSong();
   const [query, setQuery] = useState("");
   const [songs, loading, fetchSuggestedSongs] = useGetSongSuggestions();
@@ -32,7 +32,7 @@ export default function SongSuggestion() {
 
   const handleAddToDB = async (song) => {
     try {
-      await createSong(song);
+      await createSong(song, triggerRefreshHandler);
     } catch (error) {
       showToast(`Error adding song: ${error.message}`, "error");
     }

@@ -69,8 +69,20 @@ export default function MusicList({
       case "name-desc":
         return b.name.localeCompare(a.name);
       case "date-added-asc":
+        if (a.PlaylistSong && b.PlaylistSong) {
+          return (
+            new Date(a.PlaylistSong.createdAt) -
+            new Date(b.PlaylistSong.createdAt)
+          );
+        }
         return new Date(a.createdAt) - new Date(b.createdAt);
       case "date-added-desc":
+        if (a.PlaylistSong && b.PlaylistSong) {
+          return (
+            new Date(b.PlaylistSong.createdAt) -
+            new Date(a.PlaylistSong.createdAt)
+          );
+        }
         return new Date(b.createdAt) - new Date(a.createdAt);
       case "duration-asc":
         return a.duration - b.duration;
