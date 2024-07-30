@@ -63,7 +63,6 @@ export const validateResetPassword = (values) => {
 export function useGetAllUsers(refreshFlag) {
     const [users, setUsers] = useState([]);
     useEffect(() => {
-        refreshFlag && console.log('Refresh Users')
         async function getUsers() {
             const response = await fetch("http://localhost:3000/api/users", {
                 method: "GET",

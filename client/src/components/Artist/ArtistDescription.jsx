@@ -33,7 +33,7 @@ export default function ArtistDescription() {
         )}
       </div>
 
-      <h2>Albums</h2>
+      <h2 className={styles.h2}>Albums</h2>
       <div className={styles.albumList}>
         {isArtistLoading
           ? Array.from({ length: 6 }).map((_, index) => (
@@ -61,7 +61,7 @@ export default function ArtistDescription() {
             ))}
       </div>
 
-      <h2>Singles</h2>
+      <h2 className={styles.h2}>Singles</h2>
       <div className={styles.singleList}>
         {isArtistLoading
           ? Array.from({ length: 6 }).map((_, index) => (
@@ -89,7 +89,7 @@ export default function ArtistDescription() {
             ))}
       </div>
 
-      <h2>Suggested Artists</h2>
+      <h2 className={styles.h2}>Suggested Artists</h2>
       <div className={styles.suggestedArtists}>
         {isArtistLoading
           ? Array.from({ length: 6 }).map((_, index) => (

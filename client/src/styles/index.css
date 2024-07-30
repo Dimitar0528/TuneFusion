@@ -12,7 +12,7 @@
     --primary-clr-dark: hsl(213, 14%, 18%);
     --secondary-clr: hsl(339, 100%, 73%);
     --secondary-clr-light: hsl(from var(--secondary-clr) h s 85%);
-    --text-dark-clr: hsl(213, 14%, 12%);
+    --text-dark-clr: hsl(213, 14%, 13%);
     --text-light-clr: hsl(0, 0%, 95%);
     --accent-clr-dark: hsl(210, 20%, 10%);
     --accent-clr-light: hsl(0, 0%, 100%);

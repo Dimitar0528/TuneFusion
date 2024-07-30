@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./styles/MusicList.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
@@ -13,6 +13,7 @@ import {
   useAddSongToPlaylist,
   useRemoveSongFromPlaylist,
 } from "../../../hooks/CRUD-hooks/usePlaylists";
+
 export default function MusicList({
   songs,
   title,
@@ -36,6 +37,10 @@ export default function MusicList({
   } = useMusicPlayer();
   const addSongToPlaylist = useAddSongToPlaylist();
   const removeSongFromPlaylist = useRemoveSongFromPlaylist();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption, setSortOption] = useState("date-added-desc");
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const [selectedPlaylist, setSelectedPlaylist] = useState();
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState();
@@ -44,17 +49,52 @@ export default function MusicList({
     return storedLikedSongs ? JSON.parse(storedLikedSongs) : [];
   });
   const [hoveredSongUUID, setHoveredSongUUID] = useState();
-  const itemsPerPage = 20;
+
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+
+  const handleSortChange = (e) => setSortOption(e.target.value);
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(0);
+  };
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
   };
+
+  const sortedSongs = songs.sort((a, b) => {
+    switch (sortOption) {
+      case "name-asc":
+        return a.name.localeCompare(b.name);
+      case "name-desc":
+        return b.name.localeCompare(a.name);
+      case "date-added-asc":
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      case "date-added-desc":
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      case "duration-asc":
+        return a.duration - b.duration;
+      case "duration-desc":
+        return b.duration - a.duration;
+      default:
+        return 0;
+    }
+  });
+
+  const filteredSongs = sortedSongs.filter(
+    (song) =>
+      song.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      song.artist.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const offset = currentPage * itemsPerPage;
-  const currentSongs = songs.slice(offset, offset + itemsPerPage);
-  const pageCount = Math.ceil(songs.length / itemsPerPage);
+  const currentSongs = filteredSongs.slice(offset, offset + itemsPerPage);
+  const pageCount = Math.ceil(filteredSongs.length / itemsPerPage);
 
   const totalDuration = activePlaylist?.Songs.reduce((total, song) => {
     return total + song.duration;
   }, 0);
+
   const hideList = () => {
     musicListRef.current.style.opacity = "0";
     musicListRef.current.style.pointerEvents = "none";
@@ -131,6 +171,7 @@ export default function MusicList({
       addSongToPlaylist(reqObj, callback, triggerRefreshHandler);
     }
   };
+
   return (
     <div ref={musicListRef} className="music-list" style={styles}>
       <div className="header">
@@ -153,6 +194,42 @@ export default function MusicList({
             onKeyDown={(e) => handleKeyPressWhenTabbed(e, hideList)}></i>
         }
       </div>
+      <div className="sort-controls">
+        <div className="search-container">
+          <input
+            id="search"
+            type="search"
+            placeholder="Search by artist or name"
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+        </div>
+        <div className="select-container">
+          <label htmlFor="sort-by">Sort By:</label>
+          <select id="sort-by" value={sortOption} onChange={handleSortChange}>
+            <option value="name-asc">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="date-added-asc">Date Added (ASC)</option>
+            <option value="date-added-desc">Date Added (DESC)</option>
+            <option value="duration-asc">Duration (Least to Most)</option>
+            <option value="duration-desc">Duration (Most to Least)</option>
+          </select>
+        </div>
+        <div className="select-container">
+          <label htmlFor="number-of-songs">Songs per page:</label>
+          <select
+            id="number-of-songs"
+            value={itemsPerPage}
+            onChange={handleItemsPerPageChange}>
+            <option value={5}>5 per page</option>
+            <option value={10}>10 per page</option>
+            <option value={15}>15 per page</option>
+            <option value={20}>20 per page</option>
+          </select>
+        </div>
+      </div>
+      <hr />
+
       {isSongLoading ? (
         <Skeleton
           containerClassName="playlist-description"
@@ -372,6 +449,7 @@ export default function MusicList({
               <label htmlFor="playlist"> Select a playlist</label>
               <div className="custom-select">
                 <select
+                  className="add-song-to-playlist"
                   onChange={handlePlaylistSelect}
                   value={selectedPlaylist || ""}>
                   <option value="" disabled>

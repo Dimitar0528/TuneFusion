@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useRef } from "react";
 import showToast from "../utils/showToast";
 import extractUUIDPrefix from "../utils/extractUUIDPrefix";
-
 import { useGetAllSongs, useGetSongLyrics } from "../hooks/CRUD-hooks/useSongs";
 import { useGetUserAuthToken } from "../hooks/CRUD-hooks/useAuth";
 import useLocalStorage from "../hooks/useLocalStorage";
@@ -9,6 +8,7 @@ import useStoredActivePlaylist from "../hooks/useStoredActivePlaylist";
 import useUpdateActivePlaylist from "../hooks/useUpdateActivePlaylist";
 import { useRefresh } from "../hooks/useRefresh";
 import { useGetUserPlaylists } from "../hooks/CRUD-hooks/usePlaylists";
+
 const MusicPlayerContext = createContext();
 
 export function MusicPlayerProvider({ children }) {
@@ -21,6 +21,7 @@ export function MusicPlayerProvider({ children }) {
   const [playBackSpeed, setPlayBackSpeed] = useState(1);
 
   const [activePlaylist, setActivePlaylist] = useState();
+  const [currentPlayingPlaylist, setCurrentPlayingPlaylist] = useState();
 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -68,7 +69,11 @@ export function MusicPlayerProvider({ children }) {
 
   useLocalStorage("currentTime", Math.round(currentTime));
 
-  useUpdateActivePlaylist(activePlaylist, songs, setFilteredSongs);
+  useUpdateActivePlaylist(
+    currentPlayingPlaylist || activePlaylist,
+    songs,
+    setFilteredSongs
+  );
 
   const handlePlayPause = () => {
     if (currentTime > 0) {
@@ -165,6 +170,14 @@ export function MusicPlayerProvider({ children }) {
     setPlayBackSpeed(playBackSpeeds[nextIndex]);
     showToast(`Playback speed set to: ${playBackSpeeds[nextIndex]}`, "success");
   };
+
+  const handleSongSelection = (song, playlist) => {
+    setCurrentPlayingPlaylist(playlist);
+    setCurrentSongUUID(extractUUIDPrefix(song.uuid));
+    setIsPlaying(true);
+    setCurrentTime(0);
+  };
+
   const contextValue = {
     songs,
     filteredSongs,
@@ -203,11 +216,14 @@ export function MusicPlayerProvider({ children }) {
     triggerRefreshHandler,
     activePlaylist,
     setActivePlaylist,
+    currentPlayingPlaylist,
+    setCurrentPlayingPlaylist,
     currentPage,
     setCurrentPage,
     user,
     handleKeyPressWhenTabbed,
     showMusicList,
+    handleSongSelection,
   };
 
   return (

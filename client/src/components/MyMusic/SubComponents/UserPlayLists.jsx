@@ -11,6 +11,7 @@ import {
   useEditPlaylist,
   useDeletePlaylist,
 } from "../../../hooks/CRUD-hooks/usePlaylists";
+
 const initialPlaylistValues = {
   name: "",
   description: "",
@@ -28,6 +29,8 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
   const { userUUID } = user;
   const [showDialog, setShowDialog] = useState(false);
   const [editingPlaylist, setEditingPlaylist] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const createPlaylist = useCreatePlaylist();
   const editPlaylist = useEditPlaylist();
   const deletePlaylist = useDeletePlaylist();
@@ -107,6 +110,14 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     deletePlaylist(playlist.uuid, callback, triggerRefreshHandler);
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredPlaylists = playlists.filter((playlist) =>
+    playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="playlists">
       <div className="playlist-header">
@@ -121,11 +132,22 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
           onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleCreatePlaylist)}
           title="Create playlist"></i>
       </div>
+
+      <div className="sort-controls | playlist-controls">
+        <input
+          id="search"
+          type="search"
+          placeholder="Search by name"
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+      </div>
+
       {isPlaylistLoading
         ? Array.from({ length: 6 }).map((_, index) => (
             <div key={index} className="playlist">
               <div className="playlist-title">
-                <Skeleton circle={true} height={45} width={45} />
+                <Skeleton height={40} width={40} />
                 <Skeleton width={100} />
                 <div style={{ display: "flex", gap: "1rem" }}>
                   <Skeleton width={30} height={20} />
@@ -134,7 +156,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
               </div>
             </div>
           ))
-        : playlists.map((playlist) => (
+        : filteredPlaylists.map((playlist) => (
             <div
               key={playlist.uuid}
               className={`playlist ${
@@ -200,32 +222,31 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
           <div className="playlist-dialog">
             <h2>{editingPlaylist ? "Edit Playlist" : "Create New Playlist"}</h2>
             <form method="dialog" onSubmit={submitHandler}>
-              <label>
+              <label style={{ marginTop: "1rem" }} htmlFor="name">
                 Playlist Name:
-                <input
-                  type="text"
-                  name="name"
-                  value={newPlaylist.name}
-                  onChange={changeHandler}
-                />
-                {errors.name && <p className="error">{errors.name}</p>}
               </label>
-              <label>
-                Description: (optional)
-                <textarea
-                  name="description"
-                  value={newPlaylist.description}
-                  onChange={changeHandler}></textarea>
-              </label>
-              <label>
-                Image URL: (optional)
-                <input
-                  type="text"
-                  name="img_src"
-                  value={newPlaylist.img_src}
-                  onChange={changeHandler}
-                />
-              </label>
+              <input
+                id="name"
+                type="text"
+                name="name"
+                value={newPlaylist.name}
+                onChange={changeHandler}
+              />
+              {errors.name && <p className="error">{errors.name}</p>}
+              <label htmlFor="description">Description: (optional)</label>
+              <textarea
+                id="description"
+                name="description"
+                value={newPlaylist.description}
+                onChange={changeHandler}></textarea>
+              <label htmlFor="img_src">Image URL: (optional)</label>
+              <input
+                id="img_src"
+                type="text"
+                name="img_src"
+                value={newPlaylist.img_src}
+                onChange={changeHandler}
+              />
               <div className="dialog-actions">
                 <button type="submit">Save</button>
                 <button type="button" onClick={handleCloseDialog}>

@@ -14,7 +14,7 @@
     align-items: start;
     margin-bottom: 2rem;
 
-    @media (width < 969px) {
+    @media (width < 1000px) {
         flex-direction: column;
 
         & .playlists {

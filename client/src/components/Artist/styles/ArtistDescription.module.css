@@ -3,7 +3,7 @@
     margin: 2rem auto;
     padding: 20px;
     color: #fff;
-    background-color: #121212;
+    background-color: var(--text-dark-clr);
     font-family: 'Roboto', sans-serif;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
@@ -14,7 +14,7 @@
     font-weight: bold;
     margin-bottom: 20px;
     text-align: center;
-    color: #1db954;
+    color: var(--secondary-clr);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
@@ -35,8 +35,8 @@
     margin-bottom: 20px;
     text-align: center;
     line-height: 1.5;
-    color: #ccc;
-    word-wrap:break-word;
+    color: hsl(0, 0%, 87%);
+    word-wrap: break-word;
 }
 
 .albumList,
@@ -53,16 +53,22 @@
 .suggested-artist {
     display: flex;
     align-items: center;
-    background-color: #181818;
+    background-color: var(--primary-clr-light-dark);
     padding: 10px;
     border-radius: 10px;
     transition: background-color 0.3s ease;
+
+}
+
+.h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
 }
 
 .album:hover,
 .single:hover,
 .suggested-artist:hover {
-    background-color: #282828;
+    background-color: var(--primary-clr);
 }
 
 .album img,
@@ -91,24 +97,24 @@
 .single p:first-child,
 .suggested-artist p:first-child {
     font-weight: bold;
-    color: #1db954;
+    color: var(--accent-clr-light);
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .album p:last-child,
 .single p:last-child,
 .suggested-artist p:last-child {
-    color: #b3b3b3;
+    color: hsl(from var(--card-text-light-clr) h s 85%);
     font-size: 0.9rem;
 }
 
 .suggested-artist p a {
-    color: #1db954;
+    color: hsl(from var(--secondary-clr) h 30% 85%);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .suggested-artist p a:hover {
-    color: #1ed760;
+    color: var(--secondary-clr);
     text-decoration: underline;
 }

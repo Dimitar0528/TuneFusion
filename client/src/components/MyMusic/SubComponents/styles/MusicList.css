@@ -183,11 +183,9 @@
     position: relative;
 }
 
-select {
+.add-song-to-playlist {
     appearance: none;
-    /*  safari  */
     -webkit-appearance: none;
-    /*  other styles for aesthetics */
     width: 100%;
     font-size: 1.15rem;
     padding: 0.675em 6em 0.675em 1em;
@@ -244,4 +242,48 @@ select {
 .add-to-playlist {
     margin-right: 1rem;
     cursor: pointer;
+}
+
+.sort-controls {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1.5rem 1rem;
+}
+
+.sort-controls input[type="search"] {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.sort-controls label {
+    font-weight: bold;
+    margin-right: 0.5rem;
+    margin-top: .5rem;
+}
+
+.sort-controls select {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.sort-controls div {
+    display: flex;
+    align-items: center;
+}
+
+.sort-controls .select-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sort-controls .search-container {
+    flex: 1;
 }
