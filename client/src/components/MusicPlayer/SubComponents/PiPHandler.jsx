@@ -2,36 +2,37 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { PiPContainer } from "./PiPContainer";
 import MusicPlayer from "../MusicPlayer";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-export const PiPHandler = () => {
+export const PiPHandler = ({ pipWindow, setPiPWindow }) => {
   const { user } = useMusicPlayer();
   const { userUUID, role } = user;
-  const [pipWindow, setPiPWindow] = useState(documentPictureInPicture.window);
 
-  const handleClick = useCallback(async () => {
+  const copyStylesToPiPWindow = (newWindow) => {
+    [...document.styleSheets].forEach((styleSheet) => {
+      try {
+        const cssRules = [...styleSheet.cssRules]
+          .map((rule) => rule.cssText)
+          .join("");
+        const style = document.createElement("style");
+        style.textContent = cssRules;
+        newWindow.document.head.appendChild(style);
+      } catch (e) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.type = styleSheet.type;
+        link.media = styleSheet.media;
+        link.href = styleSheet.href;
+        newWindow.document.head.appendChild(link);
+      }
+    });
+  };
+
+  const handlePiPButtonClick = useCallback(async () => {
     if (pipWindow) {
       pipWindow.close();
     } else {
       const newWindow = await documentPictureInPicture.requestWindow();
       setPiPWindow(newWindow);
-
-      [...document.styleSheets].forEach((styleSheet) => {
-        try {
-          const cssRules = [...styleSheet.cssRules]
-            .map((rule) => rule.cssText)
-            .join("");
-          const style = document.createElement("style");
-
-          style.textContent = cssRules;
-          newWindow.document.head.appendChild(style);
-        } catch (e) {
-          const link = document.createElement("link");
-          link.rel = "stylesheet";
-          link.type = styleSheet.type;
-          link.media = styleSheet.media;
-          link.href = styleSheet.href;
-          newWindow.document.head.appendChild(link);
-        }
-      });
+      copyStylesToPiPWindow(newWindow);
     }
   }, [pipWindow]);
 
@@ -51,7 +52,7 @@ export const PiPHandler = () => {
     <>
       <button
         className="pip-btn"
-        onClick={handleClick}
+        onClick={handlePiPButtonClick}
         title={pipWindow ? "Close PiP Window" : "Open PiP Window"}>
         <i className="fa-solid">
           {pipWindow ? (
@@ -89,7 +90,8 @@ export const PiPHandler = () => {
         <MusicPlayer
           userUUID={userUUID}
           userRole={role}
-          excludeElementWhenInPiPMode={true}
+          excludeElementsWhenInPiPModeFlag={true}
+          applyStylesWhenInPiPModeFlag={true}
         />
       </PiPContainer>
     </>

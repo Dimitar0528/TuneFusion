@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { PiPHandler } from "./PiPHandler";
-export default function PlayerControls({ excludeElementWhenInPiPMode }) {
+export default function PlayerControls({
+  excludeElementsWhenInPiPModeFlag,
+  pipWindow,
+  setPiPWindow,
+}) {
   const {
     isPlaying,
     handlePlayPause,
@@ -92,7 +96,9 @@ export default function PlayerControls({ excludeElementWhenInPiPMode }) {
   ]);
   return (
     <div className="controls">
-      {excludeElementWhenInPiPMode !== true && <PiPHandler />}
+      {excludeElementsWhenInPiPModeFlag !== true && (
+        <PiPHandler pipWindow={pipWindow} setPiPWindow={setPiPWindow} />
+      )}
       <i
         id="playback-speed"
         className="fa-solid fa-plus-minus"

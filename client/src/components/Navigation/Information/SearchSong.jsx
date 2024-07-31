@@ -15,7 +15,7 @@ export default function SearchSong() {
     setCurrentPage,
     setActivePlaylist,
     activePlaylist,
-    triggerRefreshHandler,
+    triggerRefreshPlaylistsHandler,
   } = useMusicPlayer();
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("q");
@@ -41,9 +41,11 @@ export default function SearchSong() {
     }
 
     return () => {
-      activePlaylist
-        ? setFilteredSongs(activePlaylist.Songs)
-        : setFilteredSongs(songs.slice(0, 20));
+      if (activePlaylist) {
+        setFilteredSongs(activePlaylist.Songs);
+        triggerRefreshPlaylistsHandler();
+      }
+      setFilteredSongs(songs.slice(0, 20));
       setCurrentPage(0);
     };
   }, [searchTerm, songs, setFilteredSongs, setActivePlaylist, setCurrentPage]);
@@ -67,7 +69,7 @@ export default function SearchSong() {
             songs={searchSongs}
             title={`Search results for ${searchTerm}:  [Total Songs found: ${searchSongs.length} ]`}
             playlists={playlists}
-            triggerRefresh={triggerRefreshHandler}
+            triggerRefreshHandler={triggerRefreshPlaylistsHandler}
             styles={{ width: "95%", marginInline: "auto", maxHeight: "100vh" }}
           />
         </Suspense>

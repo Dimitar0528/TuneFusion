@@ -3,10 +3,10 @@ import songsAPI from "../../api/songs-api";
 import showToast from "../../utils/showToast";
 
 export function useCreateSong() {
-    const songCreateHandler = async (songData, triggerRefreshHandler) => {
+    const songCreateHandler = async (songData, callback) => {
         const result = await songsAPI.createSong(songData);
-        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success');
-        triggerRefreshHandler();
+        if (result.error) showToast(`Error: ${result.error}`, "error")
+        typeof callback === 'function' && callback(result);
     }
     return songCreateHandler;
 }

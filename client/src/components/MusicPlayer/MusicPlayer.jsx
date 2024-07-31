@@ -1,4 +1,5 @@
 import "./styles/MusicPlayer.css";
+import { useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import PlayerControls from "./SubComponents/PlayerControls";
 import SongDetails from "./SubComponents/SongDetails";
@@ -9,7 +10,8 @@ import showToast from "../../utils/showToast";
 export default function MusicPlayer({
   userRole,
   userUUID,
-  excludeElementWhenInPiPMode = null,
+  excludeElementsWhenInPiPModeFlag = false,
+  applyStylesWhenInPiPModeFlag = false,
 }) {
   const {
     currentSong,
@@ -18,6 +20,7 @@ export default function MusicPlayer({
     handleCollapseToggle,
     handleKeyPressWhenTabbed,
   } = useMusicPlayer();
+  const [pipWindow, setPiPWindow] = useState(documentPictureInPicture.window);
 
   const navigate = useNavigate();
 
@@ -34,10 +37,15 @@ export default function MusicPlayer({
   };
 
   return (
-    <div className={`wrapper ${isCollapsed && "collapsed"}`}>
+    <div
+      className={`wrapper ${isCollapsed && "collapsed"} ${
+        pipWindow &&
+        applyStylesWhenInPiPModeFlag === true &&
+        "picture-in-picture"
+      }`}>
       <div className="top-section">
         {userRole === "admin" && (
-          <i
+          <i id="edit"
             className="fa-solid fa-pen-to-square"
             title="Edit Song"
             onClick={() => {
@@ -67,10 +75,12 @@ export default function MusicPlayer({
 
       <SongDetails />
 
-      {excludeElementWhenInPiPMode !== true && <ProgressArea />}
+      {excludeElementsWhenInPiPModeFlag !== true && <ProgressArea />}
 
       <PlayerControls
-        excludeElementWhenInPiPMode={excludeElementWhenInPiPMode}
+        excludeElementsWhenInPiPModeFlag={excludeElementsWhenInPiPModeFlag}
+        pipWindow={pipWindow}
+        setPiPWindow={setPiPWindow}
       />
     </div>
   );

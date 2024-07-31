@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "../styles/SongManagerHandler.module.css";
 import { useParams } from "react-router-dom";
-
+import showToast from "../utils/showToast";
 import {
   useCreateSong,
   useGetSong,
@@ -60,7 +60,10 @@ export default function SongManagerHandler({ action }) {
       if (action === "updatesong") {
         await updateSong(name, formData);
       } else {
-        await createSong(formData);
+        const callback = (result) => {
+          showToast(result.message, "success", 1500, true);
+        };
+        await createSong(formData, callback);
       }
 
       setErrors({});

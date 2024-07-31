@@ -31,8 +31,12 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
   };
 
   const handleAddToDB = async (song) => {
+    const callback = (result) => {
+      showToast(result.message, "success");
+      triggerRefreshHandler();
+    };
     try {
-      await createSong(song, triggerRefreshHandler);
+      await createSong(song, callback);
     } catch (error) {
       showToast(`Error adding song: ${error.message}`, "error");
     }
