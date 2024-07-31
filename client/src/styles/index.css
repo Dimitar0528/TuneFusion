@@ -7,8 +7,8 @@
 }
 
 :root {
-    --primary-clr: hsl(295, 22%, 54%);
-    --primary-clr-light-dark: hsl(from var(--primary-clr) h s 25%);
+    --primary-clr: hsl(295, 22%, 55%);
+    --primary-clr-light-dark: hsl(from var(--primary-clr) h s 23%);
     --primary-clr-dark: hsl(213, 14%, 18%);
     --secondary-clr: hsl(339, 100%, 73%);
     --secondary-clr-light: hsl(from var(--secondary-clr) h s 85%);
@@ -163,4 +163,16 @@ body {
     position: absolute;
     left: 88%;
     cursor: pointer;
+}
+
+.pip-btn {
+    background-color: transparent;
+    border: transparent;
+
+
+    & svg {
+        cursor: pointer;
+        margin-top: .3rem;
+        color: var(--primary-clr)
+    }
 }

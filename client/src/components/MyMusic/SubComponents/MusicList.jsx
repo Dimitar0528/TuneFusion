@@ -29,7 +29,6 @@ export default function MusicList({
     isSongLoading,
     clearLyrics,
     setIsPlaying,
-    musicListRef,
     isPlaying,
     currentPage,
     setCurrentPage,
@@ -107,11 +106,6 @@ export default function MusicList({
     return total + song.duration;
   }, 0);
 
-  const hideList = () => {
-    musicListRef.current.style.opacity = "0";
-    musicListRef.current.style.pointerEvents = "none";
-  };
-
   const handleCurrentPlayingSong = (songUUID) => {
     setCurrentSongUUID(songUUID);
   };
@@ -185,7 +179,7 @@ export default function MusicList({
   };
 
   return (
-    <div ref={musicListRef} className="music-list" style={styles}>
+    <div className="music-list" style={styles}>
       <div className="header">
         <div className="row list">
           {isSongLoading ? (
@@ -197,14 +191,6 @@ export default function MusicList({
             </>
           )}
         </div>
-        {
-          <i
-            tabIndex={0}
-            id="close"
-            className="fa-solid fa-close"
-            onClick={hideList}
-            onKeyDown={(e) => handleKeyPressWhenTabbed(e, hideList)}></i>
-        }
       </div>
       <div className="sort-controls">
         <div className="search-container">
@@ -233,10 +219,11 @@ export default function MusicList({
             id="number-of-songs"
             value={itemsPerPage}
             onChange={handleItemsPerPageChange}>
-            <option value={5}>5 per page</option>
             <option value={10}>10 per page</option>
-            <option value={15}>15 per page</option>
             <option value={20}>20 per page</option>
+            <option value={30}>30 per page</option>
+            <option value={40}>40 per page</option>
+            <option value={999}>999 per page</option>
           </select>
         </div>
       </div>

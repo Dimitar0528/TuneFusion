@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-
-export default function PlayerControls() {
+import { PiPHandler } from "./PiPHandler";
+export default function PlayerControls({ excludeElementWhenInPiPMode }) {
   const {
     isPlaying,
     handlePlayPause,
@@ -19,7 +19,6 @@ export default function PlayerControls() {
     setVolume,
     handleVolumeChange,
     handleKeyPressWhenTabbed,
-    showMusicList,
   } = useMusicPlayer();
   const [previousVolume, setPreviousVolume] = useState(volume);
 
@@ -93,13 +92,7 @@ export default function PlayerControls() {
   ]);
   return (
     <div className="controls">
-      <i
-        id="more-music"
-        className="fa-solid fa-sliders"
-        title="Show Music List"
-        onClick={showMusicList}
-        tabIndex={0}
-        onKeyDown={(e) => handleKeyPressWhenTabbed(e, showMusicList)}></i>
+      {excludeElementWhenInPiPMode !== true && <PiPHandler />}
       <i
         id="playback-speed"
         className="fa-solid fa-plus-minus"

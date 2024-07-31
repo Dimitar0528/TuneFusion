@@ -39,7 +39,7 @@ label {
 }
 
 .wrapper {
-    width: max(350px, 40vw);
+    width: clamp(min(350px, 100%), 40vw, 100%);
     transition-duration: .6s;
     transition-property: display opacity;
     max-height: 630px;
@@ -290,17 +290,12 @@ label {
     user-select: none;
     background: var(--bg);
     background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--primary-clr);
     transition: .5s;
 
     &:where(:hover, :focus-visible) {
         outline: 1px solid var(--secondary-clr);
         outline-offset: 3px;
-        background: linear-gradient(var(--secondary-clr) 100%, var(--primary-clr) 0%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
     }
 }
 
@@ -315,7 +310,7 @@ label {
     width: 2.8rem;
     aspect-ratio: 1;
     background: linear-gradient(var(--accent-clr-light) 0%, var(--darkwhite) 100%);
-    box-shadow: 0 0 5px var(--secondary-clr);
+    box-shadow: 0 0 5px var(--primary-clr);
     border-radius: 50%;
 
 }
@@ -399,5 +394,4 @@ label {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: #f9f9f9;
 }

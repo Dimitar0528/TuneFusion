@@ -6,9 +6,12 @@ import ProgressArea from "./SubComponents/ProgressArea";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import showToast from "../../utils/showToast";
-export default function MusicPlayer({ userRole, userUUID }) {
+export default function MusicPlayer({
+  userRole,
+  userUUID,
+  excludeElementWhenInPiPMode = null,
+}) {
   const {
-    songs,
     currentSong,
     isPlaying,
     isCollapsed,
@@ -64,9 +67,11 @@ export default function MusicPlayer({ userRole, userUUID }) {
 
       <SongDetails />
 
-      {songs.length > 0 && <ProgressArea />}
+      {excludeElementWhenInPiPMode !== true && <ProgressArea />}
 
-      <PlayerControls />
+      <PlayerControls
+        excludeElementWhenInPiPMode={excludeElementWhenInPiPMode}
+      />
     </div>
   );
 }

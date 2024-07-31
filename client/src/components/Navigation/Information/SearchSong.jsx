@@ -10,7 +10,6 @@ const MusicList = lazy(() => import("../../MyMusic/SubComponents/MusicList"));
 export default function SearchSong() {
   const {
     songs,
-    musicListRef,
     setFilteredSongs,
     playlists,
     setCurrentPage,
@@ -67,7 +66,6 @@ export default function SearchSong() {
           <MusicList
             songs={searchSongs}
             title={`Search results for ${searchTerm}:  [Total Songs found: ${searchSongs.length} ]`}
-            musicListRef={musicListRef}
             playlists={playlists}
             triggerRefresh={triggerRefreshHandler}
             styles={{ width: "95%", marginInline: "auto", maxHeight: "100vh" }}

@@ -45,9 +45,6 @@ export function MusicPlayerProvider({ children }) {
     () => Number(JSON.parse(localStorage.getItem("currentTime"))) || 0
   );
 
-  const playerRef = useRef();
-  const musicListRef = useRef();
-
   const [user] = useGetUserAuthToken();
   const [playlists, isPlaylistLoading] = useGetUserPlaylists(
     user?.userUUID,
@@ -63,6 +60,8 @@ export function MusicPlayerProvider({ children }) {
   const [lyrics, islyricsLoading, fetchLyrics, clearLyrics] =
     useGetSongLyrics(currentSong);
 
+  const playerRef = useRef();
+
   useStoredActivePlaylist(playlists, setActivePlaylist);
 
   useLocalStorage("currentSongUUID", currentSongUUID);
@@ -73,7 +72,7 @@ export function MusicPlayerProvider({ children }) {
 
   const handlePlayPause = () => {
     if (currentTime > 0) {
-      playerRef.current.seekTo(currentTime);
+      playerRef.current?.seekTo(currentTime);
     }
     setIsPlaying(!isPlaying);
   };
@@ -132,11 +131,6 @@ export function MusicPlayerProvider({ children }) {
     }
   };
 
-  const showMusicList = () => {
-    musicListRef.current.style.opacity = "1";
-    musicListRef.current.style.pointerEvents = "auto";
-  };
-
   const handleLoopSong = () => {
     setIsLooped((isLooped) => !isLooped);
     showToast(
@@ -186,7 +180,6 @@ export function MusicPlayerProvider({ children }) {
     volume,
     setVolume,
     playerRef,
-    musicListRef,
     fetchLyrics,
     handlePlayPause,
     handleNextSong,
@@ -211,7 +204,6 @@ export function MusicPlayerProvider({ children }) {
     setCurrentPage,
     user,
     handleKeyPressWhenTabbed,
-    showMusicList,
   };
 
   return (

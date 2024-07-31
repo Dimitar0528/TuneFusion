@@ -48,7 +48,7 @@ export default function ProgressArea() {
 
         newProgress = Math.min(1, Math.max(0, newProgress));
 
-        const duration = playerRef.current.getDuration();
+        const duration = currentSong.duration;
         const newTime = newProgress * duration;
 
         setCurrentTime(newTime);
@@ -61,8 +61,7 @@ export default function ProgressArea() {
   const handleProgressBarClick = (e) => {
     const progressBarWidth = progressAreaRef.current.clientWidth;
     const clickedOffsetX = e.nativeEvent.offsetX;
-    const newTime =
-      (clickedOffsetX / progressBarWidth) * playerRef.current.getDuration();
+    const newTime = (clickedOffsetX / progressBarWidth) * currentSong.duration;
     playerRef.current.seekTo(newTime);
     setCurrentTime(newTime);
   };

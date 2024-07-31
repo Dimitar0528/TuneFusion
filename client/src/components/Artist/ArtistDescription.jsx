@@ -33,7 +33,7 @@ export default function ArtistDescription() {
         )}
       </div>
 
-      <h2 className={styles.h2}>Albums</h2>
+      {artist?.albums?.length > 0 && <h2 className={styles.h2}>Albums</h2>}
       <div className={styles.albumList}>
         {isArtistLoading
           ? Array.from({ length: 6 }).map((_, index) => (

@@ -1,7 +1,7 @@
 import MusicList from "./SubComponents/MusicList";
 import UserPlayLists from "./SubComponents/UserPlayLists";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
-
+import { PiPHandler } from "../MusicPlayer/SubComponents/PiPHandler";
 export default function MyMusic() {
   const {
     filteredSongs,
