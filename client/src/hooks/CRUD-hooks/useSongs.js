@@ -2,6 +2,21 @@ import { useState, useEffect, useCallback } from "react";
 import songsAPI from "../../api/songs-api";
 import showToast from "../../utils/showToast";
 
+export const validateSongData = (values) => {
+    const { name, artist, img_src, audio_src, duration } = values;
+    const errors = {};
+
+    if (!name) errors.name = "Name is required";
+    if (!artist) errors.artist = "Artist is required";
+    if (!img_src) errors.img_src = "Image URL is required";
+    if (!audio_src) errors.audio_src = "Audio URL is required";
+    if (!duration || isNaN(duration) || duration <= 0) {
+        errors.duration = "Valid duration in seconds is required";
+    }
+
+    return errors;
+};
+
 export function useCreateSong() {
     const songCreateHandler = async (songData, callback) => {
         const result = await songsAPI.createSong(songData);
