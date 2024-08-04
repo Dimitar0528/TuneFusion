@@ -99,13 +99,27 @@ export default function PlayerControls({
       {excludeElementsWhenInPiPModeFlag !== true && (
         <PiPHandler pipWindow={pipWindow} setPiPWindow={setPiPWindow} />
       )}
-      <i
-        id="playback-speed"
-        className="fa-solid fa-plus-minus"
-        title={`Current playback speed: ${playBackSpeed}. Increase by 0.25`}
-        onClick={handlePlayBackSpeed}
-        tabIndex={0}
-        onKeyDown={(e) => handleKeyPressWhenTabbed(e, handlePlayBackSpeed)}></i>
+      <div className="playback-speed" id="playback-speed">
+        <span>{playBackSpeed}x</span>
+        <div className="playback-speed-btns">
+          <i
+            title="Decrease playback speed by 0.25"
+            className="fa-solid fa-minus"
+            onClick={() => handlePlayBackSpeed("decrease")}
+            tabIndex={0}
+            onKeyDown={(e) =>
+              handleKeyPressWhenTabbed(e, () => handlePlayBackSpeed("decrease"))
+            }></i>
+          <i
+            title="Increase playback speed by 0.25"
+            className="fa-solid fa-plus"
+            onClick={() => handlePlayBackSpeed("increase")}
+            tabIndex={0}
+            onKeyDown={(e) =>
+              handleKeyPressWhenTabbed(e, () => handlePlayBackSpeed("increase"))
+            }></i>
+        </div>
+      </div>
       <i
         id="shuffle"
         className={`fa-solid ${shuffle ? "fa-repeat" : "fa-shuffle"}`}

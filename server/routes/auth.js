@@ -44,7 +44,7 @@ router.post('/register', async (req, res) => {
         return res.status(200).json(newUser);
     } catch (error) {
         console.error('Error creating user:', error);
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: 'Error creating user:' });
     }
 });
 
@@ -112,7 +112,7 @@ router.get('/getToken', (req, res) => {
         return res.status(200).json({ id: userUUID, role: userRole });
     } catch (error) {
         console.error('Error verifying token:', error);
-        return res.status(401).json({ error: error.message });
+        return res.status(401).json({ error: 'Error verifying token' });
     }
 });
 

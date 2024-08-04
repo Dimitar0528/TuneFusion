@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
 
-export default function ProtectedRouteGuard({ children, user }) {
-  return user.role === "admin" ? children : <Navigate to="/" replace />;
+export default function ProtectedRouteGuard({ children, role }) {
+  return role === "admin" ? children : <Navigate to="/" replace />;
 }

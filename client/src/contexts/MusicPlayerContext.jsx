@@ -143,7 +143,7 @@ export function MusicPlayerProvider({ children }) {
     );
   };
 
-  const handlePlayBackSpeed = () => {
+  const handlePlayBackSpeed = (action) => {
     const unsupportedAudioFile =
       !currentSong?.audio_src.includes("youtube.com");
     if (unsupportedAudioFile)
@@ -152,10 +152,28 @@ export function MusicPlayerProvider({ children }) {
         "warning"
       );
     const playBackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-
     const currentIndex = playBackSpeeds.indexOf(playBackSpeed);
 
-    const nextIndex = (currentIndex + 1) % playBackSpeeds.length;
+    let nextIndex;
+    switch (action) {
+      case "increase":
+        if (currentIndex === playBackSpeeds.length - 1) {
+          nextIndex = currentIndex;
+        } else {
+          nextIndex = (currentIndex + 1) % playBackSpeeds.length;
+        }
+        break;
+      case "decrease":
+        if (currentIndex === 0) {
+          nextIndex = 0;
+        } else {
+          nextIndex =
+            (currentIndex - 1 + playBackSpeeds.length) % playBackSpeeds.length;
+        }
+        break;
+      default:
+        return;
+    }
 
     setPlayBackSpeed(playBackSpeeds[nextIndex]);
     showToast(`Playback speed set to: ${playBackSpeeds[nextIndex]}`, "success");
