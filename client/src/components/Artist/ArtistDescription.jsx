@@ -3,14 +3,32 @@ import { Link, useParams } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./styles/ArtistDescription.module.css";
-import { useGetArtistDescription } from "../../hooks/CRUD-hooks/useSongs";
+import {
+  useGetArtistDescription,
+  useCreateSong,
+} from "../../hooks/CRUD-hooks/useSongs";
+import { useGetSongSuggestions } from "../../hooks/CRUD-hooks/useSongs";
+import showToast from "../../utils/showToast";
+import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 export default function ArtistDescription() {
+  const { triggerRefreshSongsHandler } = useMusicPlayer();
   const { artistName } = useParams();
   const [artist, isArtistLoading] = useGetArtistDescription(artistName);
+  const [_, loading, fetchSuggestedSongs] = useGetSongSuggestions();
+  const createSong = useCreateSong();
+  const addToDB = async (query) => {
+    const songs = await fetchSuggestedSongs(query);
+    const callback = (result) => {
+      showToast(result.message, "success");
+      triggerRefreshSongsHandler();
+    };
+    await createSong(songs[0], callback);
+  };
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>
-        {isArtistLoading ? <Skeleton width={200} /> : `About ${artistName}`}
+        About &nbsp;
+        {isArtistLoading ? <Skeleton width={200} /> : artistName}
       </h1>
       <div className={styles["img-area"]}>
         {isArtistLoading ? (
@@ -60,8 +78,7 @@ export default function ArtistDescription() {
               </div>
             ))}
       </div>
-
-      <h2 className={styles.h2}>Singles</h2>
+      {artist?.singles.length > 0 && <h2 className={styles.h2}>Singles</h2>}
       <div className={styles.singleList}>
         {isArtistLoading
           ? Array.from({ length: 6 }).map((_, index) => (
@@ -84,12 +101,18 @@ export default function ArtistDescription() {
                 <div>
                   <p>{single.title}</p>
                   <p>{single.year}</p>
+                  <button
+                    onClick={() => addToDB(single.title)}
+                    disabled={loading}>
+                    {loading ? "Loading" : "Add to DB"}
+                  </button>
                 </div>
               </div>
             ))}
       </div>
-
-      <h2 className={styles.h2}>Suggested Artists</h2>
+      {artist?.suggestedArtists.length > 0 && (
+        <h2 className={styles.h2}>Suggested Artists</h2>
+      )}
       <div className={styles.suggestedArtists}>
         {isArtistLoading
           ? Array.from({ length: 6 }).map((_, index) => (

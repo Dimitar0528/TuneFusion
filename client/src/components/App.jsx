@@ -6,7 +6,7 @@ import Login from "./Login/Login";
 import Faq from "./Navigation/Information/Faq";
 import MyMusic from "./MyMusic/MyMusic";
 import SongManagerHandler from "./SongManagerHandler";
-import ProtectedRouteHandler from "./ProtectedRouteHandler";
+import ProtectedRouteGuard from "./ProtectedRouteGuard";
 import ContactUs from "./Navigation/Information/ContactUs";
 import Header from "./Navigation/Header";
 import Footer from "./Navigation/Footer";
@@ -60,17 +60,17 @@ export default function App() {
         <Route
           path={`/updatesong/:name`}
           element={
-            <ProtectedRouteHandler role={role}>
+            <ProtectedRouteGuard role={role}>
               <SongManagerHandler action={"updatesong"} />
-            </ProtectedRouteHandler>
+            </ProtectedRouteGuard>
           }
         />
         <Route
-          path="/addsong/newsong"
+          path="/addsong"
           element={
-            <ProtectedRouteHandler role={role}>
-              <SongManagerHandler action={"addsong"} name={"newsong"} />
-            </ProtectedRouteHandler>
+            <ProtectedRouteGuard role={role}>
+              <SongManagerHandler action={"addsong"} />
+            </ProtectedRouteGuard>
           }
         />
         <Route

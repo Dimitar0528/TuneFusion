@@ -87,7 +87,7 @@ export function useGetSongSuggestions() {
         const result = await songsAPI.getSongSuggestions(query);;
         setSongs(result);
         setLoading(false);
-
+        return result
     }, []);
 
     return [songs, loading, fetchSuggestedSongs];

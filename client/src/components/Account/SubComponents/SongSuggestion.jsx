@@ -35,11 +35,7 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
       showToast(result.message, "success");
       triggerRefreshHandler();
     };
-    try {
-      await createSong(song, callback);
-    } catch (error) {
-      showToast(`Error adding song: ${error.message}`, "error");
-    }
+    await createSong(song, callback);
   };
 
   return (
@@ -126,7 +122,7 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
             ]}
             itemsPerPage={songsPerPage}
             renderRow={(song) => (
-              <tr key={song.uuid}>
+              <tr key={song.audio_src}>
                 <td data-th="Image">
                   <img
                     src={song.img_src}

@@ -52,8 +52,11 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     errors,
     changeHandler,
     submitHandler,
-    setValuesWrapper,
-  } = useForm(initialPlaylistValues, onSubmit, validatePlaylist);
+  } = useForm(
+    Object.assign(initialPlaylistValues, editingPlaylist),
+    onSubmit,
+    validatePlaylist
+  );
 
   const toggleActivePlayList = (playlist) => {
     const newActivePlaylist =
@@ -70,18 +73,13 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
 
   const handleCreatePlaylist = () => {
     setEditingPlaylist(null);
-    setValuesWrapper(initialPlaylistValues);
     setShowDialog(true);
   };
 
   const handleEditPlaylist = (e, playlist) => {
     e.stopPropagation();
     setEditingPlaylist(playlist);
-    setValuesWrapper({
-      name: playlist.name,
-      description: playlist.description || "",
-      img_src: playlist.img_src || "",
-    });
+
     setShowDialog(true);
   };
 
