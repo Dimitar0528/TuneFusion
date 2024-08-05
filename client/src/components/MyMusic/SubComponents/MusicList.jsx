@@ -13,7 +13,7 @@ import {
   useAddSongToPlaylist,
   useRemoveSongFromPlaylist,
 } from "../../../hooks/CRUD-hooks/usePlaylists";
-
+import AddSongToPlaylistModal from "./AddSongToPlaylistModal";
 export default function MusicList({
   songs,
   title,
@@ -40,7 +40,6 @@ export default function MusicList({
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("date-added-desc");
   const [itemsPerPage, setItemsPerPage] = useState(20);
-  const [selectedPlaylist, setSelectedPlaylist] = useState();
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState();
   const [likedSongs, setLikedSongs] = useState(() => {
@@ -126,20 +125,6 @@ export default function MusicList({
   const handleModalClose = () => {
     setShowModal(false);
     setSelectedSong(null);
-  };
-
-  const handlePlaylistSelect = (e) => {
-    setSelectedPlaylist(e.target.value);
-  };
-
-  const handleAddSongConfirm = async () => {
-    if (!selectedPlaylist && !selectedSong)
-      return showToast("Please select a playlist first", "warning");
-    const reqObj = {
-      songUUID: selectedSong.uuid,
-      playlistUUID: selectedPlaylist,
-    };
-    addSongToPlaylist(reqObj, () => handleModalClose(), triggerRefreshHandler);
   };
 
   const handleRemoveSongFromPlaylist = async (song, playlistName) => {
@@ -434,43 +419,13 @@ export default function MusicList({
         />
       )}
 
-      {showModal && (
-        <dialog open className="modal">
-          <div className="modal-content">
-            <h2>Add a song to the playlist</h2>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: ".5rem",
-              }}>
-              <label htmlFor="playlist"> Select a playlist</label>
-              <div className="custom-select">
-                <select
-                  className="add-song-to-playlist"
-                  onChange={handlePlaylistSelect}
-                  value={selectedPlaylist || ""}>
-                  <option value="" disabled>
-                    Select a playlist
-                  </option>
-                  {playlists.map((playlist) => (
-                    <option
-                      key={playlist.uuid}
-                      value={playlist.uuid}
-                      id="playlist">
-                      {playlist.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="modal-actions">
-              <button onClick={handleAddSongConfirm}>Add</button>
-              <button onClick={handleModalClose}>Cancel</button>
-            </div>
-          </div>
-        </dialog>
-      )}
+      <AddSongToPlaylistModal
+        playlists={playlists}
+        triggerRefreshHandler={triggerRefreshHandler}
+        showModal={showModal}
+        handleModalClose={handleModalClose}
+        selectedSong={selectedSong}
+      />
     </div>
   );
 }

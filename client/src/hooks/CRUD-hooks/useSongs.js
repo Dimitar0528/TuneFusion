@@ -45,17 +45,13 @@ export function useGetAllSongs(refreshFlag) {
 
 
 export function useGetSong(name) {
-    const [song, setSong] = useState();
-
-    useEffect(() => {
-        const fetchSong = async () => {
-            const result = await songsAPI.getSong(name);
-            setSong(result);
-        };
-        fetchSong();
-    }, [name]);
-
-    return [song];
+    const [song, setSong] = useState([]);
+    const fetchSong = useCallback(async () => {
+        const result = await songsAPI.getSong(name);
+        setSong(result);
+        return result
+    }, [name])
+    return [song, fetchSong];
 }
 
 export function useGetArtistDescription(artistName) {

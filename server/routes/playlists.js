@@ -134,9 +134,11 @@ router.put('/update-playlist/:playlistName', async (req, res) => {
 })
 
 router.post('/add-song', async (req, res) => {
-    const { songUUID, playlistUUID } = req.body;
+    const { songName, playlistUUID } = req.body;
     try {
-        const song = await Song.findByPk(songUUID);
+        const song = await Song.findOne({
+            where: { name: songName }
+        });
         const playlist = await PlayList.findByPk(playlistUUID);
 
         if (!song) {
@@ -149,7 +151,7 @@ router.post('/add-song', async (req, res) => {
 
         const existingEntry = await PlaylistSong.findOne({
             where: {
-                song_uuid: songUUID,
+                song_uuid: song.uuid,
                 playlist_uuid: playlistUUID
             }
         });
@@ -159,7 +161,7 @@ router.post('/add-song', async (req, res) => {
         }
 
         await PlaylistSong.create({
-            song_uuid: songUUID,
+            song_uuid: song.uuid,
             playlist_uuid: playlistUUID
         });
 

@@ -19,8 +19,10 @@ const initialFormData = {
 
 export default function SongManagerHandler({ action }) {
   const { name } = useParams();
-  const [song] = useGetSong(name);
-
+  const [song, fetchSong] = useGetSong(name);
+  useEffect(() => {
+    fetchSong();
+  }, []);
   const onSubmit = async (values) => {
     const updateSong = useUpdateSong();
     const createSong = useCreateSong();

@@ -80,7 +80,7 @@
 }
 
 .album div,
-.single div,
+.single div:not(.addBtns),
 .suggested-artist div {
     display: flex;
     flex-direction: column;
@@ -117,4 +117,21 @@
 .suggested-artist p a:hover {
     color: var(--secondary-clr);
     text-decoration: underline;
+}
+
+.addBtns {
+    display: flex;
+    margin-left: auto;
+    gap: .25rem;
+}
+
+.addBtn {
+    cursor: pointer;
+    padding: .2rem .5rem;
+    border-radius: 100vmin;
+    border: transparent;
+
+    &:where(:hover, :focus-visible) {
+        background-color: hsl(from var(--accent-clr-light) h s 85%);
+    }
 }

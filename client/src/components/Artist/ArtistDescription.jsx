@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./styles/ArtistDescription.module.css";
@@ -10,14 +10,36 @@ import {
 import { useGetSongSuggestions } from "../../hooks/CRUD-hooks/useSongs";
 import showToast from "../../utils/showToast";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
+import AddSongToPlaylistModal from "../MyMusic/SubComponents/AddSongToPlaylistModal";
 export default function ArtistDescription() {
-  const { triggerRefreshSongsHandler } = useMusicPlayer();
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSong, setSelectedSong] = useState();
+
+  const handleAddSongToPlayList = (song) => {
+    setSelectedSong(song);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setSelectedSong(null);
+  };
+
+  const {
+    triggerRefreshSongsHandler,
+    user,
+    playlists,
+    handleKeyPressWhenTabbed,
+    triggerRefreshPlaylistsHandler,
+  } = useMusicPlayer();
+  const { role } = user;
   const { artistName } = useParams();
   const [artist, isArtistLoading] = useGetArtistDescription(artistName);
   const [_, loading, fetchSuggestedSongs] = useGetSongSuggestions();
   const createSong = useCreateSong();
   const handleAddToDB = (single) => {
     const query = `${single.title} ${artistName}`;
+    showToast("Loading... Please wait!", "info", 3500);
     addToDB(query);
   };
   const addToDB = async (query) => {
@@ -102,14 +124,42 @@ export default function ArtistDescription() {
                   src={single.thumbnailUrl}
                   alt="Single"
                 />
-                <div style={{ display: "flex", alignItems: "start" }}>
+                <div>
                   <p>{single.title}</p>
                   <p>{single.year}</p>
-                  <button
-                    onClick={() => handleAddToDB(single)}
-                    disabled={loading}>
-                    {loading ? "Loading" : "Add to DB"}
-                  </button>
+                </div>
+                <div className={styles.addBtns}>
+                  {role === "admin" && (
+                    <div
+                      className={styles.addBtn}
+                      style={{ backgroundColor: "white" }}>
+                      <i
+                        tabIndex={0}
+                        disabled={loading}
+                        className="fa-solid fa-square-plus"
+                        onClick={() => handleAddSongToPlayList(single)}
+                        onKeyDown={(e) =>
+                          handleKeyPressWhenTabbed(e, () => {
+                            handleAddSongToPlayList(single);
+                          })
+                        }
+                        title={loading ? "Loading" : "Add to Database"}></i>
+                    </div>
+                  )}
+                  <div
+                    className={styles.addBtn}
+                    style={{ backgroundColor: "white" }}>
+                    <i
+                      tabIndex={0}
+                      className="fa-solid fa-plus"
+                      onClick={() => handleAddSongToPlayList(single)}
+                      onKeyDown={(e) =>
+                        handleKeyPressWhenTabbed(e, () => {
+                          handleAddSongToPlayList(single);
+                        })
+                      }
+                      title="Add to playlist"></i>
+                  </div>
                 </div>
               </div>
             ))}
@@ -147,6 +197,14 @@ export default function ArtistDescription() {
               </div>
             ))}
       </div>
+      <AddSongToPlaylistModal
+        playlists={playlists}
+        triggerRefreshHandler={triggerRefreshPlaylistsHandler}
+        showModal={showModal}
+        handleModalClose={handleModalClose}
+        selectedSong={selectedSong}
+        checkIfSongIsInDBFlag={true}
+      />
     </div>
   );
 }

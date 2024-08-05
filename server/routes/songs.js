@@ -31,6 +31,9 @@ router.get('/:name', async (req, res) => {
         const song = await Song.findOne({
             where: { name: name }
         });
+        if (!song) {
+            return res.status(404).json({ error: 'The requested song could not be found in our database.' });
+        }
         return res.status(200).json(song);
     } catch (error) {
         console.error('Error fetching song:', error);
