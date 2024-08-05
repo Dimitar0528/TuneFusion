@@ -16,6 +16,10 @@ export default function ArtistDescription() {
   const [artist, isArtistLoading] = useGetArtistDescription(artistName);
   const [_, loading, fetchSuggestedSongs] = useGetSongSuggestions();
   const createSong = useCreateSong();
+  const handleAddToDB = (single) => {
+    const query = `${single.title} ${artistName}`;
+    addToDB(query);
+  };
   const addToDB = async (query) => {
     const songs = await fetchSuggestedSongs(query);
     const callback = (result) => {
@@ -98,11 +102,11 @@ export default function ArtistDescription() {
                   src={single.thumbnailUrl}
                   alt="Single"
                 />
-                <div>
+                <div style={{ display: "flex", alignItems: "start" }}>
                   <p>{single.title}</p>
                   <p>{single.year}</p>
                   <button
-                    onClick={() => addToDB(single.title)}
+                    onClick={() => handleAddToDB(single)}
                     disabled={loading}>
                     {loading ? "Loading" : "Add to DB"}
                   </button>

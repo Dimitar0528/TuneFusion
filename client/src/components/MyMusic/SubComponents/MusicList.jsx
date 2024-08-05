@@ -49,18 +49,6 @@ export default function MusicList({
   });
   const [hoveredSongUUID, setHoveredSongUUID] = useState();
 
-  const handleSearchChange = (e) => setSearchTerm(e.target.value);
-
-  const handleSortChange = (e) => setSortOption(e.target.value);
-
-  const handleItemsPerPageChange = (e) => {
-    setItemsPerPage(Number(e.target.value));
-    setCurrentPage(0);
-  };
-  const handlePageClick = ({ selected }) => {
-    setCurrentPage(selected);
-  };
-
   const sortedSongs = songs.sort((a, b) => {
     switch (sortOption) {
       case "name-asc":
@@ -97,6 +85,17 @@ export default function MusicList({
       song.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       song.artist.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+
+  const handleSortChange = (e) => setSortOption(e.target.value);
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(0);
+  };
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+  };
 
   const offset = currentPage * itemsPerPage;
   const currentSongs = filteredSongs.slice(offset, offset + itemsPerPage);

@@ -17,6 +17,7 @@ export default function PlayerControls({
     handlePreviousSong,
     shuffle,
     handleShufflePlayList,
+    handleCollapseToggle,
     lyrics,
     fetchLyrics,
     volume,
@@ -74,6 +75,9 @@ export default function PlayerControls({
           break;
         case (shiftKey && key === "s") || key === "S":
           handleShufflePlayList();
+          break;
+        case (shiftKey && key === "t") || key === "T":
+          handleCollapseToggle();
           break;
         default:
           break;

@@ -1,15 +1,17 @@
-import styles from "./styles/Account.module.css";
-import EditAccount from "./SubComponents/EditAccount";
-import ViewAllUsers from "./SubComponents/ViewAllUsers";
-import SongSuggestion from "./SubComponents/SongSuggestion";
-import ViewAllSongs from "./SubComponents/ViewAllSongs";
+import { lazy, Suspense } from "react";
 import { useParams } from "react-router-dom";
-
+import styles from "./styles/Account.module.css";
 import useTabs from "./hooks/useTabs";
 import useTabEventListeners from "./hooks/useTabEventListeners";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
 import { useRefresh } from "../../hooks/useRefresh";
+
+const EditAccount = lazy(() => import("./SubComponents/EditAccount"));
+const ViewAllUsers = lazy(() => import("./SubComponents/ViewAllUsers"));
+const SongSuggestion = lazy(() => import("./SubComponents/SongSuggestion"));
+const ViewAllSongs = lazy(() => import("./SubComponents/ViewAllSongs"));
+
 export default function Account() {
   const { userUUID } = useParams();
   const { triggerRefreshSongsHandler } = useMusicPlayer();
@@ -75,7 +77,7 @@ export default function Account() {
         return (
           <div>
             <h1>Page</h1>
-            <p>This is an section.</p>
+            <p>This is a section.</p>
           </div>
         );
     }
@@ -117,7 +119,9 @@ export default function Account() {
               activeTab === tab ? styles.active : ""
             }`}
             ref={(el) => (contentsRef.current[tab] = el)}>
-            {renderTabContent(tab)}
+            <Suspense fallback={<div>Loading...</div>}>
+              {renderTabContent(tab)}
+            </Suspense>
           </div>
         ))}
       </div>

@@ -45,7 +45,8 @@ export default function MusicPlayer({
       }`}>
       <div className="top-section">
         {userRole === "admin" && (
-          <i id="edit"
+          <i
+            id="edit"
             className="fa-solid fa-pen-to-square"
             title="Edit Song"
             onClick={() => {
@@ -66,7 +67,9 @@ export default function MusicPlayer({
           onClick={() => {
             isCollapsed ? handleCollapseAndWarn() : handleCollapseToggle();
           }}
-          title={`${!isCollapsed ? "Collapse Player" : "Expand Player"}`}
+          title={`Toggle ${
+            !isCollapsed ? "Collapse Player" : "Expand Player"
+          } (Shift + T)`}
           tabIndex={0}
           onKeyDown={(e) =>
             handleKeyPressWhenTabbed(e, handleCollapseAndWarn)
