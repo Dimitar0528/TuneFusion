@@ -19,14 +19,14 @@ export default function Header({ btnText, goToLocation, userUUID }) {
       const isOpen = navLinks.classList.contains(styles["open"]);
       menuBtnIcon.setAttribute(
         "class",
-        isOpen ? "ri-close-line" : "ri-menu-line"
+        isOpen ? "fas fa-close" : "fas fa-bars"
       );
     };
 
     const handleNavLinksClick = (e) => {
       if (e.target.tagName === "INPUT") return;
       navLinks.classList.remove(styles["open"]);
-      menuBtnIcon.setAttribute("class", "ri-menu-line");
+      menuBtnIcon.setAttribute("class", "fas fa-bars");
     };
 
     menuBtn.addEventListener("click", handleMenuClick);
@@ -51,7 +51,7 @@ export default function Header({ btnText, goToLocation, userUUID }) {
           ref={menuBtnRef}>
           <span>
             <i
-              className={`ri-menu-line ${styles["menu__icon"]}`}
+              className={`fas fa-bars ${styles["menu__icon"]}`}
               ref={menuBtnIconRef}></i>
           </span>
         </div>

@@ -244,14 +244,6 @@
     cursor: pointer;
 }
 
-.sort-controls {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin: 1rem;
-}
-
 .sort-controls input[type="search"] {
     flex: 1;
     padding: 0.5rem;
@@ -266,12 +258,6 @@
     margin-top: .5rem;
 }
 
-.sort-controls select {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-}
 
 .sort-controls div {
     display: flex;

@@ -4,6 +4,7 @@ import { useDeleteUser } from "../../../hooks/CRUD-hooks/useUsers";
 import showToast from "../../../utils/showToast";
 export default function ViewAllUsers({ refreshFlag, triggerRefreshHandler }) {
   const deleteUser = useDeleteUser();
+
   const usersPerPage = 10;
   const [users] = useGetAllUsers(refreshFlag);
 
@@ -26,7 +27,7 @@ export default function ViewAllUsers({ refreshFlag, triggerRefreshHandler }) {
       renderRow={(user) => (
         <tr key={user.uuid}>
           <td data-th="UUID">{user.uuid}</td>
-          <td data-th="name">{user.name}</td>
+          <td data-th="Name">{user.name}</td>
           <td data-th="Email Address">{user.email_address}</td>
           <td data-th="Phone Number">{user.phone_number}</td>
           <td data-th="Actions">

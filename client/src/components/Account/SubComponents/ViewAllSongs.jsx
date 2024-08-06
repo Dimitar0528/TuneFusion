@@ -10,7 +10,7 @@ export default function ViewAllSongs({ triggerRefreshHandler }) {
   const { songs, currentSongUUID, setCurrentSongUUID, setCurrentTime } =
     useMusicPlayer();
   const navigate = useNavigate();
-  const songsPerPage = 10;
+  const songsPerPage = 20;
   const handleDeleteSong = async (uuid) => {
     if (!window.confirm("Are you sure you want to delete this song?")) return;
 

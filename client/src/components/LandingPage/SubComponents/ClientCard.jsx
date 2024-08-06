@@ -18,7 +18,7 @@ export default function ClientCard({
             <span key={index}>
               <i
                 className={
-                  index < activeStars ? "ri-star-fill" : "ri-star-line"
+                  index < activeStars ? "fas fa-star" : "far fa-star"
                 }></i>
             </span>
           ))}

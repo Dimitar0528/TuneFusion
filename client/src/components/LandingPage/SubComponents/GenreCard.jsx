@@ -10,7 +10,7 @@ export default function GenreCard({ imageUrl, genreName, userUUID }) {
           <Link
             className={styles.link}
             to={userUUID ? `/musicplayer/${userUUID}` : "/sign-in"}>
-            <i className="ri-arrow-right-up-line"></i>
+            <i className="fas fa-arrow-up-right-from-square"></i>
           </Link>
         </div>
       </div>

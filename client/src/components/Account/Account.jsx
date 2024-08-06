@@ -1,4 +1,6 @@
 import { lazy, Suspense } from "react";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { useParams } from "react-router-dom";
 import styles from "./styles/Account.module.css";
 import useTabs from "./hooks/useTabs";
@@ -119,7 +121,10 @@ export default function Account() {
               activeTab === tab ? styles.active : ""
             }`}
             ref={(el) => (contentsRef.current[tab] = el)}>
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense
+              fallback={
+                <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
+              }>
               {renderTabContent(tab)}
             </Suspense>
           </div>

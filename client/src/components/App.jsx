@@ -45,44 +45,30 @@ export default function App() {
           <Route path="faq" element={<Faq />} />
         </Route>
         <Route path="/search" element={<SearchSong />} />
-        <Route path="/sign-in">
-          <Route
-            path=""
-            element={
-              <ProtectedRouteGuard isNotAdminRoute={true} user={user}>
-                <Login />
-              </ProtectedRouteGuard>
-            }
-          />
-          <Route
-            path="otp"
-            element={
-              <ProtectedRouteGuard isNotAdminRoute={true} user={user}>
-                <TFAVerification />
-              </ProtectedRouteGuard>
-            }
-          />
-        </Route>
-        <Route
-          path={`/updatesong/:name`}
-          element={
-            <ProtectedRouteGuard user={user}>
-              <SongManagerHandler action={"updatesong"} />
-            </ProtectedRouteGuard>
-          }
-        />
-        <Route
-          path="/addsong"
-          element={
-            <ProtectedRouteGuard user={user}>
-              <SongManagerHandler action={"addsong"} />
-            </ProtectedRouteGuard>
-          }
-        />
         <Route
           path="/artist/:artistName/description"
           element={<ArtistDescription />}
         />
+
+        <Route
+          element={<ProtectedRouteGuard user={user} isNotAdminRouteFlag={true} />}>
+          <Route path="/sign-in">
+            <Route path="" element={<Login />} />
+            <Route path="otp" element={<TFAVerification />} />
+          </Route>
+        </Route>
+
+        <Route element={<ProtectedRouteGuard user={user} />}>
+          <Route
+            path={`/updatesong/:name`}
+            element={<SongManagerHandler action={"updatesong"} />}
+          />
+          <Route
+            path="/addsong"
+            element={<SongManagerHandler action={"addsong"} />}
+          />
+        </Route>
+
         <Route path="*" element={<Navigate to={"/"} />} />
       </Routes>
 

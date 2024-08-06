@@ -28,7 +28,7 @@ export default function SearchInput() {
         title={`${
           searchQuery ? "Search a specific song" : "Search all songs"
         }`}>
-        <i className="ri-search-line"></i>
+        <i className="fas fa-magnifying-glass"></i>{" "}
       </button>
     </form>
   );

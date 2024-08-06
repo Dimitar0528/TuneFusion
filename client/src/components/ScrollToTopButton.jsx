@@ -32,7 +32,7 @@ export default function ScrollToTopButton() {
         onClick={scrollToTop}
         className={`scrollButton ${isVisible ? "show" : ""}`}
         title="Scroll to top">
-        <i className="ri-arrow-up-line"></i>
+        <i className="fas fa-arrow-up-from-bracket"></i>{" "}
       </button>
     </div>
   );
