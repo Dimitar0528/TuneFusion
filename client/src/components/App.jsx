@@ -48,19 +48,25 @@ export default function App() {
         <Route path="/sign-in">
           <Route
             path=""
-            element={userUUID ? <Navigate to="/" replace /> : <Login />}
+            element={
+              <ProtectedRouteGuard isNotAdminRoute={true} user={user}>
+                <Login />
+              </ProtectedRouteGuard>
+            }
           />
           <Route
             path="otp"
             element={
-              userUUID ? <Navigate to="/" replace /> : <TFAVerification />
+              <ProtectedRouteGuard isNotAdminRoute={true} user={user}>
+                <TFAVerification />
+              </ProtectedRouteGuard>
             }
           />
         </Route>
         <Route
           path={`/updatesong/:name`}
           element={
-            <ProtectedRouteGuard role={role}>
+            <ProtectedRouteGuard user={user}>
               <SongManagerHandler action={"updatesong"} />
             </ProtectedRouteGuard>
           }
@@ -68,7 +74,7 @@ export default function App() {
         <Route
           path="/addsong"
           element={
-            <ProtectedRouteGuard role={role}>
+            <ProtectedRouteGuard user={user}>
               <SongManagerHandler action={"addsong"} />
             </ProtectedRouteGuard>
           }

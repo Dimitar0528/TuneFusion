@@ -130,21 +130,27 @@ export default function ArtistDescription() {
                 </div>
                 <div className={styles.addBtns}>
                   {role === "admin" && (
-                    <div
+                    <button
+                      disabled={loading}
                       className={styles.addBtn}
                       style={{ backgroundColor: "white" }}>
                       <i
+                        style={{ color: "var(--primary-clr)" }}
                         tabIndex={0}
                         disabled={loading}
-                        className="fa-solid fa-square-plus"
-                        onClick={() => handleAddSongToPlayList(single)}
+                        className={
+                          loading
+                            ? "fas fa-spinner fa-spin"
+                            : "fa-solid fa-square-plus"
+                        }
+                        onClick={() => handleAddToDB(single)}
                         onKeyDown={(e) =>
                           handleKeyPressWhenTabbed(e, () => {
-                            handleAddSongToPlayList(single);
+                            handleAddToDB(single);
                           })
                         }
                         title={loading ? "Loading" : "Add to Database"}></i>
-                    </div>
+                    </button>
                   )}
                   <div
                     className={styles.addBtn}

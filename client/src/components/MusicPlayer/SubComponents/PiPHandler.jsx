@@ -54,7 +54,7 @@ export const PiPHandler = ({ pipWindow, setPiPWindow }) => {
         className="pip-btn"
         onClick={handlePiPButtonClick}
         title={pipWindow ? "Close PiP Window" : "Open PiP Window"}>
-        <i className="fa-solid">
+        <div className="fa-solid">
           {pipWindow ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -84,7 +84,7 @@ export const PiPHandler = ({ pipWindow, setPiPWindow }) => {
               </g>
             </svg>
           )}
-        </i>
+        </div>
       </button>
       <PiPContainer pipWindow={pipWindow}>
         <MusicPlayer
