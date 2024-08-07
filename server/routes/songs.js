@@ -14,13 +14,13 @@ router.get('/', async (req, res) => {
         });
 
         if (!songs) {
-            return res.status(404).json({ error: "Songs not found" });
+            return res.status(404).json({ error: "Songs not found!" });
         }
 
         res.status(200).json(songs);
     } catch (error) {
         console.error("Error fetching songs:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "There was an error while trying to fetch all songs!" });
     }
 });
 
@@ -32,12 +32,12 @@ router.get('/:name', async (req, res) => {
             where: { name: name }
         });
         if (!song) {
-            return res.status(404).json({ error: 'The requested song could not be found in our database.' });
+            return res.status(404).json({ error: 'The requested song could not be found in our database!' });
         }
         return res.status(200).json(song);
     } catch (error) {
         console.error('Error fetching song:', error);
-        return res.status(500).json({ error: "An error occurred while fetching song" });
+        return res.status(500).json({ error: "There was an error while trying to fetch the specific song!" });
     }
 });
 
@@ -65,7 +65,7 @@ router.post('/addsong', async (req, res) => {
         res.status(200).json({ message: "Song added to database successfully!" });
     } catch (error) {
         console.error('Error creating song:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'There was an error while trying to create the song!' });
     }
 });
 
@@ -83,7 +83,7 @@ router.delete('/deleteSong/:uuid', async (req, res) => {
         }));
         return res.status(200).json({ message: 'Song deleted successfully!' });
     } catch (error) {
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'There was an error while trying to delete the song!' });
     }
 });
 
@@ -97,7 +97,7 @@ router.put('/updatesong/:name', async (req, res) => {
         const song = await Song.findOne({ where: { name: name } });
 
         if (!song) {
-            return res.status(404).json({ error: "Song not found" });
+            return res.status(404).json({ error: "Song not found!" });
         }
 
         await Song.update(
@@ -113,7 +113,7 @@ router.put('/updatesong/:name', async (req, res) => {
         return res.status(200).json({ message: "Song updated successfully!" });
     } catch (error) {
         console.error('Error updating song:', error);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: "There was an error while trying to update the song data!" });
     }
 });
 router.get('/search/:query', async (req, res) => {
@@ -141,7 +141,7 @@ router.get('/search/:query', async (req, res) => {
         res.status(200).json(songList);
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal Server Error');
+        res.status(500).send('There was an error while trying to fetch the suggested songs!');
     }
 });
 function trimDescription(description) {
@@ -167,7 +167,7 @@ router.get('/artist/:artistName', async (req, res) => {
         res.status(200).json(newArtist);
     } catch (error) {
         console.error('Error fetching artist data:', error);
-        res.status(500).json({ message: 'An error occurred while fetching artist data' });
+        res.status(500).json({ message: 'There was an error while trying to fetch the artist data!' });
     }
 })
 
@@ -182,13 +182,13 @@ router.get('/:artist/:song', async (req, res) => {
                 .includes(artist.trim().toLowerCase());
         });
         if (!songByArtist) {
-            return res.status(404).json({ error: 'Lyrics for the specified song not found' });
+            return res.status(404).json({ error: 'Lyrics for the specified song not found!' });
         }
         const lyrics = await songByArtist.lyrics();
         return res.status(200).json(lyrics);
     } catch (error) {
         console.error("Error fetching lyrics:", error);
-        return res.status(500).json({ error: 'An error occurred while fetching lyrics' });
+        return res.status(500).json({ error: 'There was an error while trying to fetch the lyrics!' });
     }
 });
 

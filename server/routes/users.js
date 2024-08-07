@@ -1,20 +1,26 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import { PlayList, User, PlaylistSong } from '../db/models/index.js'
-import { Sequelize } from 'sequelize';
+import { Sequelize, Op } from 'sequelize';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        const users = await User.findAll({ where: { role: 'user' } });
+        const users = await User.findAll({
+            where: {
+                name: {
+                    [Op.ne]: 'admin',
+                }
+            }
+        });
 
         if (!users) {
-            return res.status(404).json({ error: 'Users not found' });
+            return res.status(404).json({ error: 'Users not found!' });
         }
         return res.status(200).json(users);
     } catch (error) {
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'There was an error while trying to fetch all users!' });
     }
 });
 
@@ -29,15 +35,41 @@ router.get('/:userid', async (req, res) => {
             ),
         });
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ error: 'User not found!' });
         }
 
         return res.status(200).json(user);
     } catch (error) {
         console.error('Error fetching user:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'There was an error while trying to fetch the specific user!' });
     }
 });
+router.put('/changeUserRole/:userUUID', async (req, res) => {
+    const userUUID = req.params.userUUID;
+    const { role } = req.body;
+    let newRole;
+    role === 'user' ? newRole = 'admin' : newRole = 'user';
+    try {
+        const user = await User.findOne({
+            where: { uuid: userUUID }
+        });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found!' });
+        }
+
+        await User.update({ role: newRole }, {
+            where: { uuid: user.uuid },
+        });
+
+        return res.status(200).json({
+            message: "User role updated successfully!",
+        });
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        return res.status(500).json({ error: 'There was an error while trying to change the role of the user!' });
+    }
+});
+
 
 router.put('/editAccount/:userid', async (req, res) => {
     const userUUID = req.params.userid;
@@ -47,7 +79,7 @@ router.put('/editAccount/:userid', async (req, res) => {
         const user = await User.findOne({ where: { uuid: userUUID } });
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ error: 'User not found!' });
         }
 
         const existingUserWithname = await User.findOne({ where: { name } });
@@ -77,7 +109,7 @@ router.put('/editAccount/:userid', async (req, res) => {
 
     } catch (error) {
         console.error('Error updating account details:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'There was an error while trying to update the user data!' });
     }
 });
 router.put('/resetPassword/:user_email_address', async (req, res) => {
@@ -87,7 +119,7 @@ router.put('/resetPassword/:user_email_address', async (req, res) => {
         const user = await User.findOne({ where: { email_address: userEmail } });
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ error: 'User not found!' });
         }
 
         const passwordMatch = await bcrypt.compare(newPassword, user.password);
@@ -104,7 +136,7 @@ router.put('/resetPassword/:user_email_address', async (req, res) => {
 
         return res.status(200).json({ message: 'Password reset successfully!' });
     } catch (error) {
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'There was an error while trying to reset the password!' });
     }
 });
 
@@ -136,7 +168,7 @@ router.delete('/deleteUser/:userUUID', async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'An error occurred while deleting the user' });
+        res.status(500).json({ message: 'There was an error while trying to delete the user!' });
     }
 });
 export default router;

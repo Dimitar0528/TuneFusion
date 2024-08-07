@@ -35,7 +35,7 @@ router.post('/create-playlist', async (req, res) => {
 
     } catch (error) {
         console.error('Error creating playlist:', error);
-        res.status(500).json({ error: 'Error creating playlist!' });
+        res.status(500).json({ error: 'There was an error while trying to create the playlist!' });
 
     }
 })
@@ -57,7 +57,7 @@ router.delete('/delete-playlist/:playlistUUID', async (req, res) => {
 
     } catch (error) {
         console.error('Error deleting playlist:', error);
-        res.status(500).json({ error: 'Error deleting playlist!' });
+        res.status(500).json({ error: 'There was an error while trying to delete the playlist!' });
 
     }
 
@@ -94,16 +94,16 @@ router.get('/:userUUID', async (req, res) => {
             ),
         });
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ error: 'User not found!' });
         }
         if (!playlists) {
-            return res.status(404).json({ error: "Playlists not found" });
+            return res.status(404).json({ error: "User does not have associated playlists!" });
         }
 
         res.status(200).json(playlists);
     } catch (error) {
         console.error("Error fetching playlists:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "There was an error while trying to fetch playlists!" });
     }
 });
 
@@ -114,7 +114,7 @@ router.put('/update-playlist/:playlistName', async (req, res) => {
         const playlist = await PlayList.findOne({ where: { name: playListName } });
 
         if (!playlist) {
-            return res.status(404).json({ error: "Playlist not found" });
+            return res.status(404).json({ error: "Playlist not found!" });
         }
 
         await PlayList.update(
@@ -129,7 +129,7 @@ router.put('/update-playlist/:playlistName', async (req, res) => {
         return res.status(200).json({ message: "Playlist updated successfully!" });
     } catch (error) {
         console.error('Error updating playlist:', error);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: "There was an error while trying to update the playlist data!" });
     }
 })
 
@@ -142,11 +142,11 @@ router.post('/add-song', async (req, res) => {
         const playlist = await PlayList.findByPk(playlistUUID);
 
         if (!song) {
-            return res.status(404).json({ error: 'Song not found' });
+            return res.status(404).json({ error: 'Song not found!' });
         }
 
         if (!playlist) {
-            return res.status(404).json({ error: 'Please select an playlist first' });
+            return res.status(404).json({ error: 'Please select an playlist first!' });
         }
 
         const existingEntry = await PlaylistSong.findOne({
@@ -165,10 +165,10 @@ router.post('/add-song', async (req, res) => {
             playlist_uuid: playlistUUID
         });
 
-        res.status(200).json({ message: 'Song added to playlist successfully' });
+        res.status(200).json({ message: 'Song added to playlist successfully!' });
     } catch (error) {
         console.error("Error adding song to playlist:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "There was an error while trying to add the song to the playlist!" });
     }
 });
 
@@ -189,14 +189,10 @@ router.delete('/remove-song', async (req, res) => {
                 playlist_uuid: playlist.uuid
             }
         });
-        if (result === 0) {
-            return res.status(404).json({ error: 'Song or Playlist not found' });
-        }
-
         res.status(200).json({ message: 'Song removed from playlist successfully!' });
     } catch (error) {
         console.error('Error removing song from playlist:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'There was an error while trying to remove the song from the playlist!' });
     }
 });
 

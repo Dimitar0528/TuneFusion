@@ -44,7 +44,7 @@ router.post('/register', async (req, res) => {
         return res.status(200).json(newUser);
     } catch (error) {
         console.error('Error creating user:', error);
-        return res.status(500).json({ error: 'Error creating user:' });
+        return res.status(500).json({ error: 'There was an error while trying to create an user!' });
     }
 });
 
@@ -55,13 +55,13 @@ router.post('/login', async (req, res) => {
         const user = await User.findOne({ where: { name } });
 
         if (!user) {
-            return res.status(401).json({ error: 'Invalid name! Please check your name again.' });
+            return res.status(401).json({ error: 'Invalid name! Please check your name again!' });
         }
 
         const passwordMatch = await bcrypt.compare(password, user.password);
 
         if (!passwordMatch) {
-            return res.status(401).json({ error: 'Invalid password! Please check your password again.' });
+            return res.status(401).json({ error: 'Invalid password! Please check your password again!' });
         }
 
         const token = jwt.sign({ userUUID: user.uuid, userRole: user.role }, secretKey, {
@@ -85,7 +85,7 @@ router.post('/login', async (req, res) => {
         return res.status(200).json(responseData);
     } catch (error) {
         console.error('Error authenticating user:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'There was an error while trying to authenticate user!' });
     }
 });
 
@@ -112,7 +112,7 @@ router.get('/getToken', (req, res) => {
         return res.status(200).json({ id: userUUID, role: userRole });
     } catch (error) {
         console.error('Error verifying token:', error);
-        return res.status(401).json({ error: 'Error verifying token' });
+        return res.status(401).json({ error: 'There was an error while trying to verify the user token!' });
     }
 });
 
@@ -123,7 +123,7 @@ function generateOTP() {
 router.post('/sendOTP', async (req, res) => {
     const { email } = req.body;
     if (!email) {
-        return res.status(400).json({ error: 'Email is required' });
+        return res.status(400).json({ error: 'Email is required!' });
     }
 
     const otp = generateOTP();
@@ -141,7 +141,7 @@ router.post('/sendOTP', async (req, res) => {
         return res.status(200).json({ otp });
     } catch (error) {
         console.error('Error sending OTP:', error);
-        return res.status(500).json({ error: 'Failed to send OTP' });
+        return res.status(500).json({ error: 'There was an error while trying to send the OTP!' });
     }
 });
 
