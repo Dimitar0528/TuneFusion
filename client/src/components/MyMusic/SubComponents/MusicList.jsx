@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./styles/MusicList.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
@@ -149,7 +149,7 @@ export default function MusicList({
       localStorage.setItem("likedSongs", JSON.stringify(updatedLikedSongs));
     } else {
       const reqObj = {
-        songUUID: song.uuid,
+        songName: song.name,
         playlistUUID: likedSongsPlaylist[0].uuid,
       };
       const callback = () => {
@@ -190,8 +190,8 @@ export default function MusicList({
           <select id="sort-by" value={sortOption} onChange={handleSortChange}>
             <option value="name-asc">Name (A-Z)</option>
             <option value="name-desc">Name (Z-A)</option>
-            <option value="date-added-asc">Date Added (ASC)</option>
-            <option value="date-added-desc">Date Added (DESC)</option>
+            <option value="date-added-asc">Date (ASC)</option>
+            <option value="date-added-desc">Date (DESC) (Default)</option>
             <option value="duration-asc">Duration (Least to Most)</option>
             <option value="duration-desc">Duration (Most to Least)</option>
           </select>
@@ -206,6 +206,8 @@ export default function MusicList({
             <option value={20}>20 per page</option>
             <option value={30}>30 per page</option>
             <option value={40}>40 per page</option>
+            <option value={50}>50 per page</option>
+            <option value={69}>69 per page</option>
             <option value={999}>999 per page</option>
           </select>
         </div>

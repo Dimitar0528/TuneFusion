@@ -1,12 +1,23 @@
 import TableLayout from "../TableLayout";
 import { useGetAllUsers } from "../../../hooks/CRUD-hooks/useUsers";
-import { useDeleteUser } from "../../../hooks/CRUD-hooks/useUsers";
+import {
+  useDeleteUser,
+  useChangeUserRole,
+} from "../../../hooks/CRUD-hooks/useUsers";
 import showToast from "../../../utils/showToast";
-export default function ViewAllUsers({ refreshFlag, triggerRefreshHandler }) {
+import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
+export default function ViewAllUsers({
+  refreshFlag,
+  triggerRefreshHandler,
+  userUUID,
+}) {
   const deleteUser = useDeleteUser();
-
-  const usersPerPage = 10;
+  const changeUserRole = useChangeUserRole();
+  const usersPerPage = 20;
   const [users] = useGetAllUsers(refreshFlag);
+  const filteredUsers = users.filter(
+    (user) => extractUUIDPrefix(user.uuid) !== userUUID
+  );
 
   const handleDeleteUser = async (uuid) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
@@ -17,13 +28,17 @@ export default function ViewAllUsers({ refreshFlag, triggerRefreshHandler }) {
     deleteUser(uuid, displayMessage);
   };
 
+  const handleChangeUserRole = async (user) => {
+    if (!window.confirm("Are you sure you want to change this user's role?"))
+      return;
+    changeUserRole(user.uuid, user, triggerRefreshHandler);
+  };
   return (
     <TableLayout
-      data={users}
+      data={filteredUsers}
       columns={["UUID", "Name", "Email Address", "Phone Number", "Actions"]}
       title="Users"
       hasDbSearch={true}
-      itemsPerPage={usersPerPage}
       renderRow={(user) => (
         <tr key={user.uuid}>
           <td data-th="UUID">{user.uuid}</td>
@@ -31,9 +46,12 @@ export default function ViewAllUsers({ refreshFlag, triggerRefreshHandler }) {
           <td data-th="Email Address">{user.email_address}</td>
           <td data-th="Phone Number">{user.phone_number}</td>
           <td data-th="Actions">
-            <div className="cta-admin-buttons">
+            <div style={{ flexDirection: "row" }} className="cta-admin-buttons">
               <button onClick={() => handleDeleteUser(user.uuid)}>
                 Delete
+              </button>
+              <button onClick={() => handleChangeUserRole(user)}>
+                {user.role === "user" ? "Make admin" : "Remove admin"}
               </button>
             </div>
           </td>

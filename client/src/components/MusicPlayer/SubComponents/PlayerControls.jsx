@@ -107,7 +107,7 @@ export default function PlayerControls({
         <span>{playBackSpeed}x</span>
         <div className="playback-speed-btns">
           <i
-            title="Decrease playback speed by 0.25"
+            title="Decrease playback speed by 0.15"
             className="fa-solid fa-minus"
             onClick={() => handlePlayBackSpeed("decrease")}
             tabIndex={0}
@@ -115,7 +115,7 @@ export default function PlayerControls({
               handleKeyPressWhenTabbed(e, () => handlePlayBackSpeed("decrease"))
             }></i>
           <i
-            title="Increase playback speed by 0.25"
+            title="Increase playback speed by 0.15"
             className="fa-solid fa-plus"
             onClick={() => handlePlayBackSpeed("increase")}
             tabIndex={0}
@@ -208,7 +208,6 @@ export default function PlayerControls({
           tabIndex={0}
           onKeyDown={(e) => handleVolumeChangeKeyPress(e)}>
           <div className="range">
-            &nbsp;
             <input
               tabIndex={0}
               type="range"

@@ -39,7 +39,6 @@ export default function ViewAllSongs({ triggerRefreshHandler }) {
       ]}
       title="Songs"
       hasDbSearch={true}
-      itemsPerPage={songsPerPage}
       onAddClick={() => navigate("/addsong")}
       renderRow={(song) => (
         <tr key={song.uuid}>

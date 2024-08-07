@@ -64,6 +64,7 @@ export default function Account() {
             <ViewAllUsers
               refreshFlag={refreshUsersFlag}
               triggerRefreshHandler={triggerRefreshUsersHandler}
+              userUUID={userUUID}
             />
           )
         );

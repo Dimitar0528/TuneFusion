@@ -151,7 +151,9 @@ export function MusicPlayerProvider({ children }) {
         "The current song does not support this feature",
         "warning"
       );
-    const playBackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+    const playBackSpeeds = [
+      0.25, 0.4, 0.55, 0.7, 0.85, 1, 1.15, 1.3, 1.45, 1.6, 1.75, 1.9, 2,
+    ];
     const currentIndex = playBackSpeeds.indexOf(playBackSpeed);
 
     let nextIndex;

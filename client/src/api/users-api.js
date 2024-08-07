@@ -12,12 +12,15 @@ const editUser = (userUUID, userData) => request.put(`${BASE_URL}/editAccount/${
 
 const resetUserPassword = (userEmail, passwordData) => request.put(`${BASE_URL}/resetPassword/${userEmail}`, passwordData)
 
+const changeUserRole = (userUUID, userData) => request.put(`${BASE_URL}/changeUserRole/${userUUID}`, userData)
+
 const userAPI = {
     getUser,
     getAllUsers,
     deleteUser,
     editUser,
     resetUserPassword,
+    changeUserRole
 }
 
 export default userAPI;

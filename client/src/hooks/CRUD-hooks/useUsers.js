@@ -109,6 +109,16 @@ export function useEditUser() {
     return editUserHandler;
 }
 
+export function useChangeUserRole() {
+    const changeUserRoleHandler = async (userUUID, userData, triggerRefreshHandler) => {
+        const result = await userAPI.changeUserRole(userUUID, userData);
+        if (result.error) return showToast(`Error: ${result.error}`, "error")
+        showToast(result.message, 'success');
+        triggerRefreshHandler();
+    }
+    return changeUserRoleHandler;
+}
+
 export function useDeleteUser() {
     const deleteUserHandler = async (userUUID, callback) => {
         const result = await userAPI.deleteUser(userUUID)

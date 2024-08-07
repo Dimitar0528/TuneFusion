@@ -178,6 +178,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
                   alt={playlist.name}
                   width={45}
                   height={45}
+                  style={{ objectFit: "cover" }}
                 />{" "}
                 <h3>{playlist.name}</h3>
                 {playlist.name !== "Liked Songs" && (

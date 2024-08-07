@@ -53,7 +53,7 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
         style={{
           display: "flex",
           justifyContent: "center",
-          marginTop: "1.5rem",
+          marginBlock: "4rem",
         }}
         onSubmit={handleFormSubmit}>
         <input
@@ -64,7 +64,14 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
           placeholder="Enter artist name or genre"
           required
         />
-        <button className="addbtn btn6" type="submit" disabled={loading}>
+        <button
+          style={{
+            pointerEvents: loading ? "none" : "auto",
+            cursor: loading ? "auto" : "pointer",
+          }}
+          className="addbtn btn6"
+          type="submit"
+          disabled={loading}>
           {loading ? "Searching..." : "Search"}
         </button>
       </form>
@@ -120,7 +127,6 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
               "Duration",
               "Actions",
             ]}
-            itemsPerPage={songsPerPage}
             renderRow={(song) => (
               <tr key={song.audio_src}>
                 <td data-th="Image">

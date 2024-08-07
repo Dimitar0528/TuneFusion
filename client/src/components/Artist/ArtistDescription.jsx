@@ -52,10 +52,7 @@ export default function ArtistDescription() {
   };
   return (
     <div className={styles.container}>
-      <h1 className={styles.header}>
-        About &nbsp;
-        {isArtistLoading ? <Skeleton width={200} /> : artistName}
-      </h1>
+      <h1 className={styles.header}>About &nbsp; {artistName}</h1>
       <div className={styles["img-area"]}>
         {isArtistLoading ? (
           <Skeleton height={385} width={930} />
