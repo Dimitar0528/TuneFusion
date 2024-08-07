@@ -4,13 +4,15 @@ import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 import { formatTime } from "../../../utils/formatTime";
 import { useDeleteSong } from "../../../hooks/CRUD-hooks/useSongs";
-export default function ViewAllSongs({ triggerRefreshHandler }) {
+export default function ViewAllSongs({
+  triggerRefreshSongsHandler,
+  triggerRefreshPlaylistsHandler,
+}) {
   const deleteSong = useDeleteSong();
 
   const { songs, currentSongUUID, setCurrentSongUUID, setCurrentTime } =
     useMusicPlayer();
   const navigate = useNavigate();
-  const songsPerPage = 20;
   const handleDeleteSong = async (uuid) => {
     if (!window.confirm("Are you sure you want to delete this song?")) return;
 
@@ -22,7 +24,11 @@ export default function ViewAllSongs({ triggerRefreshHandler }) {
       setCurrentSongUUID(extractUUIDPrefix(songs[nextIndex].uuid));
       setCurrentTime(0);
     }
-    await deleteSong(uuid, triggerRefreshHandler);
+    await deleteSong(
+      uuid,
+      triggerRefreshSongsHandler,
+      triggerRefreshPlaylistsHandler
+    );
   };
 
   return (

@@ -16,7 +16,8 @@ const ViewAllSongs = lazy(() => import("./SubComponents/ViewAllSongs"));
 
 export default function Account() {
   const { userUUID } = useParams();
-  const { triggerRefreshSongsHandler } = useMusicPlayer();
+  const { triggerRefreshSongsHandler, triggerRefreshPlaylistsHandler } =
+    useMusicPlayer();
   const [refreshUserFlag, triggerRefreshUserHandler] = useRefresh();
   const [refreshUsersFlag, triggerRefreshUsersHandler] = useRefresh();
   const [user] = useGetUserDetails(userUUID, refreshUserFlag);
@@ -55,7 +56,10 @@ export default function Account() {
       case "Songs":
         return (
           user.role === "admin" && (
-            <ViewAllSongs triggerRefreshHandler={triggerRefreshSongsHandler} />
+            <ViewAllSongs
+              triggerRefreshSongsHandler={triggerRefreshSongsHandler}
+              triggerRefreshPlaylistsHandler={triggerRefreshPlaylistsHandler}
+            />
           )
         );
       case "Users":

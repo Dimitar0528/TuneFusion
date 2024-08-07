@@ -161,7 +161,7 @@ export default function LandingPage({ userUUID }) {
           />
           <GenreCard
             userUUID={userUUID}
-            imageUrl="https://scontent.fsof9-1.fna.fbcdn.net/v/t39.30808-6/398669671_867675838053916_6418958843618861615_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=833d8c&_nc_ohc=pz8rbM7ytWQQ7kNvgGQnM0B&_nc_ht=scontent.fsof9-1.fna&oh=00_AYAnHy7a7KFWaeWvsrA6kvQhWrBbDad2_dmDpdXNisVmpA&oe=66A95B0E"
+            imageUrl="https://zdrave.to/media/source/202301/1672989215_316300418_684746499686051_7010121491504181883_n.jpg"
             genreName="Bulgarian Pop Folk"
           />
         </div>

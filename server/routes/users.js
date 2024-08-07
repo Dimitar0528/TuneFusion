@@ -87,7 +87,7 @@ router.put('/editAccount/:userid', async (req, res) => {
             return res.status(409).json({ error: 'Username is already taken! Please enter a new one!' });
         }
 
-        const adminUser = await User.findOne({ where: { role: 'admin' } });
+        const adminUser = await User.findOne({ where: { name: 'admin' } });
         if (name.toLowerCase().includes('admin') && adminUser && adminUser.uuid !== user.uuid) {
             return res.status(403).json({ error: 'Request denied! Your name should not include the word admin!' });
         }

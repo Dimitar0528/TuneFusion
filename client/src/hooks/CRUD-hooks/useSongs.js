@@ -116,10 +116,11 @@ export function useUpdateSong() {
 }
 
 export function useDeleteSong() {
-    const songDeleteHandler = async (songId, triggerRefreshHandler) => {
+    const songDeleteHandler = async (songId, triggerRefreshSongsHandler, triggerRefreshPlaylistsHandler) => {
         const result = await songsAPI.deleteSong(songId)
         result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success');
-        triggerRefreshHandler();
+        triggerRefreshSongsHandler();
+        triggerRefreshPlaylistsHandler();
     }
     return songDeleteHandler;
 }
