@@ -24,6 +24,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     user,
     handleKeyPressWhenTabbed,
     isPlaylistLoading,
+    setCurrentPage,
   } = useMusicPlayer();
   const { userUUID } = user;
   const [showDialog, setShowDialog] = useState(false);
@@ -52,17 +53,14 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     errors,
     changeHandler,
     submitHandler,
-  } = useForm(
-    Object.assign(initialPlaylistValues, editingPlaylist),
-    onSubmit,
-    validatePlaylist
-  );
+    setValuesWrapper,
+  } = useForm(initialPlaylistValues, onSubmit, validatePlaylist);
 
   const toggleActivePlayList = (playlist) => {
     const newActivePlaylist =
       activePlaylist?.name === playlist.name ? null : playlist;
     setActivePlaylist(newActivePlaylist);
-
+    setCurrentPage(0);
     if (newActivePlaylist) {
       const playlistWithUuid = { ...playlist };
       localStorage.setItem("activePlaylist", JSON.stringify(playlistWithUuid));
@@ -72,6 +70,8 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
   };
 
   const handleCreatePlaylist = () => {
+    setValuesWrapper(initialPlaylistValues);
+
     setEditingPlaylist(null);
     setShowDialog(true);
   };
@@ -79,7 +79,11 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
   const handleEditPlaylist = (e, playlist) => {
     e.stopPropagation();
     setEditingPlaylist(playlist);
-
+    setValuesWrapper({
+      name: playlist.name,
+      description: playlist.description || "",
+      img_src: playlist.img_src || "",
+    });
     setShowDialog(true);
   };
 

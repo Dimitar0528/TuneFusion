@@ -53,6 +53,11 @@ export default function ArtistDescription() {
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>About &nbsp; {artistName}</h1>
+      {artist?.error && (
+        <p className="error" style={{ textAlign: "center" }}>
+          {artist?.error}
+        </p>
+      )}
       <div className={styles["img-area"]}>
         {isArtistLoading ? (
           <Skeleton height={385} width={930} />
@@ -101,7 +106,7 @@ export default function ArtistDescription() {
               </div>
             ))}
       </div>
-      {artist?.singles.length > 0 && <h2 className={styles.h2}>Singles</h2>}
+      {artist?.singles?.length > 0 && <h2 className={styles.h2}>Singles</h2>}
       <div className={styles.singleList}>
         {isArtistLoading
           ? Array.from({ length: 6 }).map((_, index) => (
@@ -167,7 +172,7 @@ export default function ArtistDescription() {
               </div>
             ))}
       </div>
-      {artist?.suggestedArtists.length > 0 && (
+      {artist?.suggestedArtists?.length > 0 && (
         <h2 className={styles.h2}>Suggested Artists</h2>
       )}
       <div className={styles.suggestedArtists}>

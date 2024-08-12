@@ -65,14 +65,6 @@ export default function TFAVerification() {
       newOtp[index] = value;
     });
     setOtp(newOtp);
-
-    console.log(newOtp.join(""));
-
-    if (pastedValues.length === 6) {
-      setTimeout(() => {
-        handleSubmit();
-      }, 400);
-    }
   };
 
   const handleSubmit = async () => {

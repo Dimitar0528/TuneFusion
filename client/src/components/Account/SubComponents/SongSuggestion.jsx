@@ -15,7 +15,7 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
   const createSong = useCreateSong();
   const [query, setQuery] = useState("");
   const [songs, loading, fetchSuggestedSongs] = useGetSongSuggestions();
-  const songsPerPage = 10;
+  const songsPerPage = 20;
 
   const handleInputChange = (e) => {
     setQuery(e.target.value);

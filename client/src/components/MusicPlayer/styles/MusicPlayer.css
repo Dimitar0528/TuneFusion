@@ -168,6 +168,7 @@ label {
 
     @media (height < 180px) {
         padding: 0;
+        bottom: .25rem;
 
         .top-section {
             display: none;
@@ -183,7 +184,7 @@ label {
         }
     }
 
-    @media (height < 130px) {
+    @media (height < 120px) {
         .song-details {
             display: none;
         }

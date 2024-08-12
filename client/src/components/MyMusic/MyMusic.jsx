@@ -18,9 +18,7 @@ export default function MyMusic() {
 
       <MusicList
         title={
-          activePlaylist !== null && activePlaylist !== undefined
-            ? `${activePlaylist?.name}`
-            : "Freshly Added Songs"
+          !!activePlaylist ? `${activePlaylist?.name}` : "Freshly Added Songs"
         }
         songs={filteredSongs}
         activePlaylist={activePlaylist}

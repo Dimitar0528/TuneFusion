@@ -46,7 +46,9 @@ export default function MusicList({
     return storedLikedSongs ? JSON.parse(storedLikedSongs) : [];
   });
   const [hoveredSongUUID, setHoveredSongUUID] = useState();
-
+  if (!activePlaylist) {
+    songs = songs.filter((song, index) => index !== songs.length - 1);
+  }
   const sortedSongs = songs.sort((a, b) => {
     switch (sortOption) {
       case "name-asc":
