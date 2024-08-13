@@ -1,13 +1,14 @@
 import { lazy, Suspense } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styles from "./styles/Account.module.css";
 import useTabs from "./hooks/useTabs";
 import useTabEventListeners from "./hooks/useTabEventListeners";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
 import { useRefresh } from "../../hooks/useRefresh";
+import { Navigate } from "react-router-dom";
 
 const EditAccount = lazy(() => import("./SubComponents/EditAccount"));
 const ViewAllUsers = lazy(() => import("./SubComponents/ViewAllUsers"));
@@ -15,12 +16,17 @@ const SongSuggestion = lazy(() => import("./SubComponents/SongSuggestion"));
 const ViewAllSongs = lazy(() => import("./SubComponents/ViewAllSongs"));
 
 export default function Account() {
-  const { userUUID } = useParams();
-  const { triggerRefreshSongsHandler, triggerRefreshPlaylistsHandler } =
+  const { currentUserUUID } = useParams();
+  const { triggerRefreshSongsHandler, triggerRefreshPlaylistsHandler, user } =
     useMusicPlayer();
+  const { userUUID } = user;
+  if (userUUID !== "") {
+    if (currentUserUUID !== userUUID) return <Navigate to="/" replace />;
+  }
+
   const [refreshUserFlag, triggerRefreshUserHandler] = useRefresh();
   const [refreshUsersFlag, triggerRefreshUsersHandler] = useRefresh();
-  const [user] = useGetUserDetails(userUUID, refreshUserFlag);
+  const [currentUser] = useGetUserDetails(currentUserUUID, refreshUserFlag);
   const tabs = ["Song Suggestions", "Songs", "Users", "Account"];
   const {
     activeTab,
@@ -49,13 +55,13 @@ export default function Account() {
       case "Account":
         return (
           <EditAccount
-            user={user}
+            user={currentUser}
             triggerRefreshHandler={triggerRefreshUserHandler}
           />
         );
       case "Songs":
         return (
-          user.role === "admin" && (
+          currentUser.role === "admin" && (
             <ViewAllSongs
               triggerRefreshSongsHandler={triggerRefreshSongsHandler}
               triggerRefreshPlaylistsHandler={triggerRefreshPlaylistsHandler}
@@ -64,17 +70,17 @@ export default function Account() {
         );
       case "Users":
         return (
-          user.role === "admin" && (
+          currentUser.role === "admin" && (
             <ViewAllUsers
               refreshFlag={refreshUsersFlag}
               triggerRefreshHandler={triggerRefreshUsersHandler}
-              userUUID={userUUID}
+              userUUID={currentUserUUID}
             />
           )
         );
       case "Song Suggestions":
         return (
-          user.role === "admin" && (
+          currentUser.role === "admin" && (
             <SongSuggestion
               triggerRefreshHandler={triggerRefreshSongsHandler}
             />
@@ -97,7 +103,7 @@ export default function Account() {
           .filter(
             (tab) =>
               !(
-                user.role === "user" &&
+                currentUser.role === "user" &&
                 ["Songs", "Users", "Song Suggestions"].includes(tab)
               )
           )

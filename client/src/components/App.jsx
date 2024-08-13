@@ -5,7 +5,7 @@ import AboutUs from "./Navigation/Information/AboutUs";
 import Login from "./Login/Login";
 import Faq from "./Navigation/Information/Faq";
 import MyMusic from "./MyMusic/MyMusic";
-import SongManagerHandler from "./SongManagerHandler";
+import SongManagerHandler from "./Account/SubComponents/SongManagerHandler";
 import ProtectedRouteGuard from "./ProtectedRouteGuard";
 import ContactUs from "./Navigation/Information/ContactUs";
 import Header from "./Navigation/Header";
@@ -34,10 +34,16 @@ export default function App() {
       <ScrollToTopButton />
 
       <Routes>
-        <Route path={"/account/:userUUID"} element={<Account />} />
+        {userUUID !== null && (
+          <Route path={"/account/:currentUserUUID"} element={<Account />} />
+        )}
         <Route path="/" element={<LandingPage userUUID={userUUID} />} />
-
-        <Route path={"/musicplayer/:userUUID"} element={<MyMusic />} />
+        <Route
+          path={"/musicplayer/:currentUserUUID"}
+          element={
+            userUUID !== null ? <MyMusic /> : <Navigate to="/sign-in" replace />
+          }
+        />
 
         <Route path="/information">
           <Route path="aboutus" element={<AboutUs />} />
@@ -51,7 +57,9 @@ export default function App() {
         />
 
         <Route
-          element={<ProtectedRouteGuard user={user} isNotAdminRouteFlag={true} />}>
+          element={
+            <ProtectedRouteGuard user={user} isNotAdminRouteFlag={true} />
+          }>
           <Route path="/sign-in">
             <Route path="" element={<Login />} />
             <Route path="otp" element={<TFAVerification />} />

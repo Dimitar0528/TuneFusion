@@ -1,14 +1,14 @@
 import { useEffect } from "react";
-import styles from "../styles/SongManagerHandler.module.css";
+import styles from "./styles/SongManagerHandler.module.css";
 import { useParams } from "react-router-dom";
-import showToast from "../utils/showToast";
+import showToast from "../../../utils/showToast";
 import {
   useCreateSong,
   useGetSong,
   useUpdateSong,
   validateSongData,
-} from "../hooks/CRUD-hooks/useSongs";
-import { useForm } from "../hooks/useForm";
+} from "../../../hooks/CRUD-hooks/useSongs";
+import { useForm } from "../../../hooks/useForm";
 const initialFormData = {
   name: "",
   artist: "",

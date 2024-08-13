@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./styles/MusicList.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
@@ -32,7 +32,11 @@ export default function MusicList({
     currentPage,
     setCurrentPage,
     handleKeyPressWhenTabbed,
+    setFilteredSongs,
   } = useMusicPlayer();
+  useEffect(() => {
+    setCurrentPage(0);
+  }, []);
   const addSongToPlaylist = useAddSongToPlaylist();
   const removeSongFromPlaylist = useRemoveSongFromPlaylist();
 
@@ -46,7 +50,7 @@ export default function MusicList({
     return storedLikedSongs ? JSON.parse(storedLikedSongs) : [];
   });
   const [hoveredSongUUID, setHoveredSongUUID] = useState();
-  if (!activePlaylist) {
+  if (!activePlaylist && songs.length > 20) {
     songs = songs.filter((song, index) => index !== songs.length - 1);
   }
   const sortedSongs = songs.sort((a, b) => {
@@ -85,6 +89,7 @@ export default function MusicList({
       song.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       song.artist.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const handleSearchChange = (e) => setSearchTerm(e.target.value);
 
   const handleSortChange = (e) => setSortOption(e.target.value);
@@ -319,6 +324,14 @@ export default function MusicList({
                           ? "Pause"
                           : `Play ${song.name} by ${song.artist}`
                       }></i>
+                  ) : extractUUIDPrefix(song.uuid) === currentSongUUID &&
+                    isPlaying ? (
+                    <img
+                      src="/assets/equaliser-animated-green.gif"
+                      alt="Playing"
+                      width={14}
+                      style={{ borderRadius: "0" }}
+                    />
                   ) : (
                     offset + index + 1
                   )}
@@ -359,8 +372,8 @@ export default function MusicList({
                     }`}
                     title={
                       likedSongs.includes(extractUUIDPrefix(song.uuid))
-                        ? "Remove from Liked Songs Playlist"
-                        : "Save to Liked Songs Playlist"
+                        ? "Remove from Liked Songs"
+                        : "Add to Liked Songs"
                     }
                     onClick={() => handleToggleLikedSong(song)}
                     onKeyDown={(e) =>

@@ -98,13 +98,13 @@ export default function LandingPage({ userUUID }) {
                 {" "}
                 Get Started
                 <span>
-                  <i class="fas fa-arrow-right"></i>
+                  <i className="fas fa-arrow-right"></i>
                 </span>
               </button>
               <Link to="/information/aboutus">
                 See More
                 <span>
-                  <i class="fas fa-arrow-right"></i>
+                  <i className="fas fa-arrow-right"></i>
                 </span>
               </Link>
             </div>

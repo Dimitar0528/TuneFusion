@@ -84,7 +84,7 @@ body {
 }
 
 .scrollButton {
-    background-color: var(--primary-clr-light-dark);
+    background-color: hsl(from var(--primary-clr-light-dark) h s 18%);
     border: none;
     border-radius: 50%;
     padding: .69rem;
