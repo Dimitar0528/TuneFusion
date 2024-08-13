@@ -12,6 +12,8 @@ import { useGetUserPlaylists } from "../hooks/CRUD-hooks/usePlaylists";
 const MusicPlayerContext = createContext();
 
 export function MusicPlayerProvider({ children }) {
+  const [user] = useGetUserAuthToken();
+
   const [filteredSongs, setFilteredSongs] = useState([]);
   const [refreshPlaylistsFlag, triggerRefreshPlaylistsHandler] = useRefresh();
   const [refreshSongsFlag, triggerRefreshSongsHandler] = useRefresh();
@@ -32,12 +34,6 @@ export function MusicPlayerProvider({ children }) {
     () => JSON.parse(localStorage.getItem("currentSongUUID")) || ""
   );
 
-  const [songs, isSongLoading] = useGetAllSongs(refreshSongsFlag);
-
-  if (currentSongUUID === "" && songs.length > 0) {
-    setCurrentSongUUID(extractUUIDPrefix(songs[0].uuid));
-  }
-
   const [volume, setVolume] = useState(
     () => Number(JSON.parse(localStorage.getItem("audioVolume"))) || 0.15
   );
@@ -45,11 +41,30 @@ export function MusicPlayerProvider({ children }) {
     () => Number(JSON.parse(localStorage.getItem("currentTime"))) || 0
   );
 
-  const [user] = useGetUserAuthToken();
   const [playlists, isPlaylistLoading] = useGetUserPlaylists(
     user?.userUUID,
     refreshPlaylistsFlag
   );
+  const playerRef = useRef();
+
+  useStoredActivePlaylist(playlists, setActivePlaylist);
+
+  useLocalStorage("currentSongUUID", currentSongUUID);
+
+  useLocalStorage("currentTime", Math.round(currentTime));
+
+  const [songs, isSongLoading] = useUpdateActivePlaylist(
+    activePlaylist,
+    setFilteredSongs,
+    currentSongUUID,
+    user?.userUUID,
+    refreshSongsFlag
+  );
+
+  if (currentSongUUID === "" && songs.length > 0) {
+    setCurrentSongUUID(extractUUIDPrefix(songs[0].uuid));
+  }
+
   const currentSong = songs.find(
     (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
   );
@@ -59,16 +74,6 @@ export function MusicPlayerProvider({ children }) {
 
   const [lyrics, islyricsLoading, fetchLyrics, clearLyrics] =
     useGetSongLyrics(currentSong);
-
-  const playerRef = useRef();
-
-  useStoredActivePlaylist(playlists, setActivePlaylist);
-
-  useLocalStorage("currentSongUUID", currentSongUUID);
-
-  useLocalStorage("currentTime", Math.round(currentTime));
-
-  useUpdateActivePlaylist(activePlaylist, songs, setFilteredSongs);
 
   const handlePlayPause = () => {
     if (currentTime > 0) {

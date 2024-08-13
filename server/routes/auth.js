@@ -94,6 +94,7 @@ router.get('/logout', (req, res) => {
         maxAge: 0,
         httpOnly: true,
         path: '/',
+        secure: true,
     });
 
     res.status(200).json({ message: 'You have successfully logged out of your account!' });
@@ -101,20 +102,18 @@ router.get('/logout', (req, res) => {
 
 router.get('/getToken', (req, res) => {
     const tokenCookie = req.headers.cookie;
-    if (!tokenCookie) return null;
+    if (!tokenCookie) return res.status(400).json({ error: 'Token not provided' });
 
-    const token = tokenCookie.split('=')[1].trim();
-
+    const token = tokenCookie.split('=')[1]?.trim();
     try {
-        const decodedUserToken = jwt.verify(token, secretKey);
-        const { userUUID, userRole } = decodedUserToken;
-
+        const { userUUID, userRole } = jwt.verify(token, secretKey);
         return res.status(200).json({ id: userUUID, role: userRole });
     } catch (error) {
         console.error('Error verifying token:', error);
-        return res.status(401).json({ error: 'There was an error while trying to verify the user token!' });
+        return res.status(401).json({ error: 'Invalid or expired token' });
     }
 });
+
 
 function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000).toString();

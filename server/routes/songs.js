@@ -1,9 +1,10 @@
 import express from 'express';
 import Genius from 'genius-lyrics';
-import { Song, PlaylistSong, } from '../db/models/index.js'
+import { Song, PlaylistSong, PlayList } from '../db/models/index.js'
 import gis from 'async-g-i-s';
-import { searchMusics, getSuggestions, getArtist, searchArtists, listMusicsFromAlbum, searchAlbums } from 'node-youtube-music';
-
+import { searchMusics, getSuggestions, getArtist, searchArtists } from 'node-youtube-music';
+import { Sequelize } from 'sequelize';
+import extractUUIDPrefix from '../../client/src/utils/extractUUIDPrefix.js';
 const router = express.Router();
 const Client = new Genius.Client();
 
@@ -23,6 +24,81 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: "There was an error while trying to fetch all songs!" });
     }
 });
+
+router.get('/specificSongs', async (req, res) => {
+    const activePlaylistName = req.query.AP;
+    const currentSongUUID = req.query.CS;
+    const userUUID = req.query.UI;
+    let songs = [];
+
+    try {
+        // Fetch the current song
+        const currentSong = await Song.findOne({
+            where: Sequelize.where(
+                Sequelize.fn('LEFT', Sequelize.col('uuid'), 6),
+                currentSongUUID
+            ),
+        })
+
+        if (activePlaylistName) {
+            const whereClause = userUUID
+                ? {
+                    [Sequelize.Op.and]: [
+                        Sequelize.where(
+                            Sequelize.fn('LEFT', Sequelize.col('created_by'), 6),
+                            userUUID
+                        ),
+                        { name: activePlaylistName }
+                    ]
+                }
+                : { name: activePlaylistName };
+
+            const playlist = await PlayList.findOne({
+                where: whereClause
+            });
+
+            // Fetch songs related to the playlist using the UUID
+            const playlistSongs = await PlaylistSong.findAll({
+                where: {
+                    playlist_uuid: playlist.uuid
+                },
+            });
+
+            // Fetch the actual song details for each song in the playlist
+            const playlistSongsDetails = await Promise.all(
+                playlistSongs.map(async (playlistSong) => {
+                    const song = await Song.findOne({
+                        where: { uuid: playlistSong.song_uuid }
+                    });
+                    return song ? song.dataValues : null;
+                })
+            );
+
+            // Include the current song if not already in the playlist
+            if (currentSong && !playlistSongsDetails.some(song => song && extractUUIDPrefix(song.uuid) === currentSongUUID)) {
+                playlistSongsDetails.push(currentSong.dataValues);
+            }
+
+            songs = playlistSongsDetails;
+        } else {
+            // Fetch the first 20 songs if no active playlist is provided
+            songs = await Song.findAll({
+                order: [["createdAt", "DESC"]],
+                limit: 20,
+            });
+
+            // Include the current song if not already in the fetched songs
+            if (currentSong && !songs.some(song => extractUUIDPrefix(song.uuid) === currentSongUUID)) {
+                songs.push(currentSong.dataValues);
+            }
+        }
+        res.status(200).json(songs);
+    } catch (error) {
+        console.error("Error fetching songs:", error);
+        res.status(500).json({ error: 'There was an error while trying to fetch the songs!' });
+    }
+});
+
 
 router.get('/:name', async (req, res) => {
     const name = req.params.name;
@@ -167,7 +243,7 @@ router.get('/artist/:artistName', async (req, res) => {
         res.status(200).json(newArtist);
     } catch (error) {
         console.error('Error fetching artist data:', error);
-        res.status(500).json({ message: 'There was an error while trying to fetch the artist data!' });
+        res.status(500).json({ error: 'There is no available information for this artist!' });
     }
 })
 

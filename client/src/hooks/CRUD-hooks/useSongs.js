@@ -43,6 +43,23 @@ export function useGetAllSongs(refreshFlag) {
     return [songs, loading];
 }
 
+export function useGetSpecificSongs(activePlaylist, currentSongUUID, userUUID, refreshFlag) {
+    const [songs, setSongs] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchSongs = async () => {
+            const result = await songsAPI.getSpecificSongs(activePlaylist, currentSongUUID, userUUID);
+            if (result.error) return showToast(`Error: ${result.error}`, "error")
+            setSongs(result);
+            setLoading(false)
+        }
+        fetchSongs()
+    }, [activePlaylist, refreshFlag]);
+
+    return [songs, loading];
+}
+
 
 export function useGetSong(name) {
     const [song, setSong] = useState([]);

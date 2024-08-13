@@ -3,15 +3,22 @@ import TableLayout from "../TableLayout";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 import { formatTime } from "../../../utils/formatTime";
-import { useDeleteSong } from "../../../hooks/CRUD-hooks/useSongs";
+import {
+  useDeleteSong,
+  useGetAllSongs,
+} from "../../../hooks/CRUD-hooks/useSongs";
 export default function ViewAllSongs({
   triggerRefreshSongsHandler,
   triggerRefreshPlaylistsHandler,
 }) {
   const deleteSong = useDeleteSong();
-
-  const { songs, currentSongUUID, setCurrentSongUUID, setCurrentTime } =
-    useMusicPlayer();
+  const {
+    refreshSongsFlag,
+    currentSongUUID,
+    setCurrentSongUUID,
+    setCurrentTime,
+  } = useMusicPlayer();
+  const [songs] = useGetAllSongs(refreshSongsFlag);
   const navigate = useNavigate();
   const handleDeleteSong = async (uuid) => {
     if (!window.confirm("Are you sure you want to delete this song?")) return;

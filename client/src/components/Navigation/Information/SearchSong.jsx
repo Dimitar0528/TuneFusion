@@ -4,19 +4,21 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./styles/SearchSong.module.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
+import { useGetAllSongs } from "../../../hooks/CRUD-hooks/useSongs";
 
 const MusicList = lazy(() => import("../../MyMusic/SubComponents/MusicList"));
 
 export default function SearchSong() {
   const {
-    songs,
     setFilteredSongs,
     playlists,
     setCurrentPage,
     setActivePlaylist,
     activePlaylist,
     triggerRefreshPlaylistsHandler,
+    refreshSongsFlag,
   } = useMusicPlayer();
+  const [songs] = useGetAllSongs(refreshSongsFlag);
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("q");
   const [searchSongs, setSearchSongs] = useState([]);

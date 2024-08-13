@@ -1,6 +1,8 @@
 import { useEffect } from "react";
+import { useGetSpecificSongs } from "./CRUD-hooks/useSongs";
+const useActivePlaylistEffect = (activePlaylist, setFilteredSongs, currentSongUUID, userUUID, refreshFlag) => {
+    const [specificSongs, loading] = useGetSpecificSongs(activePlaylist, currentSongUUID, userUUID, refreshFlag);
 
-const useActivePlaylistEffect = (activePlaylist, songs, setFilteredSongs) => {
     useEffect(() => {
         if (activePlaylist) {
             localStorage.setItem(
@@ -10,10 +12,12 @@ const useActivePlaylistEffect = (activePlaylist, songs, setFilteredSongs) => {
                 })
             );
             setFilteredSongs(activePlaylist.Songs);
+
         } else {
-            setFilteredSongs(songs.slice(0, 20));
+            setFilteredSongs(specificSongs);
         }
-    }, [activePlaylist, songs, setFilteredSongs]);
+    }, [activePlaylist, , specificSongs, setFilteredSongs]);
+    return [specificSongs, loading]
 };
 
 export default useActivePlaylistEffect;
