@@ -26,9 +26,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/specificSongs', async (req, res) => {
-    const activePlaylistName = req.query.AP;
-    const currentSongUUID = req.query.CS;
-    const userUUID = req.query.UI;
+    const { AP: activePlaylistName, CS: currentSongUUID, UI: userUUID, SP: isOnSearchPage } = req.query;
     let songs = [];
 
     try {
@@ -38,9 +36,10 @@ router.get('/specificSongs', async (req, res) => {
                 Sequelize.fn('LEFT', Sequelize.col('uuid'), 6),
                 currentSongUUID
             ),
-        })
+        });
 
         if (activePlaylistName) {
+            // Build where clause based on whether userUUID is provided
             const whereClause = userUUID
                 ? {
                     [Sequelize.Op.and]: [
@@ -53,35 +52,41 @@ router.get('/specificSongs', async (req, res) => {
                 }
                 : { name: activePlaylistName };
 
+            // Fetch playlist based on the where clause
             const playlist = await PlayList.findOne({
-                where: whereClause
+                where: whereClause,
             });
 
-            // Fetch songs related to the playlist using the UUID
-            const playlistSongs = await PlaylistSong.findAll({
-                where: {
-                    playlist_uuid: playlist.uuid
-                },
-            });
+            if (playlist) {
+                // Fetch songs related to the playlist
+                const playlistSongs = await PlaylistSong.findAll({
+                    where: { playlist_uuid: playlist.uuid },
+                });
 
-            // Fetch the actual song details for each song in the playlist
-            const playlistSongsDetails = await Promise.all(
-                playlistSongs.map(async (playlistSong) => {
-                    const song = await Song.findOne({
-                        where: { uuid: playlistSong.song_uuid }
-                    });
-                    return song ? song.dataValues : null;
-                })
-            );
+                // Fetch actual song details for each song in the playlist
+                const playlistSongsDetails = await Promise.all(
+                    playlistSongs.map(async (playlistSong) => {
+                        const song = await Song.findOne({
+                            where: { uuid: playlistSong.song_uuid }
+                        });
+                        return song ? song.dataValues : null;
+                    })
+                );
 
-            // Include the current song if not already in the playlist
-            if (currentSong && !playlistSongsDetails.some(song => song && extractUUIDPrefix(song.uuid) === currentSongUUID)) {
-                playlistSongsDetails.push(currentSong.dataValues);
+                // Include the current song if not already in the playlist
+                if (currentSong && !playlistSongsDetails.some(song => song && extractUUIDPrefix(song.uuid) === currentSongUUID)) {
+                    playlistSongsDetails.push(currentSong.dataValues);
+                }
+
+                songs = playlistSongsDetails.filter(Boolean); // Filter out null values
             }
-
-            songs = playlistSongsDetails;
+        } else if (isOnSearchPage) {
+            // Fetch all songs for the search page
+            songs = await Song.findAll({
+                order: [["createdAt", "DESC"]],
+            });
         } else {
-            // Fetch the first 20 songs if no active playlist is provided
+            // Fetch the first 20 songs if no active playlist is provided and not on search page
             songs = await Song.findAll({
                 order: [["createdAt", "DESC"]],
                 limit: 20,
@@ -92,12 +97,14 @@ router.get('/specificSongs', async (req, res) => {
                 songs.push(currentSong.dataValues);
             }
         }
+
         res.status(200).json(songs);
     } catch (error) {
         console.error("Error fetching songs:", error);
         res.status(500).json({ error: 'There was an error while trying to fetch the songs!' });
     }
 });
+
 
 
 router.get('/:name', async (req, res) => {

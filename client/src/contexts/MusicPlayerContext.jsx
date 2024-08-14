@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef } from "react";
+import { createContext, useContext, useState, useRef, useEffect } from "react";
 import showToast from "../utils/showToast";
 import extractUUIDPrefix from "../utils/extractUUIDPrefix";
 import { useGetAllSongs, useGetSongLyrics } from "../hooks/CRUD-hooks/useSongs";
@@ -74,6 +74,12 @@ export function MusicPlayerProvider({ children }) {
 
   const [lyrics, islyricsLoading, fetchLyrics, clearLyrics] =
     useGetSongLyrics(currentSong);
+
+  useEffect(() => {
+    document.title = isPlaying
+      ? `${currentSong?.name} - TuneFusion`
+      : "TuneFusion";
+  }, [currentSong, isPlaying]);
 
   const handlePlayPause = () => {
     if (currentTime > 0) {

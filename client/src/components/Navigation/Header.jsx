@@ -58,7 +58,7 @@ export default function Header({ btnText, goToLocation, userUUID }) {
       </div>
       <ul className={styles["nav__links"]} id="nav-links" ref={navLinksRef}>
         <NavLink
-          to={userUUID ? `/musicplayer/${userUUID}` : "/sign-in"}
+          to={`/musicplayer/${userUUID}`}
           className={({ isActive }) =>
             isActive ? styles["nav__link--active"] : styles["nav__link"]
           }>

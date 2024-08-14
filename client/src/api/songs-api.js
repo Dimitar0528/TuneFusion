@@ -5,6 +5,7 @@ const BASE_URL = 'http://localhost:3000/api/songs'
 const getAllSongs = async () => request.get(BASE_URL);
 
 const getSpecificSongs = async (activePlaylist, currentSongUUID, userUUID) => {
+    let isOnSearchPage = false;
     // Base URL depending on whether an active playlist is present
     let url = activePlaylist
         ? `${BASE_URL}/specificSongs?AP=${activePlaylist?.name}&CS=${currentSongUUID}`
@@ -15,8 +16,15 @@ const getSpecificSongs = async (activePlaylist, currentSongUUID, userUUID) => {
         url += `&UI=${userUUID}`;
     }
 
+    // Check if the current location is '/search' and log a message
+    if (location.pathname === '/search') {
+        isOnSearchPage = true
+        url += `&SP=${isOnSearchPage}`;
+    }
+
     return request.get(url);
 };
+
 const getSong = (songName) => request.get(`${BASE_URL}/${songName}`)
 
 const createSong = (songData) => request.post(`${BASE_URL}/addsong`, songData)

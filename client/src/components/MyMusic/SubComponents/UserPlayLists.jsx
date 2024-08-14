@@ -103,7 +103,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     if (!window.confirm("Are you sure you want to delete this playlist?"))
       return;
     const callback = () => {
-      if (playlist.name === activePlaylist.name) {
+      if (playlist.name === activePlaylist?.name) {
         localStorage.removeItem("activePlaylist");
         setActivePlaylist(null);
       }
@@ -136,7 +136,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
 
       <div className="sort-controls | playlist-controls">
         <input
-          id="search"
+          id="playlist-search"
           type="search"
           placeholder="Search by name"
           value={searchTerm}

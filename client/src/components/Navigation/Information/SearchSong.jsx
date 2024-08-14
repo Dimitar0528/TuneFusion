@@ -4,7 +4,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./styles/SearchSong.module.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-import { useGetAllSongs } from "../../../hooks/CRUD-hooks/useSongs";
+import { useGetSpecificSongs } from "../../../hooks/CRUD-hooks/useSongs";
 
 const MusicList = lazy(() => import("../../MyMusic/SubComponents/MusicList"));
 
@@ -16,16 +16,20 @@ export default function SearchSong() {
     setActivePlaylist,
     activePlaylist,
     triggerRefreshPlaylistsHandler,
-    refreshSongsFlag,
+    songs,
   } = useMusicPlayer();
-  const [songs] = useGetAllSongs(refreshSongsFlag);
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("q");
   const [searchSongs, setSearchSongs] = useState([]);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    let filteredSongs;
+    if (activePlaylist) {
+      localStorage.removeItem("activePlaylist");
+      setActivePlaylist(null);
+    }
     if (searchTerm) {
-      let filteredSongs;
       if (searchTerm === "All-Songs") {
         filteredSongs = songs;
       } else {
@@ -37,10 +41,9 @@ export default function SearchSong() {
       }
       setSearchSongs(filteredSongs);
       setFilteredSongs(filteredSongs);
-      setLoading(false);
-    } else {
-      setLoading(false);
     }
+
+    setLoading(false);
 
     return () => {
       if (activePlaylist) {
@@ -50,11 +53,25 @@ export default function SearchSong() {
       setFilteredSongs(songs.slice(0, 20));
       setCurrentPage(0);
     };
-  }, [searchTerm, songs, setFilteredSongs, setActivePlaylist, setCurrentPage]);
+  }, [
+    searchTerm,
+    songs,
+    setFilteredSongs,
+    setActivePlaylist,
+    setCurrentPage,
+    triggerRefreshPlaylistsHandler,
+  ]);
 
   return (
     <div className={styles.searchContainer}>
-      <h1>Search Results for &quot;{searchTerm}&quot;</h1>
+      <h1
+        style={{
+          backgroundColor: "var(--accent-clr-light)",
+          padding: ".2rem .5rem",
+          borderRadius: ".25rem",
+        }}>
+        Search Results for &quot;{searchTerm}&quot;
+      </h1>
       {
         <Suspense
           fallback={

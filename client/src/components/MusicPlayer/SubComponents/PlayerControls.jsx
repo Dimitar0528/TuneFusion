@@ -40,7 +40,15 @@ export default function PlayerControls({
       });
     }
   };
-
+  const handleVolumeMuteChange = (e) => {
+    if (e.target.name === "input") return;
+    if (volume > 0) {
+      setPreviousVolume(volume);
+      setVolume(0);
+    } else {
+      setVolume(previousVolume);
+    }
+  };
   useEffect(() => {
     const handleSpecificKeyPress = (e) => {
       const targetTagName = e.target.tagName.toLowerCase();
@@ -53,12 +61,7 @@ export default function PlayerControls({
 
       switch (true) {
         case key === "m" || key === "M":
-          if (volume > 0) {
-            setPreviousVolume(volume);
-            setVolume(0);
-          } else {
-            setVolume(previousVolume);
-          }
+          handleVolumeMuteChange(e);
           break;
         case code === "Space":
           e.preventDefault();
@@ -206,18 +209,24 @@ export default function PlayerControls({
           }`}
           title={`${volume <= 0 ? "Unmute (m)" : "Mute (m)"}`}
           tabIndex={0}
+          onClick={(e) => handleVolumeMuteChange(e)}
           onKeyDown={(e) => handleVolumeChangeKeyPress(e)}>
           <div className="range">
-            <input
-              tabIndex={0}
-              type="range"
-              id="volume"
-              min="0"
-              max="1"
-              step="0.01"
-              value={volume}
-              onChange={handleVolumeChange}
-            />
+            <label htmlFor="volume">
+              <input
+                title="volume"
+                placeholder="volume"
+                tabIndex={0}
+                type="range"
+                name="input"
+                id="volume"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={handleVolumeChange}
+              />
+            </label>
           </div>
         </i>
       </div>
