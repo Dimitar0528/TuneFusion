@@ -100,8 +100,18 @@
             display: none;
         }
 
+
+    }
+
+    @media (width < 500px) {
+
         & th:nth-child(1),
         & td:nth-child(1) {
+            display: none;
+        }
+
+        & th:nth-child(5),
+        & td:nth-child(5) {
             display: none;
         }
     }
@@ -184,8 +194,8 @@
 }
 
 .add-song-to-playlist {
-    appearance: none;
     -webkit-appearance: none;
+    appearance: none;
     width: 100%;
     font-size: 1.15rem;
     padding: 0.675em 6em 0.675em 1em;

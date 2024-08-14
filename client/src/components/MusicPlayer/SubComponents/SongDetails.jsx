@@ -43,9 +43,9 @@ export default function SongDetails() {
           <span>{currentSong?.name}</span>
         </p>
         <Link
-          to={`/artist/${currentSong?.artist}/description`}
+          to={`/artist/${currentSong?.artist.split(", ")[0]}/description`}
           className="artist | song-artist">
-          {currentSong?.artist}
+          {currentSong?.artist.split(", ")[0]}
         </Link>
       </div>
     </>

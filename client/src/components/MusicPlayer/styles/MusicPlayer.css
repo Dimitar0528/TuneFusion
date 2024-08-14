@@ -386,8 +386,8 @@ label {
     line-height: 2.3rem;
     border-radius: inherit;
     background: inherit;
-    background-clip: text;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 

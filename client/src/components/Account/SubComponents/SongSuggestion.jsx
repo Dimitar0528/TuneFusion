@@ -1,6 +1,6 @@
 import { useState } from "react";
 import showToast from "../../../utils/showToast";
-import Table from "../TableLayout";
+import TableLayout from "../TableLayout";
 import styles from "../styles/Account.module.css";
 import "../styles/table.css";
 import { formatTime } from "../../../utils/formatTime";
@@ -116,7 +116,7 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
         </div>
       ) : (
         songs.length > 0 && (
-          <Table
+          <TableLayout
             data={songs}
             hasDbSearch={false}
             columns={[

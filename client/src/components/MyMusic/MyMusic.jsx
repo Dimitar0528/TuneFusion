@@ -16,7 +16,6 @@ export default function MyMusic() {
   if (userUUID !== "") {
     if (currentUserUUID !== userUUID) return <Navigate to="/" replace />;
   }
-
   return (
     <div className="body">
       <UserPlayLists

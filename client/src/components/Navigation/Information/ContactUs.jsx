@@ -91,11 +91,11 @@ export default function ContactUs() {
           <div className="info">
             <div className="information">
               <img src="/assets/location.png" className="icon" alt="" />
-              <p>92 Cherry Drive Uniondale, NY 11553</p>
+              <p>Boulevard Cherni Vrah 88, Sofia, Bulgaria</p>
             </div>
             <div className="information">
               <img src="/assets/email.png" className="icon" alt="" />
-              <p>support@tunefusion.com</p>
+              <p>wrld@abv.bg</p>
             </div>
             <div className="information">
               <img src="/assets/phone.png" className="icon" alt="" />

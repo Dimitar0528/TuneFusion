@@ -207,7 +207,7 @@ body {
 }
 
 .pagination li a {
-    padding: 0.5rem 1rem;
+    padding: 0.35rem .85rem;
     border: 1px solid #ddd;
     cursor: pointer;
     color: var(--primary-clr-dark);
@@ -223,8 +223,25 @@ body {
     border-color: var(--primary-clr-dark);
 }
 
-.pagination li a:hover {
+.pagination li a:not(.disabled):where(:hover, :focus-visible) {
     background-color: var(--primary-clr-dark);
     color: var(--accent-clr-light);
     border-color: #ddd;
+}
+
+.pagination li a.disabled {
+    opacity: .58;
+    cursor: auto;
+}
+
+.item-count {
+    text-align: center;
+    padding: .25rem .75rem;
+    border-radius: .5rem;
+    background-color: hsl(from var(--accent-clr-light) h s 90%)
+}
+
+.item-count.admin {
+    display: inline-block;
+    margin-top: .5rem;
 }

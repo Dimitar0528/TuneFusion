@@ -70,6 +70,13 @@ export default function TableLayout({
   const currentItems = filteredData.slice(offset, offset + itemsPerPage);
   const pageCount = Math.ceil(filteredData.length / itemsPerPage);
 
+  const startIndex =
+    filteredData.length === 0 ? 0 : currentPage * itemsPerPage + 1;
+  const endIndex = Math.min(
+    (currentPage + 1) * itemsPerPage,
+    filteredData.length
+  );
+
   return (
     <div className="table-container">
       <div
@@ -189,8 +196,8 @@ export default function TableLayout({
       </table>
       {pageCount > 1 && (
         <ReactPaginate
-          previousLabel={"Previous"}
-          nextLabel={"Next"}
+          previousLabel={<i className="fas fa-arrow-left"></i>}
+          nextLabel={<i className="fas fa-arrow-right"></i>}
           breakLabel={"..."}
           pageCount={pageCount}
           onPageChange={handlePageClick}
@@ -198,6 +205,10 @@ export default function TableLayout({
           activeClassName={"active"}
         />
       )}
+      <p className="item-count | admin">
+        Showing <strong>{startIndex}</strong> to <strong>{endIndex}</strong> of{" "}
+        <strong>{filteredData.length}</strong> results
+      </p>
     </div>
   );
 }

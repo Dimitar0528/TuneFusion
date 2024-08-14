@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import "./styles/MusicList.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
@@ -32,7 +32,6 @@ export default function MusicList({
     currentPage,
     setCurrentPage,
     handleKeyPressWhenTabbed,
-    setFilteredSongs,
   } = useMusicPlayer();
   useEffect(() => {
     setCurrentPage(0);
@@ -90,7 +89,10 @@ export default function MusicList({
       song.artist.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(0);
+  };
 
   const handleSortChange = (e) => setSortOption(e.target.value);
 
@@ -105,6 +107,13 @@ export default function MusicList({
   const offset = currentPage * itemsPerPage;
   const currentSongs = filteredSongs.slice(offset, offset + itemsPerPage);
   const pageCount = Math.ceil(filteredSongs.length / itemsPerPage);
+
+  const startIndex =
+    filteredSongs.length === 0 ? 0 : currentPage * itemsPerPage + 1;
+  const endIndex = Math.min(
+    (currentPage + 1) * itemsPerPage,
+    filteredSongs.length
+  );
 
   const totalDuration = activePlaylist?.Songs.reduce((total, song) => {
     return total + song.duration;
@@ -185,7 +194,7 @@ export default function MusicList({
       <div className="sort-controls">
         <div className="search-container">
           <input
-            id="search"
+            id="song-search"
             type="search"
             placeholder="Search by artist or name"
             value={searchTerm}
@@ -295,129 +304,139 @@ export default function MusicList({
             </tr>
           </thead>
           <tbody>
-            {currentSongs.map((song, index) => (
-              <tr
-                key={song.uuid}
-                className={
-                  extractUUIDPrefix(song.uuid) === currentSongUUID
-                    ? "playing"
-                    : "tr"
-                }
-                onMouseEnter={() => setHoveredSongUUID(song.uuid)}
-                onMouseLeave={() => setHoveredSongUUID(null)}
-                onDoubleClick={() => handleMusicListSong(song)}
-                onTouchStart={() => handleMusicListSong(song)}>
-                <td>
-                  {hoveredSongUUID === song.uuid ? (
-                    <i
-                      className={`fa-solid fa-${
-                        extractUUIDPrefix(song.uuid) === currentSongUUID &&
-                        isPlaying
-                          ? "pause"
-                          : "play"
-                      }`}
-                      onClick={() => handleMusicListSong(song)}
-                      style={{ cursor: "pointer" }}
-                      title={
-                        extractUUIDPrefix(song.uuid) === currentSongUUID &&
-                        isPlaying
-                          ? "Pause"
-                          : `Play ${song.name} by ${song.artist}`
-                      }></i>
-                  ) : extractUUIDPrefix(song.uuid) === currentSongUUID &&
-                    isPlaying ? (
+            {currentSongs.map((song, index) => {
+              const artistArray = song.artist
+                .split(", ")
+                .map((artist) => artist.replace(/^\&\s*/, ""));
+              return (
+                <tr
+                  key={song.uuid}
+                  className={
+                    extractUUIDPrefix(song.uuid) === currentSongUUID
+                      ? "playing"
+                      : "tr"
+                  }
+                  onMouseEnter={() => setHoveredSongUUID(song.uuid)}
+                  onMouseLeave={() => setHoveredSongUUID(null)}
+                  onDoubleClick={() => handleMusicListSong(song)}
+                  onTouchStart={() => handleMusicListSong(song)}>
+                  <td>
+                    {hoveredSongUUID === song.uuid ? (
+                      <i
+                        className={`fa-solid fa-${
+                          extractUUIDPrefix(song.uuid) === currentSongUUID &&
+                          isPlaying
+                            ? "pause"
+                            : "play"
+                        }`}
+                        onClick={() => handleMusicListSong(song)}
+                        style={{ cursor: "pointer" }}
+                        title={
+                          extractUUIDPrefix(song.uuid) === currentSongUUID &&
+                          isPlaying
+                            ? "Pause"
+                            : `Play ${song.name} by ${song.artist}`
+                        }></i>
+                    ) : extractUUIDPrefix(song.uuid) === currentSongUUID &&
+                      isPlaying ? (
+                      <img
+                        src="/assets/equaliser-animated-green.gif"
+                        alt="Playing"
+                        width={14}
+                        style={{ borderRadius: "0" }}
+                      />
+                    ) : (
+                      offset + index + 1
+                    )}
+                  </td>
+                  <td>
                     <img
-                      src="/assets/equaliser-animated-green.gif"
-                      alt="Playing"
-                      width={14}
-                      style={{ borderRadius: "0" }}
+                      width={40}
+                      height={40}
+                      src={song.img_src}
+                      alt={song.name}
+                      style={{ objectFit: "cover" }}
                     />
-                  ) : (
-                    offset + index + 1
-                  )}
-                </td>
-                <td>
-                  <img
-                    width={40}
-                    height={40}
-                    src={song.img_src}
-                    alt={song.name}
-                    style={{ objectFit: "cover" }}
-                  />
-                </td>
-                <td>
-                  <div>
-                    <strong>{song.name}</strong>
-                    <p>
-                      <Link
-                        className="song-artist"
-                        to={`/artist/${song.artist}/description`}>
-                        {song.artist}{" "}
-                      </Link>
-                    </p>
-                  </div>
-                </td>
-                <td>
-                  {song.PlaylistSong
-                    ? formatDate(song.PlaylistSong.createdAt)
-                    : formatDate(song.createdAt)}
-                </td>
-                <td>
-                  <i
-                    tabIndex={0}
-                    className={` fa-heart | add-to-playlist ${
-                      likedSongs.includes(extractUUIDPrefix(song.uuid))
-                        ? "fa-solid"
-                        : "fa-regular"
-                    }`}
-                    title={
-                      likedSongs.includes(extractUUIDPrefix(song.uuid))
-                        ? "Remove from Liked Songs"
-                        : "Add to Liked Songs"
-                    }
-                    onClick={() => handleToggleLikedSong(song)}
-                    onKeyDown={(e) =>
-                      handleKeyPressWhenTabbed(e, () => {
-                        handleToggleLikedSong(song);
-                      })
-                    }
-                    style={{ cursor: "pointer" }}></i>
-                  {formatTime(song.duration)}
-                </td>
-                <td>
-                  <div className="action-btns">
+                  </td>
+                  <td>
+                    <div>
+                      <strong>{song.name}</strong>
+                      <p>
+                        {artistArray.map((artist, index) => (
+                          <Fragment key={artist}>
+                            <Link
+                              className="song-artist"
+                              to={`/artist/${artist}/description`}>
+                              {artist}
+                            </Link>
+                            {index < artistArray.length - 1 && ", "}
+                          </Fragment>
+                        ))}
+                      </p>
+                    </div>
+                  </td>
+                  <td>
+                    {song.PlaylistSong
+                      ? formatDate(song.PlaylistSong.createdAt)
+                      : formatDate(song.createdAt)}
+                  </td>
+                  <td>
                     <i
                       tabIndex={0}
-                      className="fa-solid fa-plus"
-                      onClick={() => handleAddSongToPlayList(song)}
+                      className={` fa-heart | add-to-playlist ${
+                        likedSongs.includes(extractUUIDPrefix(song.uuid))
+                          ? "fa-solid"
+                          : "fa-regular"
+                      }`}
+                      title={
+                        likedSongs.includes(extractUUIDPrefix(song.uuid))
+                          ? "Remove from Liked Songs"
+                          : "Add to Liked Songs"
+                      }
+                      onClick={() => handleToggleLikedSong(song)}
                       onKeyDown={(e) =>
                         handleKeyPressWhenTabbed(e, () => {
-                          handleAddSongToPlayList(song);
+                          handleToggleLikedSong(song);
                         })
                       }
-                      title="Add to playlist"></i>
-                    {activePlaylist &&
-                      activePlaylist.name !== "Liked Songs" && (
-                        <i
-                          tabIndex={0}
-                          className="fa-solid fa-delete-left"
-                          onClick={() =>
-                            handleRemoveSongFromPlaylist(
-                              song,
-                              activePlaylist.name
-                            )
-                          }
-                          onKeyDown={(e) =>
-                            handleKeyPressWhenTabbed(e, () => {
-                              handleRemoveSongFromPlaylist(song);
-                            })
-                          }
-                          title="Remove from playlist"></i>
-                      )}
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      style={{ cursor: "pointer" }}></i>
+                    {formatTime(song.duration)}
+                  </td>
+                  <td>
+                    <div className="action-btns">
+                      <i
+                        tabIndex={0}
+                        className="fa-solid fa-plus"
+                        onClick={() => handleAddSongToPlayList(song)}
+                        onKeyDown={(e) =>
+                          handleKeyPressWhenTabbed(e, () => {
+                            handleAddSongToPlayList(song);
+                          })
+                        }
+                        title="Add to playlist"></i>
+                      {activePlaylist &&
+                        activePlaylist.name !== "Liked Songs" && (
+                          <i
+                            tabIndex={0}
+                            className="fa-solid fa-delete-left"
+                            onClick={() =>
+                              handleRemoveSongFromPlaylist(
+                                song,
+                                activePlaylist.name
+                              )
+                            }
+                            onKeyDown={(e) =>
+                              handleKeyPressWhenTabbed(e, () => {
+                                handleRemoveSongFromPlaylist(song);
+                              })
+                            }
+                            title="Remove from playlist"></i>
+                        )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
@@ -425,15 +444,20 @@ export default function MusicList({
       {pageCount > 1 && (
         <ReactPaginate
           forcePage={currentPage}
-          previousLabel={"Previous"}
-          nextLabel={"Next"}
+          previousLabel={<i className="fas fa-arrow-left"></i>}
+          nextLabel={<i className="fas fa-arrow-right"></i>}
           breakLabel={"..."}
           pageCount={pageCount}
           onPageChange={handlePageClick}
           containerClassName={"pagination"}
           activeClassName={"active"}
+          disabledLinkClassName={"disabled"}
         />
       )}
+      <p className="item-count">
+        Showing <strong>{startIndex}</strong> to <strong>{endIndex}</strong> of{" "}
+        <strong>{filteredSongs.length}</strong> songs
+      </p>
 
       <AddSongToPlaylistModal
         playlists={playlists}

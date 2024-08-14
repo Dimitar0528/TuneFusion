@@ -16,6 +16,7 @@ export default function SearchInput() {
     <form onSubmit={handleSearchSubmit}>
       <input
         type="text"
+        name="search-input"
         placeholder="Search songs..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
