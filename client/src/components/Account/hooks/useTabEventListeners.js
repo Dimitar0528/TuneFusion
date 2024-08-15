@@ -2,9 +2,11 @@ import { useEffect } from "react";
 
 const useTabEventListeners = (tabsRef, activeTab, setActiveTab, updateUnderline, updateUnderlinePosition) => {
     useEffect(() => {
-        const currentRef = tabsRef.current
+        const currentRef = tabsRef.current;
+
         const handleHover = (e) => {
             const hoveredTab = e.currentTarget;
+            updateUnderline();
             updateUnderlinePosition(hoveredTab);
         };
 
@@ -12,13 +14,18 @@ const useTabEventListeners = (tabsRef, activeTab, setActiveTab, updateUnderline,
             updateUnderline();
         };
 
+        const handleKeyDown = (e) => {
+            if (e.code === "Enter") {
+                const newTab = e.currentTarget.dataset.target;
+                setActiveTab(newTab);
+            }
+        };
+
         currentRef.forEach((tab) => {
             if (tab) {
                 tab.addEventListener("mouseenter", handleHover);
                 tab.addEventListener("mouseleave", handleLeave);
-                tab.addEventListener("keydown", (e) => {
-                    if (e.code === "Enter") setActiveTab(e.currentTarget.dataset.target);
-                });
+                tab.addEventListener("keydown", handleKeyDown);
             }
         });
 
@@ -27,14 +34,11 @@ const useTabEventListeners = (tabsRef, activeTab, setActiveTab, updateUnderline,
                 if (tab) {
                     tab.removeEventListener("mouseenter", handleHover);
                     tab.removeEventListener("mouseleave", handleLeave);
-                    tab.removeEventListener("keydown", (e) => {
-                        if (e.code === "Enter")
-                            setActiveTab(e.currentTarget.dataset.target);
-                    });
+                    tab.removeEventListener("keydown", handleKeyDown);
                 }
             });
         };
-    }, [activeTab, setActiveTab, updateUnderline, updateUnderlinePosition, tabsRef]);
+    }, [activeTab, setActiveTab, updateUnderline, tabsRef, updateUnderlinePosition]);
 };
 
 export default useTabEventListeners;

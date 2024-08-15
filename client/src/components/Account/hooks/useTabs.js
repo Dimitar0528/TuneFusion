@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 
 const useTabs = () => {
-    const [activeTab, setActiveTab] = useState('Account');
+    const queryParams = new URLSearchParams(location.search);
+    const tab = queryParams.get("tab")
+    const [activeTab, setActiveTab] = useState(tab);
     const underlineRef = useRef(null);
     const tabsRef = useRef([]);
     const contentsRef = useRef([]);

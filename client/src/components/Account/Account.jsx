@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import styles from "./styles/Account.module.css";
 import useTabs from "./hooks/useTabs";
 import useTabEventListeners from "./hooks/useTabEventListeners";
@@ -16,18 +16,27 @@ const SongSuggestion = lazy(() => import("./SubComponents/SongSuggestion"));
 const ViewAllSongs = lazy(() => import("./SubComponents/ViewAllSongs"));
 
 export default function Account() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { currentUserUUID } = useParams();
   const { triggerRefreshSongsHandler, triggerRefreshPlaylistsHandler, user } =
     useMusicPlayer();
   const { userUUID } = user;
-  if (userUUID !== "") {
-    if (currentUserUUID !== userUUID) return <Navigate to="/" replace />;
-  }
+
+  // Redirect if currentUserUUID does not match userUUID
+  if (userUUID !== "" && currentUserUUID !== userUUID)
+    return <Navigate to="/" replace />;
 
   const [refreshUserFlag, triggerRefreshUserHandler] = useRefresh();
   const [refreshUsersFlag, triggerRefreshUsersHandler] = useRefresh();
   const [currentUser] = useGetUserDetails(currentUserUUID, refreshUserFlag);
-  const tabs = ["Song Suggestions", "Songs", "Users", "Account"];
+
+  const updateUnderlinePosition = (element) => {
+    underlineRef.current.style.width = `${element.offsetWidth}px`;
+    underlineRef.current.style.left = `${element.offsetLeft}px`;
+  };
+
+  const tabs = ["Song-Suggestions", "Songs", "Users", "Account"];
   const {
     activeTab,
     setActiveTab,
@@ -37,9 +46,13 @@ export default function Account() {
     updateUnderline,
   } = useTabs();
 
-  const updateUnderlinePosition = (element) => {
-    underlineRef.current.style.width = `${element.offsetWidth}px`;
-    underlineRef.current.style.left = `${element.offsetLeft}px`;
+  const updateUrlWithTab = (tab) => {
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set("tab", tab.replace(/\s+/g, "-"));
+    navigate(`/account/${currentUserUUID}?${queryParams.toString()}`, {
+      replace: true,
+    });
+    setActiveTab(tab);
   };
 
   useTabEventListeners(
@@ -54,38 +67,59 @@ export default function Account() {
     switch (tab) {
       case "Account":
         return (
-          <EditAccount
-            user={currentUser}
-            triggerRefreshHandler={triggerRefreshUserHandler}
-          />
+          <Suspense
+            fallback={
+              <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
+            }>
+            <EditAccount
+              user={currentUser}
+              triggerRefreshHandler={triggerRefreshUserHandler}
+            />
+          </Suspense>
         );
       case "Songs":
         return (
           currentUser.role === "admin" && (
-            <ViewAllSongs
-              triggerRefreshSongsHandler={triggerRefreshSongsHandler}
-              triggerRefreshPlaylistsHandler={triggerRefreshPlaylistsHandler}
-            />
+            <Suspense
+              fallback={
+                <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
+              }>
+              <ViewAllSongs
+                triggerRefreshSongsHandler={triggerRefreshSongsHandler}
+                triggerRefreshPlaylistsHandler={triggerRefreshPlaylistsHandler}
+              />
+            </Suspense>
           )
         );
       case "Users":
         return (
           currentUser.role === "admin" && (
-            <ViewAllUsers
-              refreshFlag={refreshUsersFlag}
-              triggerRefreshHandler={triggerRefreshUsersHandler}
-              userUUID={currentUserUUID}
-            />
+            <Suspense
+              fallback={
+                <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
+              }>
+              <ViewAllUsers
+                refreshFlag={refreshUsersFlag}
+                triggerRefreshHandler={triggerRefreshUsersHandler}
+                userUUID={currentUserUUID}
+              />
+            </Suspense>
           )
         );
-      case "Song Suggestions":
+      case "Song-Suggestions":
         return (
           currentUser.role === "admin" && (
-            <SongSuggestion
-              triggerRefreshHandler={triggerRefreshSongsHandler}
-            />
+            <Suspense
+              fallback={
+                <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
+              }>
+              <SongSuggestion
+                triggerRefreshHandler={triggerRefreshSongsHandler}
+              />
+            </Suspense>
           )
         );
+
       default:
         return (
           <div>
@@ -104,7 +138,7 @@ export default function Account() {
             (tab) =>
               !(
                 currentUser.role === "user" &&
-                ["Songs", "Users", "Song Suggestions"].includes(tab)
+                ["Songs", "Users", "Song-Suggestions"].includes(tab)
               )
           )
           .map((tab, index) => (
@@ -115,7 +149,10 @@ export default function Account() {
                 activeTab === tab ? styles.active : ""
               }`}
               data-target={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => {
+                setActiveTab(tab);
+                updateUrlWithTab(tab);
+              }}
               ref={(el) => (tabsRef.current[index] = el)}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </div>
@@ -132,12 +169,7 @@ export default function Account() {
               activeTab === tab ? styles.active : ""
             }`}
             ref={(el) => (contentsRef.current[tab] = el)}>
-            <Suspense
-              fallback={
-                <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
-              }>
-              {renderTabContent(tab)}
-            </Suspense>
+            {renderTabContent(tab)}
           </div>
         ))}
       </div>
