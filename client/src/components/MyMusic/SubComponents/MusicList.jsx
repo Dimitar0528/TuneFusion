@@ -306,8 +306,8 @@ export default function MusicList({
           <tbody>
             {currentSongs.map((song, index) => {
               const artistArray = song.artist
-                .split(", ")
-                .map((artist) => artist.replace(/^\&\s*/, ""));
+                .split(/, | & |,|&/)
+                .map((artist) => artist.trim());
               return (
                 <tr
                   key={song.uuid}

@@ -54,7 +54,9 @@ export default function ArtistDescription() {
     <div className={styles.container}>
       <h1 className={styles.header}>About &nbsp; {artistName}</h1>
       {artist?.error && (
-        <p className="error" style={{ textAlign: "center" }}>
+        <p
+          className="error"
+          style={{ textAlign: "center", padding: "1.65rem" }}>
           {artist?.error}
         </p>
       )}

@@ -1,0 +1,153 @@
+.spotifyIntegration {
+    width: max(340px, 85vw);
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: var(--accent-clr-light);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.spotifyIntegration h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.playlistHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--primary-clr-light-dark);
+    color: white;
+    padding: 10px;
+}
+
+.playlistName {
+    font-size: 1.5em;
+    margin: 0;
+}
+
+.songArtist {
+    color: hsl(from var(--secondary-clr) h s 40%);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.songArtist:hover {
+    text-decoration: underline;
+}
+
+/* Table Styles */
+.playlistTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.playlistTable th,
+.playlistTable td {
+    padding: 0.25rem;
+    border: 1px solid #ddd;
+}
+
+.playlistTable th {
+    background-color: var(--accent-clr-dark);
+    color: white;
+    text-transform: uppercase;
+}
+
+.trackImage {
+    margin-inline: auto;
+    width: 50px;
+    aspect-ratio: 1 / 1;
+    border-radius: 5px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-block: 1rem;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    font-size: 1em;
+    color: white;
+    background-color: #1db954;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .spotifyIntegration {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .spotifyIntegration h1 {
+        font-size: 1.5em;
+    }
+
+    .playlistName {
+        font-size: 1.2em;
+    }
+
+    .playlistTable th,
+    .playlistTable td {
+        padding: 0.8rem;
+        font-size: 0.9em;
+    }
+
+    .trackImage {
+        width: 40px;
+    }
+
+    .pagination {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pagination button {
+        padding: 8px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .spotifyIntegration {
+        width: 95%;
+        padding: 10px;
+    }
+
+    .spotifyIntegration h1 {
+        font-size: 1.2em;
+    }
+
+    .playlistName {
+        font-size: 1em;
+    }
+
+    .playlistTable th,
+    .playlistTable td {
+        padding: 0.5rem;
+        font-size: 0.8em;
+    }
+
+    .trackImage {
+        width: 30px;
+    }
+
+    .pagination button {
+        padding: 6px 12px;
+        font-size: 0.9em;
+    }
+}

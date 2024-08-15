@@ -196,6 +196,7 @@ export default function TableLayout({
       </table>
       {pageCount > 1 && (
         <ReactPaginate
+          forcePage={currentPage}
           previousLabel={<i className="fas fa-arrow-left"></i>}
           nextLabel={<i className="fas fa-arrow-right"></i>}
           breakLabel={"..."}

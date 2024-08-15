@@ -14,6 +14,9 @@ const EditAccount = lazy(() => import("./SubComponents/EditAccount"));
 const ViewAllUsers = lazy(() => import("./SubComponents/ViewAllUsers"));
 const SongSuggestion = lazy(() => import("./SubComponents/SongSuggestion"));
 const ViewAllSongs = lazy(() => import("./SubComponents/ViewAllSongs"));
+const SpotifyIntegration = lazy(() =>
+  import("./SubComponents/SpotifyIntegration")
+);
 
 export default function Account() {
   const navigate = useNavigate();
@@ -36,7 +39,7 @@ export default function Account() {
     underlineRef.current.style.left = `${element.offsetLeft}px`;
   };
 
-  const tabs = ["Song-Suggestions", "Songs", "Users", "Account"];
+  const tabs = ["Song-Suggestions", "Spotify", "Songs", "Users", "Account"];
   const {
     activeTab,
     setActiveTab,
@@ -119,7 +122,17 @@ export default function Account() {
             </Suspense>
           )
         );
-
+      case "Spotify":
+        return (
+          currentUser.role === "admin" && (
+            <Suspense
+              fallback={
+                <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
+              }>
+              <SpotifyIntegration />
+            </Suspense>
+          )
+        );
       default:
         return (
           <div>

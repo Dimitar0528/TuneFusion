@@ -17,6 +17,7 @@ import ScrollToTopButton from "./ScrollToTopButton";
 import MusicPlayer from "./MusicPlayer/MusicPlayer";
 import SearchSong from "./Navigation/Information/SearchSong";
 import ArtistDescription from "./Artist/ArtistDescription";
+import SpotifyRedirect from "./Account/SubComponents/SpotifyRedirect";
 export default function App() {
   const { user } = useMusicPlayer();
   const { userUUID, role } = user;
@@ -27,7 +28,9 @@ export default function App() {
       <Header
         userUUID={userUUID}
         btnText={userUUID ? "My Account" : "Sign up"}
-        goToLocation={userUUID ? `/account/${userUUID}` : "/sign-in"}
+        goToLocation={
+          userUUID ? `/account/${userUUID}?tab=Account` : "/sign-in"
+        }
       />
 
       {userUUID && <MusicPlayer userUUID={userUUID} userRole={role} />}
@@ -36,6 +39,9 @@ export default function App() {
       <Routes>
         {userUUID !== null && (
           <Route path={"/account/:currentUserUUID"} element={<Account />} />
+        )}
+        {userUUID !== null && (
+          <Route path={"/callback"} element={<SpotifyRedirect />} />
         )}
         <Route path="/" element={<LandingPage userUUID={userUUID} />} />
         <Route
