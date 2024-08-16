@@ -199,6 +199,38 @@ router.put('/updatesong/:name', async (req, res) => {
         return res.status(500).json({ error: "There was an error while trying to update the song data!" });
     }
 });
+router.get('/addIndividualSong/:songName', async (req, res) => {
+    try {
+        const songName = req.params.songName.toLowerCase().replace(/^["']|["']$/g, '');
+        const [firstSong] = await searchMusics(songName);
+
+        if (!firstSong) {
+            return res.status(404).json({ error: 'Song not found' });
+        }
+
+        const { artists, title, youtubeId, duration } = firstSong;
+        const artistNames = artists.map(artist => artist.name);
+        const artistNamesString = artistNames.join(', ');
+        const searchTerm = artistNames[0] + songName;
+        const [{ url: img_src } = {}] = await gis(searchTerm);
+
+        const song_duration = duration.totalSeconds;
+        const audio_src = `https://www.youtube.com/watch?v=${youtubeId}`;
+
+        res.status(200).json({
+            name: title,
+            artist: artistNamesString,
+            img_src,
+            audio_src,
+            duration: song_duration,
+        });
+    } catch (error) {
+        console.error('Error occurred:', error);
+        res.status(500).json({ error: 'There was an error while trying to fetch the selected song!' });
+    }
+});
+
+
 router.get('/search/:query', async (req, res) => {
     try {
         const query = req.params.query.toLowerCase();
@@ -211,13 +243,14 @@ router.get('/search/:query', async (req, res) => {
         const songList = await Promise.all((artistSongs.length > 0 ? artistSongs : suggestions).map(async song => {
             const { title: name, artists, youtubeId: id, duration } = song;
             const song_duration = duration.totalSeconds;
-            const artistName = artists[0].name;
-            const searchTerm = artistName + name;
+            const artistNames = artists.map(artist => artist.name);
+            const artistNamesString = artistNames.join(', ');
+            const searchTerm = artistNames[0] + name;
             const imgs = await gis(searchTerm);
             const img_src = imgs[0]?.url;
             const audio_src = `https://www.youtube.com/watch?v=${id}`;
             return {
-                name, artist: artistName, img_src, audio_src, duration: song_duration
+                name, artist: artistNamesString, img_src, audio_src, duration: song_duration
             };
         }));
 

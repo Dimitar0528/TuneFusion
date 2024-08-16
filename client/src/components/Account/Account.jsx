@@ -24,7 +24,7 @@ export default function Account() {
   const { currentUserUUID } = useParams();
   const { triggerRefreshSongsHandler, triggerRefreshPlaylistsHandler, user } =
     useMusicPlayer();
-  const { userUUID } = user;
+  const { userUUID, role } = user;
 
   // Redirect if currentUserUUID does not match userUUID
   if (userUUID !== "" && currentUserUUID !== userUUID)
@@ -39,7 +39,13 @@ export default function Account() {
     underlineRef.current.style.left = `${element.offsetLeft}px`;
   };
 
-  const tabs = ["Song-Suggestions", "Spotify", "Songs", "Users", "Account"];
+  const tabs = [
+    "Song-Suggestions",
+    "Songs",
+    "Users",
+    "Spotify-Playlists",
+    "Account",
+  ];
   const {
     activeTab,
     setActiveTab,
@@ -122,14 +128,14 @@ export default function Account() {
             </Suspense>
           )
         );
-      case "Spotify":
+      case "Spotify-Playlists":
         return (
           currentUser.role === "admin" && (
             <Suspense
               fallback={
                 <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
               }>
-              <SpotifyIntegration />
+              <SpotifyIntegration user={user} />
             </Suspense>
           )
         );

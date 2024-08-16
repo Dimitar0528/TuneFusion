@@ -106,6 +106,23 @@ export function useGetSongSuggestions() {
     return [songs, loading, fetchSuggestedSongs];
 }
 
+export function useGetIndividualSong() {
+    const [song, setSong] = useState({});
+    const [loading, setLoading] = useState(false);
+
+    const fetchIndividualSong = useCallback(async (songName) => {
+
+        setLoading(true);
+        setSong({});
+        const result = await songsAPI.addIndividualSong(songName);
+        setSong(result);
+        setLoading(false);
+        return result
+    }, []);
+
+    return [song, loading, fetchIndividualSong];
+}
+
 export function useGetSongLyrics(currentSong) {
     const [lyrics, setLyrics] = useState("");
     const [loading, setIsLoading] = useState(false);

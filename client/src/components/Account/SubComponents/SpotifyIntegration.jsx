@@ -4,7 +4,13 @@ import { encodeToBase64 } from "../utils/encodetoBase64";
 import { Link } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-export default function SpotifyIntegration({ userUUID }) {
+import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
+import { useAddExternalSongToDB } from "../../../hooks/useAddExternalSongToDB";
+export default function SpotifyIntegration({ user }) {
+  const { userUUID, role } = user;
+  const { handleKeyPressWhenTabbed, triggerRefreshSongsHandler } =
+    useMusicPlayer();
+
   const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
   const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
 
@@ -22,9 +28,11 @@ export default function SpotifyIntegration({ userUUID }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [trackPage, setTrackPage] = useState({});
-  const [playlistPage, setPlaylistPage] = useState(0); // State to manage playlist pagination
-  const playlistsPerPage = 3; // Number of playlists per page
-
+  const [playlistPage, setPlaylistPage] = useState(0);
+  const playlistsPerPage = 3;
+  const [addExternalSongToDB, songLoading] = useAddExternalSongToDB(
+    triggerRefreshSongsHandler
+  );
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -167,7 +175,7 @@ export default function SpotifyIntegration({ userUUID }) {
 
   return (
     <div className={styles.spotifyIntegration}>
-      <h1>Your Playlists</h1>
+      <h1>Your Spotify Playlists</h1>
       {playlists.length === 0 ? (
         <p>No playlists created by you.</p>
       ) : (
@@ -195,6 +203,7 @@ export default function SpotifyIntegration({ userUUID }) {
                       <th>Image</th>
                       <th>Track Name</th>
                       <th>Artists</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -219,6 +228,36 @@ export default function SpotifyIntegration({ userUUID }) {
                               {index < track.artists.length - 1 && ", "}
                             </React.Fragment>
                           ))}
+                        </td>
+                        <td>
+                          {role === "admin" && (
+                            <button
+                              disabled={songLoading}
+                              className={styles.addBtn}
+                              style={{
+                                backgroundColor: "white",
+                                border: "transparent",
+                              }}>
+                              <i
+                                style={{ color: "var(--primary-clr)" }}
+                                tabIndex={0}
+                                disabled={songLoading}
+                                className={
+                                  songLoading
+                                    ? "fas fa-spinner fa-spin"
+                                    : "fa-solid fa-square-plus"
+                                }
+                                onClick={() => addExternalSongToDB(track.name)}
+                                onKeyDown={(e) =>
+                                  handleKeyPressWhenTabbed(e, () => {
+                                    addExternalSongToDB(track.name);
+                                  })
+                                }
+                                title={
+                                  songLoading ? "Loading" : "Add to Database"
+                                }></i>
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}

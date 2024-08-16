@@ -5,10 +5,9 @@ import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./styles/ArtistDescription.module.css";
 import {
   useGetArtistDescription,
-  useCreateSong,
+  useGetIndividualSong,
 } from "../../hooks/CRUD-hooks/useSongs";
-import { useGetSongSuggestions } from "../../hooks/CRUD-hooks/useSongs";
-import showToast from "../../utils/showToast";
+import { useAddExternalSongToDB } from "../../hooks/useAddExternalSongToDB";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import AddSongToPlaylistModal from "../MyMusic/SubComponents/AddSongToPlaylistModal";
 export default function ArtistDescription() {
@@ -35,21 +34,10 @@ export default function ArtistDescription() {
   const { role } = user;
   const { artistName } = useParams();
   const [artist, isArtistLoading] = useGetArtistDescription(artistName);
-  const [_, loading, fetchSuggestedSongs] = useGetSongSuggestions();
-  const createSong = useCreateSong();
-  const handleAddToDB = (single) => {
-    const query = `${single.title} ${artistName}`;
-    showToast("Loading... Please wait!", "info", 3500);
-    addToDB(query);
-  };
-  const addToDB = async (query) => {
-    const songs = await fetchSuggestedSongs(query);
-    const callback = (result) => {
-      showToast(result.message, "success");
-      triggerRefreshSongsHandler();
-    };
-    await createSong(songs[0], callback);
-  };
+  const [addExternalSongToDB, loading] = useAddExternalSongToDB(
+    triggerRefreshSongsHandler
+  );
+
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>About &nbsp; {artistName}</h1>
@@ -147,10 +135,10 @@ export default function ArtistDescription() {
                             ? "fas fa-spinner fa-spin"
                             : "fa-solid fa-square-plus"
                         }
-                        onClick={() => handleAddToDB(single)}
+                        onClick={() => addExternalSongToDB(single.title)}
                         onKeyDown={(e) =>
                           handleKeyPressWhenTabbed(e, () => {
-                            handleAddToDB(single);
+                            addExternalSongToDB(single.title);
                           })
                         }
                         title={loading ? "Loading" : "Add to Database"}></i>

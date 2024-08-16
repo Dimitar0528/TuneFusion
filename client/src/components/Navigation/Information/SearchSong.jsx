@@ -15,14 +15,21 @@ export default function SearchSong() {
     setCurrentPage,
     setActivePlaylist,
     activePlaylist,
+    currentSongUUID,
+    user,
     triggerRefreshPlaylistsHandler,
-    songs,
   } = useMusicPlayer();
+  const { userUUID } = user;
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("q");
   const [searchSongs, setSearchSongs] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [songs] = useGetSpecificSongs(
+    activePlaylist,
+    currentSongUUID,
+    userUUID,
+    triggerRefreshPlaylistsHandler
+  );
   useEffect(() => {
     let filteredSongs;
     if (activePlaylist) {

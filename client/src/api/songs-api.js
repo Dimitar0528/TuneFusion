@@ -37,6 +37,8 @@ const getSongLyrics = (songArtist, songName) => request.get(`${BASE_URL}/${songA
 
 const getSongSuggestions = (query) => request.get(`${BASE_URL}/search/${query}`);
 
+const addIndividualSong = (songName) => request.get(`${BASE_URL}/addIndividualSong/${songName}`);
+
 const getArtistDescription = (artistName) => request.get(`${BASE_URL}/artist/${artistName}`)
 
 const songsAPI = {
@@ -48,6 +50,7 @@ const songsAPI = {
     updateSong,
     getSongLyrics,
     getSongSuggestions,
+    addIndividualSong,
     getArtistDescription
 }
 
