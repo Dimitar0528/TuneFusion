@@ -3,10 +3,7 @@ import { useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./styles/ArtistDescription.module.css";
-import {
-  useGetArtistDescription,
-  useGetIndividualSong,
-} from "../../hooks/CRUD-hooks/useSongs";
+import { useGetArtistDescription } from "../../hooks/CRUD-hooks/useSongs";
 import { useAddExternalSongToDB } from "../../hooks/useAddExternalSongToDB";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import AddSongToPlaylistModal from "../MyMusic/SubComponents/AddSongToPlaylistModal";

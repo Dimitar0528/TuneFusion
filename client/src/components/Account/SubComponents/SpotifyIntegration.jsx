@@ -6,10 +6,28 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { useAddExternalSongToDB } from "../../../hooks/useAddExternalSongToDB";
+import AddSongToPlaylistModal from "../../MyMusic/SubComponents/AddSongToPlaylistModal";
 export default function SpotifyIntegration({ user }) {
   const { userUUID, role } = user;
-  const { handleKeyPressWhenTabbed, triggerRefreshSongsHandler } =
-    useMusicPlayer();
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSong, setSelectedSong] = useState();
+
+  const handleAddSongToPlayList = (song) => {
+    setSelectedSong(song);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setSelectedSong(null);
+  };
+  const {
+    handleKeyPressWhenTabbed,
+    triggerRefreshSongsHandler,
+    triggerRefreshPlaylistsHandler,
+    playlists: TuneFusionPlaylists,
+  } = useMusicPlayer();
 
   const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
   const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
@@ -230,34 +248,56 @@ export default function SpotifyIntegration({ user }) {
                           ))}
                         </td>
                         <td>
-                          {role === "admin" && (
-                            <button
-                              disabled={songLoading}
-                              className={styles.addBtn}
-                              style={{
-                                backgroundColor: "white",
-                                border: "transparent",
-                              }}>
-                              <i
-                                style={{ color: "var(--primary-clr)" }}
-                                tabIndex={0}
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-evenly",
+                            }}>
+                            {role === "admin" && (
+                              <button
                                 disabled={songLoading}
-                                className={
-                                  songLoading
-                                    ? "fas fa-spinner fa-spin"
-                                    : "fa-solid fa-square-plus"
-                                }
-                                onClick={() => addExternalSongToDB(track.name)}
+                                className={styles.addBtn}
+                                style={{
+                                  backgroundColor: "white",
+                                  border: "transparent",
+                                }}>
+                                <i
+                                  style={{ color: "var(--primary-clr)" }}
+                                  tabIndex={0}
+                                  disabled={songLoading}
+                                  className={
+                                    songLoading
+                                      ? "fas fa-spinner fa-spin"
+                                      : "fa-solid fa-square-plus"
+                                  }
+                                  onClick={() =>
+                                    addExternalSongToDB(track.name)
+                                  }
+                                  onKeyDown={(e) =>
+                                    handleKeyPressWhenTabbed(e, () => {
+                                      addExternalSongToDB(track.name);
+                                    })
+                                  }
+                                  title={
+                                    songLoading ? "Loading" : "Add to Database"
+                                  }></i>
+                              </button>
+                            )}
+                            <div
+                              className={styles.addBtn}
+                              style={{ backgroundColor: "white" }}>
+                              <i
+                                tabIndex={0}
+                                className="fa-solid fa-plus"
+                                onClick={() => handleAddSongToPlayList(track)}
                                 onKeyDown={(e) =>
                                   handleKeyPressWhenTabbed(e, () => {
-                                    addExternalSongToDB(track.name);
+                                    handleAddSongToPlayList(track);
                                   })
                                 }
-                                title={
-                                  songLoading ? "Loading" : "Add to Database"
-                                }></i>
-                            </button>
-                          )}
+                                title="Add to playlist"></i>
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -292,6 +332,14 @@ export default function SpotifyIntegration({ user }) {
               Next Playlists
             </button>
           </div>
+          <AddSongToPlaylistModal
+            playlists={TuneFusionPlaylists}
+            triggerRefreshHandler={triggerRefreshPlaylistsHandler}
+            showModal={showModal}
+            handleModalClose={handleModalClose}
+            selectedSong={selectedSong}
+            checkIfSongIsInDBFlag={true}
+          />
         </>
       )}
     </div>

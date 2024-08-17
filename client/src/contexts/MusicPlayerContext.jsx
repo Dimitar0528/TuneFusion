@@ -1,11 +1,11 @@
 import { createContext, useContext, useState, useRef, useEffect } from "react";
 import showToast from "../utils/showToast";
 import extractUUIDPrefix from "../utils/extractUUIDPrefix";
-import { useGetAllSongs, useGetSongLyrics } from "../hooks/CRUD-hooks/useSongs";
+import { useGetSongLyrics } from "../hooks/CRUD-hooks/useSongs";
 import { useGetUserAuthToken } from "../hooks/CRUD-hooks/useAuth";
-import useLocalStorage from "../hooks/useLocalStorage";
-import useStoredActivePlaylist from "../hooks/useStoredActivePlaylist";
-import useUpdateActivePlaylist from "../hooks/useUpdateActivePlaylist";
+import useLocalStorage from "./hooks/useLocalStorage";
+import useStoredActivePlaylist from "./hooks/useStoredActivePlaylist";
+import useUpdateActivePlaylist from "./hooks/useUpdateActivePlaylist";
 import { useRefresh } from "../hooks/useRefresh";
 import { useGetUserPlaylists } from "../hooks/CRUD-hooks/usePlaylists";
 

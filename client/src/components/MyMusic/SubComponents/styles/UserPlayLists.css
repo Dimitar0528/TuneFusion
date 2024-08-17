@@ -54,13 +54,16 @@
 }
 
 .playlist-dialog {
-    width: 90%;
-    max-width: 400px;
+    width: clamp(340px, 35vw, 100%);
     border: none;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 1rem;
     background-color: white;
+
+    @media (width < 900px) {
+        margin-top: -2rem;
+    }
 }
 
 .playlist-dialog form {

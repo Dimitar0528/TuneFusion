@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useGetSpecificSongs } from "./CRUD-hooks/useSongs";
+import { useGetSpecificSongs } from "../../hooks/CRUD-hooks/useSongs";
 const useActivePlaylistEffect = (activePlaylist, setFilteredSongs, currentSongUUID, userUUID, refreshFlag) => {
     const [specificSongs, loading] = useGetSpecificSongs(activePlaylist, currentSongUUID, userUUID, refreshFlag);
 

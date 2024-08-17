@@ -132,7 +132,7 @@ export function useGetSongLyrics(currentSong) {
     const fetchLyrics = useCallback(async () => {
         if (lyrics) return clearLyrics();
         setIsLoading(true);
-        const result = await songsAPI.getSongLyrics(currentSong.artist, currentSong.name);
+        const result = await songsAPI.getSongLyrics(currentSong.artist.split(', ')[0], currentSong.name);
         result.error ? setLyrics(result.error) : setLyrics(result);
         setIsLoading(false);
 

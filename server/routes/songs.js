@@ -38,7 +38,13 @@ router.get('/specificSongs', async (req, res) => {
             ),
         });
 
-        if (activePlaylistName) {
+        if (isOnSearchPage) {
+            // Fetch all songs for the search page
+            songs = await Song.findAll({
+                order: [["createdAt", "DESC"]],
+            });
+
+        } else if (activePlaylistName) {
             // Build where clause based on whether userUUID is provided
             const whereClause = userUUID
                 ? {
@@ -78,13 +84,8 @@ router.get('/specificSongs', async (req, res) => {
                     playlistSongsDetails.push(currentSong.dataValues);
                 }
 
-                songs = playlistSongsDetails.filter(Boolean); // Filter out null values
+                songs = playlistSongsDetails.filter(Boolean);
             }
-        } else if (isOnSearchPage) {
-            // Fetch all songs for the search page
-            songs = await Song.findAll({
-                order: [["createdAt", "DESC"]],
-            });
         } else {
             // Fetch the first 20 songs if no active playlist is provided and not on search page
             songs = await Song.findAll({

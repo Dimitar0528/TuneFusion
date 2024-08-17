@@ -233,6 +233,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
                 name="name"
                 value={newPlaylist.name}
                 onChange={changeHandler}
+                placeholder="My Playlist"
               />
               {errors.name && <p className="error">{errors.name}</p>}
               <label htmlFor="description">Description: (optional)</label>
@@ -240,7 +241,8 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
                 id="description"
                 name="description"
                 value={newPlaylist.description}
-                onChange={changeHandler}></textarea>
+                onChange={changeHandler}
+                placeholder="Playlists containing some songs"></textarea>
               <label htmlFor="img_src">Image URL: (optional)</label>
               <input
                 id="img_src"
@@ -248,6 +250,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
                 name="img_src"
                 value={newPlaylist.img_src}
                 onChange={changeHandler}
+                placeholder="https://i.ytimg.com/vi/kCJsVS46CpQ/maxresdefault.jpg"
               />
               <div className="dialog-actions">
                 <button type="submit">Save</button>
