@@ -36,7 +36,9 @@ export default function SpotifyIntegration({ user }) {
   const SCOPES = ["playlist-read-private", "playlist-read-collaborative"];
 
   const getAuthUrl = (userUUID) => {
-    const state = encodeURIComponent(`userUUID=${userUUID}&tab=Spotify`);
+    const state = encodeURIComponent(
+      `userUUID=${userUUID}&tab=Spotify-Playlists`
+    );
     return `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(
       REDIRECT_URI
     )}&scope=${encodeURIComponent(SCOPES.join(" "))}&state=${state}`;
@@ -54,8 +56,8 @@ export default function SpotifyIntegration({ user }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let token = localStorage.getItem("spotifyAccessToken");
-        let refreshToken = localStorage.getItem("spotifyRefreshToken");
+        let token = localStorage.getItem("SP_AT");
+        let refreshToken = localStorage.getItem("SP_RT");
 
         if (!token && !refreshToken) {
           window.location.href = getAuthUrl(userUUID);
@@ -103,9 +105,9 @@ export default function SpotifyIntegration({ user }) {
     });
     if (!response.ok) {
       if (response.status === 401) {
-        const refreshToken = localStorage.getItem("spotifyRefreshToken");
+        const refreshToken = localStorage.getItem("SP_RT");
         const newToken = await refreshAccessToken(refreshToken);
-        localStorage.setItem("spotifyAccessToken", newToken.access_token);
+        localStorage.setItem("SP_AT", newToken.access_token);
         return fetchUserProfile(newToken.access_token);
       } else {
         throw new Error("Failed to fetch user profile");
@@ -125,9 +127,9 @@ export default function SpotifyIntegration({ user }) {
     );
     if (!playlistsResponse.ok) {
       if (playlistsResponse.status === 401) {
-        const refreshToken = localStorage.getItem("spotifyRefreshToken");
+        const refreshToken = localStorage.getItem("SP_RT");
         const newToken = await refreshAccessToken(refreshToken);
-        localStorage.setItem("spotifyAccessToken", newToken.access_token);
+        localStorage.setItem("SP_AT", newToken.access_token);
 
         return fetchPlaylists(newToken.access_token, userId);
       } else {
@@ -149,9 +151,9 @@ export default function SpotifyIntegration({ user }) {
         );
         if (!playlistTracksResponse.ok) {
           if (playlistTracksResponse.status === 401) {
-            const refreshToken = localStorage.getItem("spotifyRefreshToken");
+            const refreshToken = localStorage.getItem("SP_RT");
             const newToken = await refreshAccessToken(refreshToken);
-            localStorage.setItem("spotifyAccessToken", newToken.access_token);
+            localStorage.setItem("SP_AT", newToken.access_token);
 
             return fetchPlaylists(newToken.access_token, userId);
           } else {
@@ -194,6 +196,10 @@ export default function SpotifyIntegration({ user }) {
   return (
     <div className={styles.spotifyIntegration}>
       <h1>Your Spotify Playlists</h1>
+      <p>
+        Here you can see the first 100 songs from playlists, that are either
+        created or liked by you.
+      </p>
       {playlists.length === 0 ? (
         <p>No playlists created by you.</p>
       ) : (
@@ -214,6 +220,7 @@ export default function SpotifyIntegration({ user }) {
                     className={styles.playlistImage}
                   />
                   <h2 className={styles.playlistName}>{playlist.name}</h2>
+                  <button>Create playlist in DB</button>
                 </div>
                 <table className={styles.playlistTable}>
                   <thead>
@@ -225,82 +232,87 @@ export default function SpotifyIntegration({ user }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {tracksToShow.map((track) => (
-                      <tr key={track.id}>
-                        <td>
-                          <img
-                            src={track.album.images[2]?.url}
-                            alt={track.name}
-                            className={styles.trackImage}
-                          />
-                        </td>
-                        <td>{track.name}</td>
-                        <td>
-                          {track.artists.map((artist, index) => (
-                            <React.Fragment key={artist.id}>
-                              <Link
-                                to={`/artist/${artist.name}/description`}
-                                className={styles.songArtist}>
-                                {artist.name}
-                              </Link>
-                              {index < track.artists.length - 1 && ", "}
-                            </React.Fragment>
-                          ))}
-                        </td>
-                        <td>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-evenly",
-                            }}>
-                            {role === "admin" && (
-                              <button
-                                disabled={songLoading}
-                                className={styles.addBtn}
-                                style={{
-                                  backgroundColor: "white",
-                                  border: "transparent",
-                                }}>
-                                <i
-                                  style={{ color: "var(--primary-clr)" }}
-                                  tabIndex={0}
+                    {tracksToShow.map((track) => {
+                      const songDetails = `${track.name}-${track.artists[0].name}`;
+                      return (
+                        <tr key={track.id}>
+                          <td>
+                            <img
+                              src={track.album.images[2]?.url}
+                              alt={track.name}
+                              className={styles.trackImage}
+                            />
+                          </td>
+                          <td>{track.name}</td>
+                          <td>
+                            {track.artists.map((artist, index) => (
+                              <React.Fragment key={artist.id}>
+                                <Link
+                                  to={`/artist/${artist.name}/description`}
+                                  className={styles.songArtist}>
+                                  {artist.name}
+                                </Link>
+                                {index < track.artists.length - 1 && ", "}
+                              </React.Fragment>
+                            ))}
+                          </td>
+                          <td>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-evenly",
+                              }}>
+                              {role === "admin" && (
+                                <button
                                   disabled={songLoading}
-                                  className={
-                                    songLoading
-                                      ? "fas fa-spinner fa-spin"
-                                      : "fa-solid fa-square-plus"
-                                  }
-                                  onClick={() =>
-                                    addExternalSongToDB(track.name)
-                                  }
+                                  className={styles.addBtn}
+                                  style={{
+                                    backgroundColor: "white",
+                                    border: "transparent",
+                                  }}>
+                                  <i
+                                    style={{ color: "var(--primary-clr)" }}
+                                    tabIndex={0}
+                                    disabled={songLoading}
+                                    className={
+                                      songLoading
+                                        ? "fas fa-spinner fa-spin"
+                                        : "fa-solid fa-square-plus"
+                                    }
+                                    onClick={() =>
+                                      addExternalSongToDB(songDetails)
+                                    }
+                                    onKeyDown={(e) =>
+                                      handleKeyPressWhenTabbed(e, () => {
+                                        addExternalSongToDB(songDetails);
+                                      })
+                                    }
+                                    title={
+                                      songLoading
+                                        ? "Loading"
+                                        : "Add to Database"
+                                    }></i>
+                                </button>
+                              )}
+                              <div
+                                className={styles.addBtn}
+                                style={{ backgroundColor: "white" }}>
+                                <i
+                                  tabIndex={0}
+                                  className="fa-solid fa-plus"
+                                  onClick={() => handleAddSongToPlayList(track)}
                                   onKeyDown={(e) =>
                                     handleKeyPressWhenTabbed(e, () => {
-                                      addExternalSongToDB(track.name);
+                                      handleAddSongToPlayList(track);
                                     })
                                   }
-                                  title={
-                                    songLoading ? "Loading" : "Add to Database"
-                                  }></i>
-                              </button>
-                            )}
-                            <div
-                              className={styles.addBtn}
-                              style={{ backgroundColor: "white" }}>
-                              <i
-                                tabIndex={0}
-                                className="fa-solid fa-plus"
-                                onClick={() => handleAddSongToPlayList(track)}
-                                onKeyDown={(e) =>
-                                  handleKeyPressWhenTabbed(e, () => {
-                                    handleAddSongToPlayList(track);
-                                  })
-                                }
-                                title="Add to playlist"></i>
+                                  title="Add to playlist"></i>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
                 <div className={styles.pagination}>

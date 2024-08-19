@@ -122,14 +122,10 @@
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 520px) {
     .spotifyIntegration {
         width: 95%;
         padding: 10px;
-    }
-
-    .spotifyIntegration h1 {
-        font-size: 1.2em;
     }
 
     .playlistName {
@@ -138,7 +134,7 @@
 
     .playlistTable th,
     .playlistTable td {
-        padding: 0.5rem;
+        padding: 0.15rem;
         font-size: 0.8em;
     }
 

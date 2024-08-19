@@ -1,9 +1,10 @@
 import styles from "./styles/AboutUs.module.css";
+
 export default function AboutUs() {
   return (
     <>
       <div className={styles["we-are-block"]}>
-        <div id="about-us-section" className={styles["about-us-section"]}>
+        <div id={styles["about-us-section"]}>
           <div className={styles["about-us-image"]}>
             <img
               src="https://www.billboard.com/wp-content/uploads/2020/09/music-streaming-2020-billboard-1548-1601492250.jpg"
@@ -28,18 +29,18 @@ export default function AboutUs() {
           </div>
         </div>
 
-        <div id="history-section" className={styles["history-section"]}>
+        <div id={styles["history-section"]}>
+          <div className={styles["history-image"]}>
+            <img
+              src="https://media.licdn.com/dms/image/C4E12AQH5d3iDIVB4uA/article-cover_image-shrink_720_1280/0/1633697610814?e=2147483647&v=beta&t=F9xUQrgO_riJ4j4G-r4Rm4SIasfneABMRnmYQkGDB9A"
+              width="900"
+              height="500"
+              alt="TuneFusion"
+              className={styles.img}
+            />
+          </div>
           <div className={styles["history-info"]}>
             <h2>What We Offer</h2>
-            <div className={styles["history-image"]}>
-              <img
-                src="https://media.licdn.com/dms/image/C4E12AQH5d3iDIVB4uA/article-cover_image-shrink_720_1280/0/1633697610814?e=2147483647&v=beta&t=F9xUQrgO_riJ4j4G-r4Rm4SIasfneABMRnmYQkGDB9A"
-                width="900"
-                height="500"
-                alt="TuneFusion Office"
-                className={styles.img}
-              />
-            </div>
 
             <p>
               TuneFusion provides a comprehensive range of features to satisfy

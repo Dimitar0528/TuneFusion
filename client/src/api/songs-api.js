@@ -37,7 +37,7 @@ const getSongLyrics = (songArtist, songName) => request.get(`${BASE_URL}/${songA
 
 const getSongSuggestions = (query) => request.get(`${BASE_URL}/search/${query}`);
 
-const addIndividualSong = (songName) => request.get(`${BASE_URL}/addIndividualSong/${songName}`);
+const addIndividualSong = (songDetails) => request.get(`${BASE_URL}/addIndividualSong/${songDetails}`);
 
 const getArtistDescription = (artistName) => request.get(`${BASE_URL}/artist/${artistName}`)
 

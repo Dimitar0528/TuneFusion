@@ -42,9 +42,8 @@ export default function SpotifyRedirect() {
       if (code && state) {
         try {
           const tokens = await exchangeCodeForTokens(code);
-          console.log(tokens);
-          localStorage.setItem("spotifyAccessToken", tokens.access_token);
-          localStorage.setItem("spotifyRefreshToken", tokens.refresh_token);
+          localStorage.setItem("SP_AT", tokens.access_token);
+          localStorage.setItem("SP_RT", tokens.refresh_token);
 
           const decodedState = decodeURIComponent(state);
           const stateParams = new URLSearchParams(decodedState);

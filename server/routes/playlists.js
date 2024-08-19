@@ -142,7 +142,7 @@ router.post('/add-song', async (req, res) => {
         const playlist = await PlayList.findByPk(playlistUUID);
 
         if (!song) {
-            return res.status(404).json({ error: 'Song not found!' });
+            return res.status(404).json({ error: 'The requested song could not be found in our database.' });
         }
 
         if (!playlist) {

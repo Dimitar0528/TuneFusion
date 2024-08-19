@@ -110,11 +110,11 @@ export function useGetIndividualSong() {
     const [song, setSong] = useState({});
     const [loading, setLoading] = useState(false);
 
-    const fetchIndividualSong = useCallback(async (songName) => {
+    const fetchIndividualSong = useCallback(async (songDetails) => {
 
         setLoading(true);
         setSong({});
-        const result = await songsAPI.addIndividualSong(songName);
+        const result = await songsAPI.addIndividualSong(songDetails);
         setSong(result);
         setLoading(false);
         return result

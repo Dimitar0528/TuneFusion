@@ -132,7 +132,7 @@ router.post('/addsong', async (req, res) => {
 
     try {
         const song = await Song.findOne({
-            where: { name: name }
+            where: { name: name, artist: artist }
         });
         if (song) {
             return res.status(400).json({ error: 'The song has already been added to the database!' });
@@ -200,10 +200,10 @@ router.put('/updatesong/:name', async (req, res) => {
         return res.status(500).json({ error: "There was an error while trying to update the song data!" });
     }
 });
-router.get('/addIndividualSong/:songName', async (req, res) => {
+router.get('/addIndividualSong/:songDetails', async (req, res) => {
     try {
-        const songName = req.params.songName.toLowerCase().replace(/^["']|["']$/g, '');
-        const [firstSong] = await searchMusics(songName);
+        const [songName, artistName] = req.params.songDetails.split('-');
+        const [firstSong] = await searchMusics(`${songName} ${artistName}`);
 
         if (!firstSong) {
             return res.status(404).json({ error: 'Song not found' });
