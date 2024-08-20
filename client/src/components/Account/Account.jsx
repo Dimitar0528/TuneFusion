@@ -24,7 +24,7 @@ export default function Account() {
   const { currentUserUUID } = useParams();
   const { triggerRefreshSongsHandler, triggerRefreshPlaylistsHandler, user } =
     useMusicPlayer();
-  const { userUUID, role } = user;
+  const { userUUID } = user;
 
   // Redirect if currentUserUUID does not match userUUID
   if (userUUID !== "" && currentUserUUID !== userUUID)
@@ -130,14 +130,16 @@ export default function Account() {
         );
       case "Spotify-Playlists":
         return (
-          currentUser.role === "admin" && (
-            <Suspense
-              fallback={
-                <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
-              }>
-              <SpotifyIntegration user={user} />
-            </Suspense>
-          )
+          <Suspense
+            fallback={
+              <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
+            }>
+            <SpotifyIntegration
+              user={user}
+              triggerRefreshHandler={triggerRefreshPlaylistsHandler}
+              triggerRefreshSongsHandler={triggerRefreshSongsHandler}
+            />
+          </Suspense>
         );
       default:
         return (

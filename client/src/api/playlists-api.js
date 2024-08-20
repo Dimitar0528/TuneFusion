@@ -12,6 +12,8 @@ const deletePlaylist = (playlistUUID) => request.del(`${BASE_URL}/delete-playlis
 
 const addSongToPlaylist = (playlistData) => request.post(`${BASE_URL}/add-song`, playlistData)
 
+const addExternalSongToPlaylist = (playlistData) => request.post(`${BASE_URL}/addExternalSong`, playlistData)
+
 const removeSongFromPlaylist = (playlistData) => request.del(`${BASE_URL}/remove-song`, playlistData)
 
 const playlistsAPI = {
@@ -20,6 +22,7 @@ const playlistsAPI = {
     editPlaylist,
     deletePlaylist,
     addSongToPlaylist,
+    addExternalSongToPlaylist,
     removeSongFromPlaylist
 }
 

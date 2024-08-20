@@ -29,6 +29,18 @@ export function useAddSongToPlaylist() {
     return addSongToPlaylistHandler
 }
 
+export function useAddExternalSongToPlaylist() {
+    const addExternalSongToPlaylistHandler = async (playlistData, triggerRefreshHandler, triggerRefreshSongsHandler) => {
+        const result = await playlistsAPI.addExternalSongToPlaylist(playlistData);
+        result.warn && showToast(`Warning: ${result.warn}`, "warning", 2500);
+        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success');
+        triggerRefreshHandler();
+        triggerRefreshSongsHandler();
+    }
+    return addExternalSongToPlaylistHandler
+}
+
+
 export const useGetUserPlaylists = (userUUID, refreshFlag) => {
     const [playlists, setPlaylists] = useState([]);
     const [loading, setLoading] = useState(true);

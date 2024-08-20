@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "./styles/SpotifyIntegration.module.css"; // Import CSS Module
+import styles from "./styles/SpotifyIntegration.module.css";
 import { encodeToBase64 } from "../utils/encodetoBase64";
 import { Link } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
@@ -7,9 +7,14 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { useAddExternalSongToDB } from "../../../hooks/useAddExternalSongToDB";
 import AddSongToPlaylistModal from "../../MyMusic/SubComponents/AddSongToPlaylistModal";
-export default function SpotifyIntegration({ user }) {
+import {
+  useAddExternalSongToPlaylist,
+  useCreatePlaylist,
+} from "../../../hooks/CRUD-hooks/usePlaylists";
+export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
   const { userUUID, role } = user;
-
+  const createPlaylist = useCreatePlaylist();
+  const addExternalSongToPlaylist = useAddExternalSongToPlaylist();
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState();
 
@@ -49,10 +54,34 @@ export default function SpotifyIntegration({ user }) {
   const [error, setError] = useState(null);
   const [trackPage, setTrackPage] = useState({});
   const [playlistPage, setPlaylistPage] = useState(0);
-  const playlistsPerPage = 3;
+  const [playlistsPerPage, setPlaylistsPerPage] = useState(5);
   const [addExternalSongToDB, songLoading] = useAddExternalSongToDB(
     triggerRefreshSongsHandler
   );
+  const handleItemsPerPageChange = (e) => {
+    setPlaylistsPerPage(Number(e.target.value));
+    setPlaylistPage(0);
+  };
+
+  const movePlaylistToTuneFusionHandler = (values, playlistTracks) => {
+    const reqObj = {
+      ...values,
+      created_by: userUUID,
+    };
+    const playlistTracksObj = {
+      ...playlistTracks,
+      playlistName: values.name,
+      created_by: userUUID,
+      userRole: role,
+    };
+    createPlaylist(reqObj, triggerRefreshHandler);
+    addExternalSongToPlaylist(
+      playlistTracksObj,
+      triggerRefreshHandler,
+      triggerRefreshSongsHandler
+    );
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -185,9 +214,13 @@ export default function SpotifyIntegration({ user }) {
   if (loading)
     return <Skeleton height={550} width="clamp(300px, 80vw, 100%)" />;
 
-  if (error) return <div className={styles.error}>Error: {error}</div>;
+  if (error)
+    return (
+      <div style={{ backgroundColor: "white" }} className="error">
+        Error: {error}
+      </div>
+    );
 
-  // Pagination logic for playlists
   const playlistsToShow = playlists.slice(
     playlistPage * playlistsPerPage,
     (playlistPage + 1) * playlistsPerPage
@@ -196,10 +229,22 @@ export default function SpotifyIntegration({ user }) {
   return (
     <div className={styles.spotifyIntegration}>
       <h1>Your Spotify Playlists</h1>
-      <p>
+      <p style={{ marginBottom: "1rem" }}>
         Here you can see the first 100 songs from playlists, that are either
         created or liked by you.
       </p>
+      <div className="select-container" style={{ marginBottom: "1rem" }}>
+        <label htmlFor="number-of-songs">Playlists per page: &nbsp;</label>
+        <select
+          id="number-of-songs"
+          value={playlistsPerPage}
+          onChange={handleItemsPerPageChange}>
+          <option value={5}>5 per page</option>
+          <option value={10}>10 per page</option>
+          <option value={15}>15 per page</option>
+          <option value={20}>20 per page</option>
+        </select>
+      </div>
       {playlists.length === 0 ? (
         <p>No playlists created by you.</p>
       ) : (
@@ -210,6 +255,31 @@ export default function SpotifyIntegration({ user }) {
               currentPage * 10,
               (currentPage + 1) * 10
             );
+            const playlistValues = {
+              name: playlist.name,
+              description: playlist.description,
+              img_src: playlist.images[0]?.url,
+            };
+            const extractedTracks = playlist.tracks
+              .slice(0, 3)
+              .map((track, index) => {
+                const { name, artists, album, duration_ms } = track;
+
+                const artistNames = artists
+                  .map((artist) => artist.name)
+                  .join(", ");
+
+                const albumImage =
+                  album.images && album.images[0] ? album.images[0].url : "";
+
+                return {
+                  name,
+                  artistNames,
+                  albumImage,
+                  duration_ms,
+                };
+              });
+
             return (
               <div key={playlist.id} className={styles.playlistContainer}>
                 <div className={styles.playlistHeader}>
@@ -220,7 +290,15 @@ export default function SpotifyIntegration({ user }) {
                     className={styles.playlistImage}
                   />
                   <h2 className={styles.playlistName}>{playlist.name}</h2>
-                  <button>Create playlist in DB</button>
+                  <button
+                    onClick={() =>
+                      movePlaylistToTuneFusionHandler(
+                        playlistValues,
+                        extractedTracks
+                      )
+                    }>
+                    Move Playlist to TuneFusion
+                  </button>
                 </div>
                 <table className={styles.playlistTable}>
                   <thead>
@@ -330,7 +408,7 @@ export default function SpotifyIntegration({ user }) {
               </div>
             );
           })}
-          <div className={styles.playlistPagination}>
+          <div className={styles.pagination}>
             <button
               onClick={() => handlePlaylistPageChange(-1)}
               disabled={playlistPage <= 0}>

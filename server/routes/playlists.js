@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import { PlayList, PlaylistSong, Song, User } from '../db/models/index.js'
 import { Sequelize } from 'sequelize';
+import { searchMusics } from 'node-youtube-music';
 
 router.post('/create-playlist', async (req, res) => {
     const { name, description, created_by, img_src } = req.body;
@@ -171,6 +172,113 @@ router.post('/add-song', async (req, res) => {
         res.status(500).json({ error: "There was an error while trying to add the song to the playlist!" });
     }
 });
+
+router.post('/addExternalSong', async (req, res) => {
+    try {
+        const { playlistName, created_by, userRole, ...songs } = req.body;
+
+        const songsToAdd = await Promise.all(
+            Object.values(songs).map(async (externalSong) => {
+                const { name, artistNames, albumImage: img_src } = externalSong;
+
+                // Check if the song already exists in the database
+                const existingSong = await Song.findOne({
+                    where: {
+                        name: name,
+                        artist: artistNames
+                    }
+                });
+
+                if (!existingSong) {
+                    const [firstSong] = await searchMusics(`${name} ${artistNames.split(', ')[0]}`);
+
+                    if (!firstSong) {
+                        return res.status(404).json({ error: 'Specific song not found' });
+                    }
+
+                    const { youtubeId, duration } = firstSong;
+                    return {
+                        name,
+                        artist: artistNames,
+                        img_src,
+                        audio_src: `https://www.youtube.com/watch?v=${youtubeId}`,
+                        duration: duration.totalSeconds
+                    };
+                }
+
+                return existingSong;
+            })
+        );
+
+        // Filter out null values (songs not found) and segregate new and existing songs
+        const newSongs = songsToAdd.filter(song => song && !song.uuid);
+        const existingSongs = songsToAdd.filter(song => song && song.uuid);
+
+        if (userRole === 'admin' && newSongs.length > 0) {
+            const addedSongs = await Song.bulkCreate(newSongs);
+            existingSongs.push(...addedSongs);
+        }
+
+        console.log('Songs added to the database:', newSongs);
+
+        try {
+            setTimeout(async () => {
+                const playlist = await PlayList.findOne({
+                    where: {
+                        [Sequelize.Op.and]: [
+                            Sequelize.where(
+                                Sequelize.fn('LEFT', Sequelize.col('created_by'), 6),
+                                created_by
+                            ),
+                            { name: playlistName }
+                        ]
+                    }
+                });
+
+
+                const existingPlaylistSongs = await PlaylistSong.findAll({
+                    where: {
+                        playlist_uuid: playlist.uuid,
+                        song_uuid: {
+                            [Sequelize.Op.in]: existingSongs.map(song => song.uuid)
+                        }
+                    },
+                    attributes: ['song_uuid']
+                });
+
+                const existingSongUUIDs = existingPlaylistSongs.map(playlistSong => playlistSong.song_uuid);
+
+                // Filter out songs that are already in the playlist
+                const songsToAddToPlaylist = existingSongs.filter(song => !existingSongUUIDs.includes(song.uuid));
+
+                if (songsToAddToPlaylist.length > 0) {
+                    const playlistSongsData = songsToAddToPlaylist.map(song => ({
+                        song_uuid: song.uuid,
+                        playlist_uuid: playlist.uuid
+                    }));
+
+                    // Add only the new songs to the playlist
+                    await PlaylistSong.bulkCreate(playlistSongsData);
+
+                    if (userRole !== 'admin') {
+                        return res.status(422).json({ warn: 'Some of the songs were not added because they are not inside our database yet!' });
+                    }
+                    return res.status(200).json({ message: 'Playlist transferred successfully' });
+                }
+            }, 50);
+
+        } catch (error) {
+            console.error('Error adding songs to the playlist:', error);
+            return res.status(500).json({ error: 'Internal Server Error while adding songs to playlist' });
+        }
+
+    } catch (error) {
+        console.error('Error processing songs:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 
 router.delete('/remove-song', async (req, res) => {
     const { songUUID, playlistName, userUUID } = req.body;

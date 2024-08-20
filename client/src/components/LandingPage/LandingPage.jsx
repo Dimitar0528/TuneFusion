@@ -6,8 +6,10 @@ import GenreCard from "./SubComponents/GenreCard";
 import FeatureCard from "./SubComponents/FeatureCard";
 import ClientCard from "./SubComponents/ClientCard";
 import { Link, useNavigate } from "react-router-dom";
+
 export default function LandingPage({ userUUID }) {
   const navigate = useNavigate();
+
   useEffect(() => {
     const scrollRevealOption = {
       distance: "50px",
@@ -121,6 +123,52 @@ export default function LandingPage({ userUUID }) {
           </div>
         </div>
       </header>
+
+      <section
+        className={`${styles["section__container"]} ${styles["spotify__container"]}`}>
+        <h2 className={styles["section__header"]}>
+          <strong>New Feature</strong>-Spotify Integration with TuneFusion
+        </h2>
+        <p className={styles["section__description"]}>
+          <i>
+            <strong>
+              Seamlessly integrate your Spotify playlists with TuneFusion.
+            </strong>{" "}
+            Browse the playlists you've created or liked on Spotify and move
+            them (OR each song individually) to TuneFusion effortlessly. Enjoy
+            your favorite tracks on TuneFusion without any hassles or
+            interruptions.
+          </i>
+        </p>
+        <div className={styles["spotify__integration"]}>
+          <img
+            src="https://static1.makeuseofimages.com/wordpress/wp-content/uploads/2024/03/woman-listening-to-music-with-headphones.jpg"
+            alt="Spotify Integration"
+            className={styles["spotify__image"]}
+          />
+          <div className={styles["spotify__details"]}>
+            <h3>Move Your Playlists</h3>
+            <p>
+              Sync your Spotify account with TuneFusion, browse through all the
+              playlists you’ve created or liked, and transfer them instantly.
+              Experience the convenience of having all your favorite music in
+              one place.
+            </p>
+            <button
+              className={`${styles["btn"]} ${styles["spotify__btn"]}`}
+              onClick={() => {
+                userUUID
+                  ? navigate(`/account/${userUUID}?tab=Spotify-Playlists`)
+                  : navigate("/sign-in");
+              }}>
+              Start Integration &nbsp;
+              <span>
+                <i className="fas fa-arrow-right"></i>
+              </span>
+            </button>
+          </div>
+        </div>
+      </section>
 
       <section
         className={`${styles["section__container"]} ${styles["genre__container"]}`}>
