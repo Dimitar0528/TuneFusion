@@ -76,7 +76,7 @@ router.get('/:userUUID', async (req, res) => {
             include: [
                 {
                     model: Song,
-
+                    attributes: ['uuid', 'name', 'artist', 'duration', 'img_src'],
                     through: {
                         model: PlaylistSong,
                         attributes: ['createdAt'],
@@ -84,6 +84,7 @@ router.get('/:userUUID', async (req, res) => {
 
                 }
             ],
+            attributes: { exclude: ['uuid', 'updatedAt', 'UserUuid', 'created_by', 'createdAt'] },
             order: [
                 ['createdAt', 'DESC'],
                 [Song, PlaylistSong, 'createdAt', 'DESC']],

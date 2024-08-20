@@ -36,12 +36,14 @@ router.get('/specificSongs', async (req, res) => {
                 Sequelize.fn('LEFT', Sequelize.col('uuid'), 6),
                 currentSongUUID
             ),
+            attributes: { exclude: ['updatedAt'] }
         });
 
         if (isOnSearchPage) {
             // Fetch all songs for the search page
             songs = await Song.findAll({
                 order: [["createdAt", "DESC"]],
+                attributes: { exclude: ['updatedAt'] }
             });
 
         } else if (activePlaylistName) {
@@ -61,6 +63,7 @@ router.get('/specificSongs', async (req, res) => {
             // Fetch playlist based on the where clause
             const playlist = await PlayList.findOne({
                 where: whereClause,
+                attributes: { exclude: ['updatedAt'] }
             });
 
             if (playlist) {
@@ -73,7 +76,8 @@ router.get('/specificSongs', async (req, res) => {
                 const playlistSongsDetails = await Promise.all(
                     playlistSongs.map(async (playlistSong) => {
                         const song = await Song.findOne({
-                            where: { uuid: playlistSong.song_uuid }
+                            where: { uuid: playlistSong.song_uuid },
+                            attributes: { exclude: ['updatedAt'] }
                         });
                         return song ? song.dataValues : null;
                     })
@@ -91,6 +95,7 @@ router.get('/specificSongs', async (req, res) => {
             songs = await Song.findAll({
                 order: [["createdAt", "DESC"]],
                 limit: 20,
+                attributes: { exclude: ['updatedAt'] }
             });
 
             // Include the current song if not already in the fetched songs

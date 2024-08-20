@@ -5,6 +5,7 @@ import songRoutes from './routes/songs.js';
 import userRoutes from './routes/users.js';
 import authRoutes from './routes/auth.js';
 import playlistsRoutes from './routes/playlists.js';
+import compression from 'compression';
 const app = express();
 
 app.use(express.json());
@@ -14,6 +15,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(cookieParser());
+app.use(compression({ level: 9 }));
 
 const port = 3000;
 
