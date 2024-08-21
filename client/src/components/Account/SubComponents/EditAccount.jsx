@@ -13,6 +13,8 @@ import {
   useResetPassword,
 } from "../../../hooks/CRUD-hooks/useUsers";
 import { useTogglePasswordVisibility } from "../../../hooks/useTogglePasswordVisibility";
+import ConfirmDialog from "../../ConfirmDialog";
+
 const initialUserData = {
   name: "",
   first_name: "",
@@ -44,6 +46,8 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
   const deleteUser = useDeleteUser();
   const resetPassword = useResetPassword();
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   const onSubmit = async (formData) => {
     if (
@@ -109,10 +113,7 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
       )
     );
   };
-  const handleUserDeleteAccount = async () => {
-    if (!window.confirm("Are you sure you want to delete your account?"))
-      return;
-
+  const handleDeleteUserAccount = async (uuid) => {
     const displayMessage = () => {
       showToast("Account deleted successfully!", "success", 1500, true, true);
       localStorage.clear();
@@ -122,194 +123,225 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
     logoutUser();
   };
 
-  return (
-    <div className={styles.editAccount}>
-      <form
-        name="edit-form"
-        className={styles.editContainer}
-        onSubmit={submitHandler}>
-        <h1 className={styles.editTitle}>Edit my account</h1>
-        <div className={styles.grid}>
-          <div className={`${styles.formGroup} ${styles.a}`}>
-            <label htmlFor="name">Username</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="example"
-              value={formData.name}
-              onChange={changeHandler}
-              required
-            />
-            {errors.name && <p className="error">{errors.name}</p>}
-          </div>
-          <div className={`${styles.formGroup} ${styles.b}`}>
-            <label htmlFor="first_name">First Name</label>
-            <input
-              id="first_name"
-              name="first_name"
-              type="text"
-              placeholder="John"
-              value={formData.first_name}
-              onChange={changeHandler}
-              required
-            />
-            {errors.first_name && <p className="error">{errors.first_name}</p>}
-          </div>
-          <div className={`${styles.formGroup} ${styles.c}`}>
-            <label htmlFor="last_name">Last Name</label>
-            <input
-              id="last_name"
-              name="last_name"
-              type="text"
-              placeholder="Doe"
-              value={formData.last_name}
-              onChange={changeHandler}
-              required
-            />
-            {errors.last_name && <p className="error">{errors.last_name}</p>}
-          </div>
-          <div className={styles.formGroup}>
-            <label htmlFor="email_address">Email Address</label>
-            <input
-              id="email_address"
-              name="email_address"
-              type="text"
-              placeholder="john_doe@hotmail.com"
-              value={formData.email_address}
-              onChange={changeHandler}
-              required
-            />
-            {errors.email_address && (
-              <p className="error">{errors.email_address}</p>
-            )}
-          </div>
-          <div className={styles.formGroup}>
-            <label htmlFor="phone_number">Phone Number</label>
-            <input
-              id="phone_number"
-              name="phone_number"
-              type="tel"
-              placeholder="0877696969"
-              value={formData.phone_number}
-              onChange={changeHandler}
-              required
-            />
-            {errors.phone_number && (
-              <p className="error">{errors.phone_number}</p>
-            )}
-          </div>
-          <div className={styles.formGroup}>
-            <label htmlFor="gender">
-              Gender <span className={styles.notRequired}>(Optional)</span>
-            </label>
-            <select
-              name="gender"
-              id="gender"
-              value={formData.gender}
-              onChange={changeHandler}>
-              <option value=""></option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-        </div>
-        <div className={styles.buttonContainer}>
-          <button
-            type="button"
-            className={`${styles.button} ${styles.deleteBtn}`}
-            onClick={handleUserDeleteAccount}>
-            Delete Account
-          </button>
-          <button
-            type="button"
-            className={`${styles.button} ${styles.logOut}`}
-            onClick={handleUserLogout}>
-            Log Out
-          </button>
-          <button
-            type="button"
-            className={`${styles.button} ${styles.editPassword}`}
-            onClick={() => setPasswordModalOpen(true)}>
-            Reset Password
-          </button>
-          <input
-            type="submit"
-            value="Save changes"
-            className={`${styles.button} ${styles.submitBtn}`}
-          />
-        </div>
-      </form>
+  const handleDeleteClick = (user) => {
+    setUserToDelete(user);
+    setIsModalOpen(true);
+  };
 
-      {passwordModalOpen && (
-        <dialog open className={styles["password-modal"]}>
-          <div className={styles["modal-content"]}>
-            <h2>Reset Password</h2>
-            <p style={{ marginBottom: "1rem" }}>
-              The same rules apply for new password: To be at least 8 characters
-              long and to have at least one capitalized letter and number
-            </p>
-            <form onSubmit={passwordSubmitHandler}>
-              <label htmlFor="newPassword">New Password:</label>
-              <div className="input-field">
-                <i className="fas fa-lock"></i>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="newPassword"
-                  name="newPassword"
-                  value={passwordData.newPassword}
-                  onChange={passwordChangeHandler}
-                  autoComplete="off"
-                  required
-                />
-                <i
-                  className={`fas eye ${
-                    showPassword ? "fa-eye-slash" : "fa-eye"
-                  }`}
-                  onClick={() => showPasswordHandler()}></i>
-              </div>
-              {passwordErrors.newPassword && (
-                <p className="error">{passwordErrors.newPassword}</p>
-              )}
-              <br />
-              <label htmlFor="repeatPassword">Repeat New Password:</label>
-              <div className="input-field">
-                <i className="fas fa-lock"></i>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="repeatPassword"
-                  name="repeatPassword"
-                  value={passwordData.repeatPassword}
-                  onChange={passwordChangeHandler}
-                  autoComplete="off"
-                  required
-                />
-                <i
-                  className={`fas eye ${
-                    showPassword ? "fa-eye-slash" : "fa-eye"
-                  }`}
-                  onClick={() => showPasswordHandler()}></i>
-              </div>
-              {passwordErrors.repeatPassword && (
-                <p className="error">{passwordErrors.repeatPassword}</p>
-              )}
-              <br />
+  const confirmDelete = () => {
+    if (userToDelete) {
+      handleDeleteUser(userToDelete.uuid);
+      setIsModalOpen(false);
+      setUserToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setIsModalOpen(false);
+    setUserToDelete(null);
+  };
+
+  return (
+    <>
+      <div className={styles.editAccount}>
+        <form
+          name="edit-form"
+          className={styles.editContainer}
+          onSubmit={submitHandler}>
+          <h1 className={styles.editTitle}>Edit my account</h1>
+          <div className={styles.grid}>
+            <div className={`${styles.formGroup} ${styles.a}`}>
+              <label htmlFor="name">Username</label>
               <input
-                type="submit"
-                value="Save New Password"
-                className={styles.button}
+                id="name"
+                name="name"
+                type="text"
+                placeholder="example"
+                value={formData.name}
+                onChange={changeHandler}
+                required
               />
-            </form>
+              {errors.name && <p className="error">{errors.name}</p>}
+            </div>
+            <div className={`${styles.formGroup} ${styles.b}`}>
+              <label htmlFor="first_name">First Name</label>
+              <input
+                id="first_name"
+                name="first_name"
+                type="text"
+                placeholder="John"
+                value={formData.first_name}
+                onChange={changeHandler}
+                required
+              />
+              {errors.first_name && (
+                <p className="error">{errors.first_name}</p>
+              )}
+            </div>
+            <div className={`${styles.formGroup} ${styles.c}`}>
+              <label htmlFor="last_name">Last Name</label>
+              <input
+                id="last_name"
+                name="last_name"
+                type="text"
+                placeholder="Doe"
+                value={formData.last_name}
+                onChange={changeHandler}
+                required
+              />
+              {errors.last_name && <p className="error">{errors.last_name}</p>}
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="email_address">Email Address</label>
+              <input
+                id="email_address"
+                name="email_address"
+                type="text"
+                placeholder="john_doe@hotmail.com"
+                value={formData.email_address}
+                onChange={changeHandler}
+                required
+              />
+              {errors.email_address && (
+                <p className="error">{errors.email_address}</p>
+              )}
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="phone_number">Phone Number</label>
+              <input
+                id="phone_number"
+                name="phone_number"
+                type="tel"
+                placeholder="0877696969"
+                value={formData.phone_number}
+                onChange={changeHandler}
+                required
+              />
+              {errors.phone_number && (
+                <p className="error">{errors.phone_number}</p>
+              )}
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="gender">
+                Gender <span className={styles.notRequired}>(Optional)</span>
+              </label>
+              <select
+                name="gender"
+                id="gender"
+                value={formData.gender}
+                onChange={changeHandler}>
+                <option value=""></option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div className={styles.buttonContainer}>
             <button
               type="button"
-              className={`${styles.button} ${styles.closeBtn}`}
-              onClick={() => setPasswordModalOpen(false)}>
-              Cancel
+              className={`${styles.button} ${styles.deleteBtn}`}
+              onClick={() => handleDeleteClick(user)}>
+              Delete Account
             </button>
+            <button
+              type="button"
+              className={`${styles.button} ${styles.logOut}`}
+              onClick={handleUserLogout}>
+              Log Out
+            </button>
+            <button
+              type="button"
+              className={`${styles.button} ${styles.editPassword}`}
+              onClick={() => setPasswordModalOpen(true)}>
+              Reset Password
+            </button>
+            <input
+              type="submit"
+              value="Save changes"
+              className={`${styles.button} ${styles.submitBtn}`}
+            />
           </div>
-        </dialog>
+        </form>
+
+        {passwordModalOpen && (
+          <dialog open className={styles["password-modal"]}>
+            <div className={styles["modal-content"]}>
+              <h2>Reset Password</h2>
+              <p style={{ marginBottom: "1rem" }}>
+                The same rules apply for new password: To be at least 8
+                characters long and to have at least one capitalized letter and
+                number
+              </p>
+              <form onSubmit={passwordSubmitHandler}>
+                <label htmlFor="newPassword">New Password:</label>
+                <div className="input-field">
+                  <i className="fas fa-lock"></i>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="newPassword"
+                    name="newPassword"
+                    value={passwordData.newPassword}
+                    onChange={passwordChangeHandler}
+                    autoComplete="off"
+                    required
+                  />
+                  <i
+                    className={`fas eye ${
+                      showPassword ? "fa-eye-slash" : "fa-eye"
+                    }`}
+                    onClick={() => showPasswordHandler()}></i>
+                </div>
+                {passwordErrors.newPassword && (
+                  <p className="error">{passwordErrors.newPassword}</p>
+                )}
+                <br />
+                <label htmlFor="repeatPassword">Repeat New Password:</label>
+                <div className="input-field">
+                  <i className="fas fa-lock"></i>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="repeatPassword"
+                    name="repeatPassword"
+                    value={passwordData.repeatPassword}
+                    onChange={passwordChangeHandler}
+                    autoComplete="off"
+                    required
+                  />
+                  <i
+                    className={`fas eye ${
+                      showPassword ? "fa-eye-slash" : "fa-eye"
+                    }`}
+                    onClick={() => showPasswordHandler()}></i>
+                </div>
+                {passwordErrors.repeatPassword && (
+                  <p className="error">{passwordErrors.repeatPassword}</p>
+                )}
+                <br />
+                <input
+                  type="submit"
+                  value="Save New Password"
+                  className={styles.button}
+                />
+              </form>
+              <button
+                type="button"
+                className={`${styles.button} ${styles.closeBtn}`}
+                onClick={() => setPasswordModalOpen(false)}>
+                Cancel
+              </button>
+            </div>
+          </dialog>
+        )}
+      </div>
+      {isModalOpen && (
+        <ConfirmDialog
+          itemType="account"
+          itemName={userToDelete.name}
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
       )}
-    </div>
+    </>
   );
 }
