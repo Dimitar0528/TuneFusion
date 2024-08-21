@@ -164,6 +164,11 @@
     padding: 20px;
     border-radius: 5px;
     text-align: center;
+
+    & label {
+        font-weight: 500;
+        font-size: 1.15rem;
+    }
 }
 
 .modal-content h2 {

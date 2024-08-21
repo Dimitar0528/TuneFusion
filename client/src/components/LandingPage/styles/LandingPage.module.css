@@ -637,3 +637,13 @@ footer {
 .search__button i {
   color: #333;
 }
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--accent-clr-light);
+  transition: .25s;
+
+  &:where(:hover, :focus-visible) {
+    color: var(--darkwhite);
+  }
+}

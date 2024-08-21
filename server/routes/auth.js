@@ -90,12 +90,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-    res.cookie('_token', '', {
-        maxAge: 0,
-        httpOnly: true,
-        path: '/',
-        secure: true,
-    });
+    res.clearCookie('_token');
 
     res.status(200).json({ message: 'You have successfully logged out of your account!' });
 });

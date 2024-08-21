@@ -299,8 +299,10 @@ export default function LandingPage({ userUUID }) {
               occupation="Event Planner"
             />
           </div>
-          <div className="swiper-button-next"></div>
-          <div className="swiper-button-prev"></div>
+          <div
+            className={`swiper-button-next ${styles["swiper-button-next"]}`}></div>
+          <div
+            className={`swiper-button-prev ${styles["swiper-button-prev"]}`}></div>
         </div>
       </section>
     </div>

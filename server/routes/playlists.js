@@ -84,7 +84,7 @@ router.get('/:userUUID', async (req, res) => {
 
                 }
             ],
-            attributes: { exclude: ['uuid', 'updatedAt', 'UserUuid', 'created_by', 'createdAt'] },
+            attributes: { exclude: ['updatedAt', 'UserUuid', 'created_by', 'createdAt'] },
             order: [
                 ['createdAt', 'DESC'],
                 [Song, PlaylistSong, 'createdAt', 'DESC']],
@@ -186,7 +186,10 @@ router.post('/addExternalSong', async (req, res) => {
                 const existingSong = await Song.findOne({
                     where: {
                         name: name,
-                        artist: artistNames
+                        artist: Sequelize.where(
+                            Sequelize.fn('SUBSTRING_INDEX', Sequelize.col('artist'), ', ', 1),
+                            artistNames.split(', ')[0]
+                        )
                     }
                 });
 
@@ -219,8 +222,6 @@ router.post('/addExternalSong', async (req, res) => {
             const addedSongs = await Song.bulkCreate(newSongs);
             existingSongs.push(...addedSongs);
         }
-
-        console.log('Songs added to the database:', newSongs);
 
         try {
             setTimeout(async () => {
@@ -262,7 +263,7 @@ router.post('/addExternalSong', async (req, res) => {
                     await PlaylistSong.bulkCreate(playlistSongsData);
 
                     if (userRole !== 'admin') {
-                        return res.status(422).json({ warn: 'Some of the songs were not added because they are not inside our database yet!' });
+                        return res.status(422).json({ warn: `Some songs couldn't be added because they aren't available in our database yet!` });
                     }
                     return res.status(200).json({ message: 'Playlist transferred successfully' });
                 }
