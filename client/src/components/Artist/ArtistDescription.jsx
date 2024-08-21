@@ -47,7 +47,7 @@ export default function ArtistDescription() {
       )}
       <div className={styles["img-area"]}>
         {isArtistLoading ? (
-          <Skeleton height={385} width={930} />
+          <Skeleton height={385} width="clamp(300px, 80vw, 100vw)" />
         ) : (
           artist?.thumbnails?.length > 0 && (
             <img

@@ -260,25 +260,22 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
               description: playlist.description,
               img_src: playlist.images[0]?.url,
             };
-            const extractedTracks = playlist.tracks
-              .slice(0, 3)
-              .map((track, index) => {
-                const { name, artists, album, duration_ms } = track;
+            const extractedTracks = playlist.tracks.slice(0, 3).map((track) => {
+              const { name, artists, album } = track;
 
-                const artistNames = artists
-                  .map((artist) => artist.name)
-                  .join(", ");
+              const artistNames = artists
+                .map((artist) => artist.name)
+                .join(", ");
 
-                const albumImage =
-                  album.images && album.images[0] ? album.images[0].url : "";
+              const albumImage =
+                album.images && album.images[0] ? album.images[0].url : "";
 
-                return {
-                  name,
-                  artistNames,
-                  albumImage,
-                  duration_ms,
-                };
-              });
+              return {
+                name,
+                artistNames,
+                albumImage,
+              };
+            });
 
             return (
               <div key={playlist.id} className={styles.playlistContainer}>
@@ -296,8 +293,9 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
                         playlistValues,
                         extractedTracks
                       )
-                    }>
-                    Move Playlist to TuneFusion
+                    }
+                    className={styles.movePlaylistBtn}>
+                    <span> Transfer playlist</span>
                   </button>
                 </div>
                 <table className={styles.playlistTable}>
@@ -397,12 +395,12 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
                   <button
                     onClick={() => handlePageChange(playlist.id, -1)}
                     disabled={currentPage <= 0}>
-                    Previous
+                    Previous Songs
                   </button>
                   <button
                     onClick={() => handlePageChange(playlist.id, 1)}
                     disabled={(currentPage + 1) * 10 >= playlist.tracks.length}>
-                    Next
+                    Next Songs
                   </button>
                 </div>
               </div>

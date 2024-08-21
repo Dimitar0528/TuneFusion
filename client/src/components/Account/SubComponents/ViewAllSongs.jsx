@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Fragment } from "react";
 import TableLayout from "../TableLayout";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
@@ -46,39 +48,60 @@ export default function ViewAllSongs({
         "UUID",
         "Name",
         "Artist",
-        "Duration",
         "Audio Source",
+        "Duration",
         "Actions",
       ]}
       title="Songs"
       hasDbSearch={true}
       onAddClick={() => navigate("/addsong")}
-      renderRow={(song) => (
-        <tr key={song.uuid}>
-          <td data-th="Image">
-            <img
-              src={song.img_src}
-              alt={`${song.artist} cover`}
-              className="song-image"
-            />
-          </td>
-          <td data-th="UUID">{song.uuid}</td>
-          <td data-th="Title">{song.name}</td>
-          <td data-th="Artist">{song.artist}</td>
-          <td data-th="Duration">{formatTime(song.duration)}</td>
-          <td data-th="Audio Source">{song.audio_src}</td>
-          <td data-th="Actions">
-            <div className="cta-admin-buttons">
-              <button onClick={() => navigate(`/updatesong/${song.name}`)}>
-                Edit
-              </button>
-              <button onClick={() => handleDeleteSong(song.uuid)}>
-                Delete
-              </button>
-            </div>
-          </td>
-        </tr>
-      )}
+      renderRow={(song) => {
+        const artistArray = song.artist
+          .split(/, | & |,|&/)
+          .map((artist) => artist.trim());
+        return (
+          <tr key={song.uuid}>
+            <td data-th="Image">
+              <img
+                src={song.img_src}
+                alt={`${song.artist} cover`}
+                className="song-image"
+              />
+            </td>
+            <td data-th="UUID">{song.uuid}</td>
+            <td data-th="Title">{song.name}</td>
+            <td data-th="Artist">
+              {artistArray.map((artist, index) => (
+                <Fragment key={artist}>
+                  <Link
+                    className="song-artist"
+                    to={`/artist/${artist}/description`}>
+                    {artist}
+                  </Link>
+                  {index < artistArray.length - 1 && ", "}
+                </Fragment>
+              ))}
+            </td>
+            <td data-th="Audio Source">
+              <a target="_blank" className="song-artist" href={song.audio_src}>
+                {" "}
+                {song.audio_src}
+              </a>
+            </td>
+            <td data-th="Duration">{formatTime(song.duration)}</td>
+            <td data-th="Actions">
+              <div className="cta-admin-buttons">
+                <button onClick={() => navigate(`/updatesong/${song.name}`)}>
+                  Edit
+                </button>
+                <button onClick={() => handleDeleteSong(song.uuid)}>
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+        );
+      }}
     />
   );
 }

@@ -176,6 +176,7 @@ export default function TableLayout({
           </div>
         </div>
       )}
+
       <table className="rwd-table">
         <tbody>
           <tr>

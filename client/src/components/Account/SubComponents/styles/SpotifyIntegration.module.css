@@ -20,8 +20,9 @@
     align-items: center;
     justify-content: space-between;
     background-color: var(--primary-clr-light-dark);
-    color: white;
-    padding: 10px;
+    color: var(--accent-clr-light);
+    padding: .5rem;
+    border-radius: .5rem;
 }
 
 .playlistName {
@@ -39,7 +40,6 @@
     text-decoration: underline;
 }
 
-/* Table Styles */
 .playlistTable {
     width: 100%;
     border-collapse: collapse;
@@ -75,16 +75,21 @@
 .pagination button {
     padding: 5px 10px;
     font-size: 1em;
-    color: white;
-    background-color: #1db954;
+    color: var(--accent-clr-dark);
+    background-color: var(--secondary-clr-light);
     border: none;
     border-radius: 3px;
     cursor: pointer;
     transition: background-color 0.3s;
+
+    &:where(:hover, :focus-visible) {
+        background-color: var(--secondary-clr);
+    }
+
 }
 
 .pagination button:disabled {
-    background-color: #ccc;
+    background-color: hsl(0 0% 80% / .25);
     cursor: not-allowed;
 }
 
@@ -146,4 +151,36 @@
         padding: 6px 12px;
         font-size: 0.9em;
     }
+}
+
+
+.movePlaylistBtn {
+    cursor: pointer;
+    padding: .25rem .75rem;
+    background: var(--secondary-clr-light);
+    color: var(--accent-clr-dark);
+    border: 2px solid var(--secondary-clr);
+    text-transform: uppercase;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+    transition: color 400ms;
+}
+
+.movePlaylistBtn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--secondary-clr);
+    z-index: -1;
+    transition: transform 400ms ease-out;
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+.movePlaylistBtn:where(:hover, :focus-visible)::before {
+    transform: scaleX(1);
 }

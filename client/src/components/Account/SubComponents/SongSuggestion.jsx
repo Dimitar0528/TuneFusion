@@ -138,7 +138,16 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
                 </td>
                 <td data-th="Title">{song.name}</td>
                 <td data-th="Artist">{song.artist}</td>
-                <td data-th="Audio Source">{song.audio_src}</td>
+                <td data-th="Audio Source">
+                  {" "}
+                  <a
+                    target="_blank"
+                    className="song-artist"
+                    href={song.audio_src}>
+                    {" "}
+                    {song.audio_src}
+                  </a>
+                </td>
                 <td data-th="Duration">{formatTime(song.duration)}</td>
                 <td data-th="Actions">
                   <div className="cta-admin-buttons">
