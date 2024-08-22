@@ -130,7 +130,7 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
 
   const confirmDelete = () => {
     if (userToDelete) {
-      handleDeleteUser(userToDelete.uuid);
+      handleDeleteUserAccount(userToDelete.uuid);
       setIsModalOpen(false);
       setUserToDelete(null);
     }

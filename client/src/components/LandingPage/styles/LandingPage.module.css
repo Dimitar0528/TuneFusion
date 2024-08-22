@@ -55,7 +55,7 @@
 }
 
 
-nav {
+.nav {
   margin-bottom: 1rem;
   border-radius: 1rem;
   background-color: var(--accent-clr-dark);
@@ -504,7 +504,7 @@ footer {
 }
 
 @media (width > 1080px) {
-  nav {
+  .nav {
     padding-block: .5rem;
     padding-inline: 1rem;
     display: flex;
