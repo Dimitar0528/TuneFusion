@@ -37,17 +37,19 @@ li {
 
 .navbar {
     z-index: 999;
-    width: 35px;
-    max-width: 4rem;
-    background-color: var(--green);
-    height: 100%;
+    width: min(2rem, 4rem);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     position: fixed;
     top: 0;
     left: 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: all .3s ease;
+    transition: all .4s;
 }
 
 
@@ -70,8 +72,19 @@ li {
     font-size: 1rem;
 }
 
-.navbar .navbar-container .navbar-logo-div .navbar-toggler:hover {
-    color: var(--light-grey);
+.navbar .navbar-container .navbar-logo-div .navbar-toggler:where(:hover, :focus-visible) {
+    color: var(--accent-clr-light);
+}
+
+.navbar-logo-link {
+    background-color: var(--accent-clr-light);
+    padding: 0 .5rem;
+    border-radius: .25rem;
+    transition: .2s;
+
+    &:where(:hover, :focus-visible) {
+        background-color: var(--text-light-clr);
+    }
 }
 
 .navbar .navbar-container .navbar-logo-div .navbar-logo-link {
@@ -80,11 +93,9 @@ li {
 
 .navbar .navbar-search {
     width: 100%;
-    background-image: url('../img/search.svg');
-    background-repeat: no-repeat;
-    background-color: var(--light-green);
+    background-color: var(--secondary-clr-light);
     background-position: center;
-    margin-left: -.5rem;
+    margin-left: -.75rem;
     padding: .5rem;
     border-radius: 10px;
     margin-bottom: 1.2rem;
@@ -93,10 +104,10 @@ li {
 #icon-search {
     position: absolute;
     cursor: pointer;
-    color: var(--green);
+    color: var(--primary-clr-light-dark);
     font-size: .8rem;
     top: 4.6rem;
-    left: .7rem;
+    left: .45rem;
 }
 
 .navbar .navbar-search::placeholder {
@@ -123,8 +134,8 @@ li {
     align-items: center;
     justify-content: center;
     gap: 0.7rem;
-    transition: 0.2s ease-in-out;
     font-weight: 500;
+    cursor: pointer;
 }
 
 
@@ -133,13 +144,13 @@ li {
     color: inherit;
 }
 
-.navbar .menu-list .menu-item .menu-link:hover,
-.navbar .menu-list .menu-item .menu-link:hover {
-    color: var(--light-grey);
+.navbar.active .menu-list .menu-item:not(.active):where(:hover, :focus-visible) {
+    background-color: var(--primary-clr-dark);
+    color: var(--accent-clr-light);
 }
 
 .navbar .user-container {
-    background-color: var(--light-green);
+    background-color: var(--secondary-clr-light);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -197,9 +208,6 @@ li {
     opacity: 1;
 }
 
-.navbar.active .menu-list {
-    padding-left: 1rem;
-}
 
 .navbar.active .menu-list .menu-item .menu-link {
     justify-content: flex-start;
@@ -218,17 +226,41 @@ li {
     display: flex;
 }
 
+.navbar.active .menu-list .menu-item {
+    padding: .2rem;
+    transition: 0.2s;
+    background-color: var(--accent-clr-light);
+}
+
+.navbar.active .menu-list .menu-item.active {
+    background-color: var(--primary-clr-light-dark);
+    color: var(--accent-clr-light);
+    border-radius: .25rem;
+}
+
+.navbar:not(.active) .menu-list .fas {
+    background-color: var(--accent-clr-light);
+    padding: .2rem;
+    transition: .2s;
+
+    &:where(:hover, :focus-visible) {
+        background-color: var(--primary-clr-dark);
+        color: var(--accent-clr-light);
+    }
+}
+
+.menu-list .menu-item.active .fas {
+    background-color: var(--primary-clr-light-dark);
+    color: var(--accent-clr-light);
+}
 
 .dashboard {
     width: auto;
     height: auto;
-    margin-left: 5rem;
-}
+    margin-left: clamp(1.7rem, 3vw, 100%);
 
-.navbar.active+.dashboard {
-    margin-left: 22%;
-}
 
+}
 
 
 @media only screen and (max-width: 870px) {
@@ -236,9 +268,6 @@ li {
         max-width: 27%;
     }
 
-    .navbar.active+.dashboard {
-        margin-left: 30%;
-    }
 }
 
 @media only screen and (max-width: 670px) {
@@ -251,20 +280,18 @@ li {
         width: 100%;
     }
 
-    .navbar .navbar-search {
-        position: absolute;
-        border-radius: 0;
-        left: 0;
-    }
-
-    .navbar .menu-item {
-        position: relative;
-        top: 4rem;
-    }
 }
 
 @media only screen and (max-width: 350px) {
     .dashboard .title {
         font-size: 1.7rem;
+    }
+}
+
+.logout-btn {
+    transition: .25s;
+
+    &:where(:hover, :focus-visible) {
+        scale: 1.25;
     }
 }

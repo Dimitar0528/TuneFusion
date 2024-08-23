@@ -4,16 +4,26 @@ import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
 import { useRefresh } from "../../hooks/useRefresh";
 import { useLogoutUser } from "../../hooks/CRUD-hooks/useAuth";
 import showToast from "../../utils/showToast";
+import MusicList from "./SubComponents/MusicList";
+import UserPlayLists from "./SubComponents/UserPlayLists";
+import { Link, useNavigate } from "react-router-dom";
+import extractUUIDPrefix from "../../utils/extractUUIDPrefix";
 
-export default function Sidebar({ user }) {
+export default function Sidebar({
+  user,
+  playlists,
+  triggerRefreshHandler,
+  songs,
+  activePlaylist,
+}) {
   const { userUUID } = user;
   const [refreshUserFlag] = useRefresh();
-
+  const navigate = useNavigate();
   const [isNavbarActive, setIsNavbarActive] = useState(false);
   const [currentUser] = useGetUserDetails(userUUID, refreshUserFlag);
   const logoutUser = useLogoutUser();
 
-  const [activeTab, setActiveTab] = useState("Discover");
+  const [activeTab, setActiveTab] = useState("My Library");
 
   const toggleNavbar = () => {
     setIsNavbarActive(!isNavbarActive);
@@ -41,14 +51,28 @@ export default function Sidebar({ user }) {
 
   const renderTabContent = () => {
     switch (activeTab) {
+      case "My Library":
+        return (
+          <div className="tab-content body">
+            <UserPlayLists
+              playlists={playlists}
+              triggerRefreshHandler={triggerRefreshHandler}
+            />
+            <MusicList
+              title={
+                !!activePlaylist
+                  ? `${activePlaylist?.name}`
+                  : "Freshly Added Songs"
+              }
+              songs={songs}
+              activePlaylist={activePlaylist}
+              playlists={playlists}
+              triggerRefreshHandler={triggerRefreshHandler}
+            />
+          </div>
+        );
       case "Discover":
-        return <div className="tab-content">Discover Content</div>;
-      case "New Music":
-        return <div className="tab-content">New Music Content</div>;
-      case "Playlists":
-        return <div className="tab-content">Playlists Content</div>;
-      case "Liked Songs":
-        return <div className="tab-content">Liked Songs Content</div>;
+        return <div className="tab-content"></div>;
       case "Settings":
         return <div className="tab-content">Settings Content</div>;
       default:
@@ -61,11 +85,12 @@ export default function Sidebar({ user }) {
       <nav className={`navbar ${isNavbarActive ? "active" : ""}`}>
         <div className="navbar-container">
           <div className="navbar-logo-div">
-            <button className="navbar-logo-link">
-              <i className="fa-brands fa-napster"></i>
+            <button className="navbar-logo-link" onClick={() => navigate("/")}>
+              TuneFusion
             </button>
             <button className="navbar-toggler" onClick={toggleNavbar}>
-              <i className="fas fa-bars"></i>
+              <i
+                className={isNavbarActive ? "fas fa-close" : "fas fa-bars"}></i>
             </button>
           </div>
 
@@ -85,53 +110,33 @@ export default function Sidebar({ user }) {
           <ul className="menu-list">
             <li
               className={`menu-item ${
+                activeTab === "My Library" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("My Library")}>
+              <div className="menu-link">
+                <i className="fas fa-book-open"></i>
+                <span className="menu-link-text">My Library</span>
+              </div>
+            </li>
+            <li
+              className={`menu-item ${
                 activeTab === "Discover" ? "active" : ""
               }`}
               onClick={() => setActiveTab("Discover")}>
-              <a className="menu-link" href="#">
-                <i className="fas fa-music"></i>
-                <span className="menu-link-text">Discover</span>
-              </a>
-            </li>
-            <li
-              className={`menu-item ${
-                activeTab === "New Music" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("New Music")}>
-              <a className="menu-link" href="#">
+              <div className="menu-link">
                 <i className="fas fa-circle-play"></i>
-                <span className="menu-link-text">New Music</span>
-              </a>
-            </li>
-            <li
-              className={`menu-item ${
-                activeTab === "Playlists" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("Playlists")}>
-              <a className="menu-link" href="#">
-                <i className="fas fa-sliders"></i>
-                <span className="menu-link-text">Playlists</span>
-              </a>
-            </li>
-            <li
-              className={`menu-item ${
-                activeTab === "Liked Songs" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("Liked Songs")}>
-              <a className="menu-link" href="#">
-                <i className="fas fa-heart"></i>
-                <span className="menu-link-text">Liked Songs</span>
-              </a>
+                <span className="menu-link-text">Discover</span>
+              </div>
             </li>
             <li
               className={`menu-item ${
                 activeTab === "Settings" ? "active" : ""
               }`}
               onClick={() => setActiveTab("Settings")}>
-              <a className="menu-link" href="#">
+              <div className="menu-link">
                 <i className="fas fa-gear"></i>
                 <span className="menu-link-text">Settings</span>
-              </a>
+              </div>
             </li>
           </ul>
         </div>
@@ -140,19 +145,25 @@ export default function Sidebar({ user }) {
           <div className="user-info">
             <i className="fas fa-user-secret"></i>
             <div className="user-details">
-              <h3 className="user-name">{currentUser.name}</h3>
+              <Link
+                to={`/account/${extractUUIDPrefix(
+                  currentUser.uuid
+                )}?tab=Account`}
+                className="user-name | song-artist">
+                {currentUser.name}
+              </Link>
             </div>
           </div>
-          <button className="logout-btn" onClick={handleUserLogout}>
+          <button
+            title="Log Out"
+            className="logout-btn"
+            onClick={handleUserLogout}>
             <i className="fas fa-arrow-right-from-bracket"></i>
           </button>
         </div>
       </nav>
 
-      <main className="dashboard">
-        <h1 className="title">{activeTab}</h1>
-        {renderTabContent()}
-      </main>
+      <main className="dashboard">{renderTabContent()}</main>
     </div>
   );
 }
