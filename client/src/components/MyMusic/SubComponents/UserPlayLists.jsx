@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "./styles/UserPlayLists.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import Skeleton from "react-loading-skeleton";
@@ -11,11 +11,13 @@ import {
   useDeletePlaylist,
 } from "../../../hooks/CRUD-hooks/usePlaylists";
 import ConfirmDialog from "../../ConfirmDialog";
+import { useNavigate } from "react-router-dom";
 
 const initialPlaylistValues = {
   name: "",
   description: "",
   img_src: "",
+  visibility: "",
 };
 
 export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
@@ -28,7 +30,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     setCurrentPage,
   } = useMusicPlayer();
   const { userUUID } = user;
-
+  const navigate = useNavigate();
   const [showDialog, setShowDialog] = useState(false);
   const [editingPlaylist, setEditingPlaylist] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,7 +47,18 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
       created_by: userUUID,
     };
     if (editingPlaylist) {
-      editPlaylist(editingPlaylist.name, reqObj, triggerRefreshHandler);
+      const updatedPlaylist = await editPlaylist(
+        editingPlaylist.name,
+        reqObj,
+        triggerRefreshHandler
+      );
+      localStorage.setItem(
+        "activePlaylist",
+        JSON.stringify({
+          name: updatedPlaylist?.name,
+          visibility: updatedPlaylist?.visibility,
+        })
+      );
     } else {
       createPlaylist(reqObj, triggerRefreshHandler);
     }
@@ -65,17 +78,22 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
       activePlaylist?.name === playlist.name ? null : playlist;
     setActivePlaylist(newActivePlaylist);
     setCurrentPage(0);
+    localStorage.setItem("CP", `${1}`);
+
     if (newActivePlaylist) {
+      navigate(
+        `?playlist=${newActivePlaylist.name.replace(/\s+/g, "")}&page=1`
+      );
       const playlistWithUuid = { ...playlist };
       localStorage.setItem("activePlaylist", JSON.stringify(playlistWithUuid));
     } else {
+      navigate(`?page=1`);
       localStorage.removeItem("activePlaylist");
     }
   };
 
   const handleCreatePlaylist = () => {
     setValuesWrapper(initialPlaylistValues);
-
     setEditingPlaylist(null);
     setShowDialog(true);
   };
@@ -87,6 +105,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
       name: playlist.name,
       description: playlist.description || "",
       img_src: playlist.img_src || "",
+      visibility: playlist.visibility,
     });
     setShowDialog(true);
   };
@@ -263,6 +282,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
                   placeholder="My Playlist"
                 />
                 {errors.name && <p className="error">{errors.name}</p>}
+
                 <label htmlFor="description">Description: (optional)</label>
                 <textarea
                   id="description"
@@ -270,6 +290,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
                   value={newPlaylist.description}
                   onChange={changeHandler}
                   placeholder="Playlists containing some songs"></textarea>
+
                 <label htmlFor="img_src">Image URL: (optional)</label>
                 <input
                   id="img_src"
@@ -279,6 +300,21 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
                   onChange={changeHandler}
                   placeholder="https://i.ytimg.com/vi/kCJsVS46CpQ/maxresdefault.jpg"
                 />
+
+                <label htmlFor="visibility">Visibility:</label>
+                <select
+                  id="visibility"
+                  name="visibility"
+                  value={newPlaylist.visibility}
+                  onChange={changeHandler}
+                  style={{ marginBottom: "1rem" }}>
+                  <option value="default">
+                    -- Choose playlist visibility --
+                  </option>
+                  <option value="public">Public</option>
+                  <option value="private">Private</option>
+                </select>
+
                 <div className="dialog-actions">
                   <button type="submit">Save</button>
                   <button type="button" onClick={handleCloseDialog}>

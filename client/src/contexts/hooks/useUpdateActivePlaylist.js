@@ -9,6 +9,7 @@ const useActivePlaylistEffect = (activePlaylist, setFilteredSongs, currentSongUU
                 "activePlaylist",
                 JSON.stringify({
                     name: activePlaylist?.name,
+                    visibility: activePlaylist?.visibility,
                 })
             );
             setFilteredSongs(activePlaylist.Songs);

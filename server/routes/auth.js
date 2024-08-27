@@ -38,8 +38,9 @@ router.post('/register', async (req, res) => {
             uuid: crypto.randomUUID(),
             name: 'Liked Songs',
             description: "The songs that you enjoy listening to the most",
+            img_src: "https://i1.sndcdn.com/artworks-y6qitUuZoS6y8LQo-5s2pPA-t500x500.jpg",
+            visibility: 'private',
             created_by: newUser.uuid,
-            img_src: "https://i1.sndcdn.com/artworks-y6qitUuZoS6y8LQo-5s2pPA-t500x500.jpg"
         })
         return res.status(200).json(newUser);
     } catch (error) {

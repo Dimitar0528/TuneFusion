@@ -24,6 +24,10 @@ PlayList.init(
             type: DataTypes.TEXT,
             allowNull: true,
         },
+        visibility: {
+            type: DataTypes.ENUM('public', 'private'),
+            allowNull: false,
+        },
         created_by: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,

@@ -8,7 +8,7 @@ export default function SearchInput({ isNavbarActive, activateNavbar }) {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery === "") searchQuery = "All-Songs";
-    navigate(`/search?q=${searchQuery}`);
+    navigate(`/search?q=${searchQuery}&page=1`);
     setSearchQuery("");
   };
   return (

@@ -5,7 +5,7 @@ import { Sequelize } from 'sequelize';
 import { searchMusics } from 'node-youtube-music';
 
 router.post('/create-playlist', async (req, res) => {
-    const { name, description, created_by, img_src } = req.body;
+    const { name, description, created_by, img_src, visibility } = req.body;
     const uuid = crypto.randomUUID();
     const user = await User.findOne({
         where: Sequelize.where(
@@ -29,8 +29,9 @@ router.post('/create-playlist', async (req, res) => {
             uuid,
             name,
             description,
+            img_src: img_src || null,
+            visibility,
             created_by: user.uuid,
-            img_src: img_src || null
         })
         res.status(200).json({ message: 'Playlist created successfully!' })
 
@@ -66,13 +67,21 @@ router.delete('/delete-playlist/:playlistUUID', async (req, res) => {
 
 router.get('/:userUUID', async (req, res) => {
     const userUUID = req.params.userUUID;
-    try {
-        const playlists = await PlayList.findAll({
-            where: Sequelize.where(
-                Sequelize.fn('LEFT', Sequelize.col('created_by'), 6),
-                userUUID
-            ),
+    const publicSearch = req.query.publicSearch === 'true';
 
+    try {
+        const whereCondition = {
+            [Sequelize.Op.and]: [
+                Sequelize.where(Sequelize.fn('LEFT', Sequelize.col('created_by'), 6), userUUID)
+            ]
+        };
+
+        if (publicSearch) {
+            whereCondition[Sequelize.Op.and].push({ visibility: 'public' });
+        }
+
+        const playlists = await PlayList.findAll({
+            where: whereCondition,
             include: [
                 {
                     model: Song,
@@ -81,25 +90,28 @@ router.get('/:userUUID', async (req, res) => {
                         model: PlaylistSong,
                         attributes: ['createdAt'],
                     },
-
                 }
             ],
             attributes: { exclude: ['updatedAt', 'UserUuid', 'created_by', 'createdAt'] },
             order: [
                 ['createdAt', 'DESC'],
-                [Song, PlaylistSong, 'createdAt', 'DESC']],
+                [Song, PlaylistSong, 'createdAt', 'DESC']
+            ],
         });
+
         const user = await User.findOne({
             where: Sequelize.where(
                 Sequelize.fn('LEFT', Sequelize.col('uuid'), 6),
                 userUUID
             ),
         });
+
         if (!user) {
             return res.status(404).json({ error: 'User not found!' });
         }
-        if (!playlists) {
-            return res.status(404).json({ error: "User does not have associated playlists!" });
+
+        if (!playlists || playlists.length === 0) {
+            return res.status(404).json({ error: publicSearch ? "No public playlists found!" : "User does not have associated playlists!" });
         }
 
         res.status(200).json(playlists);
@@ -122,13 +134,18 @@ router.put('/update-playlist/:playlistName', async (req, res) => {
         await PlayList.update(
             {
                 name: body.name || playlist.name,
-                description: body.description || playlist.description,
+                description: body.description !== undefined ? body.description : playlist.description,
                 img_src: body.img_src || playlist.img_src,
+                visibility: body.visibility || playlist.visibility
             },
             { where: { uuid: playlist.uuid } }
         );
-
-        return res.status(200).json({ message: "Playlist updated successfully!" });
+        const updatedPlaylist = await PlayList.findOne({ where: { uuid: playlist.uuid } });
+        const resObj = {
+            updatedPlaylist,
+            message: "Playlist updated successfully!"
+        }
+        return res.status(200).json(resObj);
     } catch (error) {
         console.error('Error updating playlist:', error);
         return res.status(500).json({ error: "There was an error while trying to update the playlist data!" });

@@ -7,7 +7,7 @@ import ReactPaginate from "react-paginate";
 import { formatTime } from "../../../utils/formatTime";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   useAddSongToPlaylist,
   useRemoveSongFromPlaylist,
@@ -33,15 +33,23 @@ export default function MusicList({
     setCurrentPage,
     handleKeyPressWhenTabbed,
   } = useMusicPlayer();
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
   useEffect(() => {
-    setCurrentPage(0);
+    const page = Number(searchParams.get("page")) || 0;
+    setCurrentPage(page - 1);
   }, []);
+  const query = searchParams.get("q");
+  const navigate = useNavigate();
   const addSongToPlaylist = useAddSongToPlaylist();
   const removeSongFromPlaylist = useRemoveSongFromPlaylist();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("date-added-desc");
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [itemsPerPage, setItemsPerPage] = useState(
+    () => JSON.parse(localStorage.getItem("IPP")) || 20
+  );
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState();
   const [likedSongs, setLikedSongs] = useState(() => {
@@ -92,6 +100,7 @@ export default function MusicList({
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(0);
+    query ? navigate(`?q=${query}&page=1`) : navigate(`?page=1`);
   };
 
   const handleSortChange = (e) => setSortOption(e.target.value);
@@ -99,9 +108,21 @@ export default function MusicList({
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(0);
+    localStorage.setItem("IPP", Number(e.target.value));
+    query ? navigate(`?q=${query}&page=1`) : navigate(`?page=1`);
   };
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
+    query
+      ? navigate(`?q=${query}&page=${selected + 1}`)
+      : activePlaylist
+      ? navigate(
+          `?playlist=${activePlaylist.name.replace(/\s+/g, "")}&page=${
+            selected + 1
+          }`
+        )
+      : navigate(`?page=${selected + 1}`);
+    localStorage.setItem("CP", selected + 1);
   };
 
   const offset = currentPage * itemsPerPage;

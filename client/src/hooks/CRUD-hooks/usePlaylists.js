@@ -63,6 +63,7 @@ export function useEditPlaylist() {
         const result = await playlistsAPI.editPlaylist(playlistName, playlistData);
         result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success');
         triggerRefreshHandler();
+        return result.updatedPlaylist
     }
     return editPlaylistHandler
 }
