@@ -8,6 +8,7 @@ import MusicList from "./SubComponents/MusicList";
 import UserPlayLists from "./SubComponents/UserPlayLists";
 import { Link, useNavigate } from "react-router-dom";
 import extractUUIDPrefix from "../../utils/extractUUIDPrefix";
+import SearchInput from "./SubComponents/SearchInput";
 
 export default function Sidebar({
   user,
@@ -48,7 +49,10 @@ export default function Sidebar({
       )
     );
   };
-
+  const playlistTitle = ` ${activePlaylist?.name} - ${
+    activePlaylist?.visibility?.charAt(0).toUpperCase() +
+    activePlaylist?.visibility?.slice(1)
+  } Playlist`;
   const renderTabContent = () => {
     switch (activeTab) {
       case "My Library":
@@ -60,9 +64,7 @@ export default function Sidebar({
             />
             <MusicList
               title={
-                !!activePlaylist
-                  ? `${activePlaylist?.name}`
-                  : "Freshly Added Songs"
+                !!activePlaylist ? `${playlistTitle}` : "Freshly Added Songs"
               }
               songs={songs}
               activePlaylist={activePlaylist}
@@ -74,7 +76,7 @@ export default function Sidebar({
       case "Discover":
         return <div className="tab-content"></div>;
       case "Settings":
-        return <div className="tab-content">Settings Content</div>;
+        return <div className="tab-content"></div>;
       default:
         return null;
     }
@@ -94,18 +96,10 @@ export default function Sidebar({
             </button>
           </div>
 
-          <input
-            type="search"
-            name="search"
-            placeholder="Search..."
-            className="navbar-search"
-            id="search"
-            onClick={activateNavbar}
+          <SearchInput
+            isNavbarActive={isNavbarActive}
+            activateNavbar={activateNavbar}
           />
-          <i
-            id="icon-search"
-            className="fas fa-magnifying-glass"
-            onClick={activateNavbar}></i>
 
           <ul className="menu-list">
             <li

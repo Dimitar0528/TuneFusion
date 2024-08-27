@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import styles from "../../LandingPage/styles/LandingPage.module.css";
 
-export default function SearchInput() {
+export default function SearchInput({ isNavbarActive, activateNavbar }) {
   let [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
@@ -13,24 +12,25 @@ export default function SearchInput() {
     setSearchQuery("");
   };
   return (
-    <form onSubmit={handleSearchSubmit}>
+    <>
       <input
-        type="text"
-        name="search-input"
-        placeholder="Search songs..."
+        type="search"
+        name="search"
+        placeholder="Search..."
+        className="navbar-search"
+        id="search"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className={styles["search__input"]}
+        onClick={activateNavbar}
         title={`${searchQuery ? "Search a specific song" : "Search all songs"}`}
       />
-      <button
-        type="submit"
-        className={styles["search__button"]}
-        title={`${
-          searchQuery ? "Search a specific song" : "Search all songs"
-        }`}>
-        <i className="fas fa-magnifying-glass"></i>{" "}
-      </button>
-    </form>
+      <i
+        id="icon-search"
+        title={`${searchQuery ? "Search a specific song" : "Search all songs"}`}
+        className="fas fa-magnifying-glass"
+        onClick={(e) => {
+          isNavbarActive ? handleSearchSubmit(e) : activateNavbar();
+        }}></i>
+    </>
   );
 }

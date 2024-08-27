@@ -108,6 +108,12 @@ li {
     font-size: .8rem;
     top: 4.6rem;
     left: .45rem;
+    transition: .25s;
+
+    &:where(:hover, :focus-visible) {
+        outline: 1px solid var(--primary-clr);
+        outline-offset: 2px;
+    }
 }
 
 .navbar .navbar-search::placeholder {

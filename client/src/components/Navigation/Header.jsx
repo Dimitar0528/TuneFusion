@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "../LandingPage/styles/LandingPage.module.css";
-import SearchInput from "./Information/SearchInput";
 export default function Header({ btnText, goToLocation, userUUID }) {
   const menuBtnRef = useRef();
   const navLinksRef = useRef();
@@ -73,7 +72,6 @@ export default function Header({ btnText, goToLocation, userUUID }) {
           <i className="fas fa-address-card"></i>
           About Us
         </NavLink>
-        <SearchInput />
         <NavLink
           to="/information/contactus"
           className={({ isActive }) =>
