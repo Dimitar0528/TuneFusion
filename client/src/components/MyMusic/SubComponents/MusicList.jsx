@@ -97,10 +97,21 @@ export default function MusicList({
       song.artist.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const constructNavigatePlayListUrl = (page) => {
+    return query
+      ? navigate(`?q=${query}&page=${page + 1}`)
+      : activePlaylist
+      ? navigate(
+          `?playlist=${activePlaylist.name.replace(/\s+/g, "")}&page=${
+            page + 1
+          }`
+        )
+      : navigate(`?page=${page + 1}`);
+  };
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(0);
-    query ? navigate(`?q=${query}&page=1`) : navigate(`?page=1`);
+    constructNavigatePlayListUrl(0);
   };
 
   const handleSortChange = (e) => setSortOption(e.target.value);
@@ -109,19 +120,11 @@ export default function MusicList({
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(0);
     localStorage.setItem("IPP", Number(e.target.value));
-    query ? navigate(`?q=${query}&page=1`) : navigate(`?page=1`);
+    constructNavigatePlayListUrl(0);
   };
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
-    query
-      ? navigate(`?q=${query}&page=${selected + 1}`)
-      : activePlaylist
-      ? navigate(
-          `?playlist=${activePlaylist.name.replace(/\s+/g, "")}&page=${
-            selected + 1
-          }`
-        )
-      : navigate(`?page=${selected + 1}`);
+    constructNavigatePlayListUrl(selected);
     localStorage.setItem("CP", selected + 1);
   };
 
@@ -136,7 +139,7 @@ export default function MusicList({
     filteredSongs.length
   );
 
-  const totalDuration = activePlaylist?.Songs.reduce((total, song) => {
+  const totalDuration = activePlaylist?.Songs?.reduce((total, song) => {
     return total + song.duration;
   }, 0);
 
@@ -341,9 +344,13 @@ export default function MusicList({
                   onMouseLeave={() => setHoveredSongUUID(null)}
                   onDoubleClick={() => handleMusicListSong(song)}
                   onTouchStart={() => handleMusicListSong(song)}>
-                  <td>
+                  <td
+                    onFocus={() => setHoveredSongUUID(song.uuid)}
+                    tabIndex={0}
+                    style={{ outline: "none" }}>
                     {hoveredSongUUID === song.uuid ? (
                       <i
+                        tabIndex={0}
                         className={`fa-solid fa-${
                           extractUUIDPrefix(song.uuid) === currentSongUUID &&
                           isPlaying
@@ -351,6 +358,11 @@ export default function MusicList({
                             : "play"
                         }`}
                         onClick={() => handleMusicListSong(song)}
+                        onKeyDown={(e) =>
+                          handleKeyPressWhenTabbed(e, () => {
+                            handleMusicListSong(song);
+                          })
+                        }
                         style={{ cursor: "pointer" }}
                         title={
                           extractUUIDPrefix(song.uuid) === currentSongUUID &&

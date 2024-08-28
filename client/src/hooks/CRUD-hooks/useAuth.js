@@ -50,7 +50,15 @@ export function useLoginUser() {
         const result = await authAPI.loginUser(userData);
         if (result.error) return showToast(`Error: ${result.error}`, "error");
         const { user_uuid } = result;
-        location.href = `/musicplayer/${extractUUIDPrefix(user_uuid)}`;
+        const activePlaylist = localStorage.getItem("activePlaylist");
+        const activePage = localStorage.getItem("CP");
+        if (activePlaylist) {
+            const playlistName = activePlaylist?.name ? encodeURIComponent(activePlaylist.name) : '';
+            location.href = `/musicplayer/${extractUUIDPrefix(user_uuid)}?playlist=${playlistName}&page=${activePage}`;
+        } else {
+            location.href = `/musicplayer/${extractUUIDPrefix(user_uuid)}?page=${activePage}`;
+        }
+
     }
     return loginUserHandler;
 }

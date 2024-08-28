@@ -17,7 +17,7 @@ const useActivePlaylistEffect = (activePlaylist, setFilteredSongs, currentSongUU
         } else {
             setFilteredSongs(specificSongs);
         }
-    }, [activePlaylist, , specificSongs, setFilteredSongs]);
+    }, [activePlaylist, specificSongs, setFilteredSongs]);
     return [specificSongs, loading]
 };
 

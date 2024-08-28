@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "../LandingPage/styles/LandingPage.module.css";
+import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 export default function Header({ btnText, goToLocation, userUUID }) {
+  const { activePlaylist, currentPage } = useMusicPlayer();
   const menuBtnRef = useRef();
   const navLinksRef = useRef();
   const menuBtnIconRef = useRef();
@@ -57,7 +59,13 @@ export default function Header({ btnText, goToLocation, userUUID }) {
       </div>
       <ul className={styles["nav__links"]} id="nav-links" ref={navLinksRef}>
         <NavLink
-          to={`/musicplayer/${userUUID}?page=1`}
+          to={
+            activePlaylist
+              ? `/musicplayer/${userUUID}?playlist=${
+                  activePlaylist?.name
+                }&page=${currentPage + 1}`
+              : `/musicplayer/${userUUID}?page=${currentPage + 1}`
+          }
           className={({ isActive }) =>
             isActive ? styles["nav__link--active"] : styles["nav__link"]
           }>
