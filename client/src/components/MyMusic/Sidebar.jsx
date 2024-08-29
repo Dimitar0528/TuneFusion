@@ -4,20 +4,19 @@ import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
 import { useRefresh } from "../../hooks/useRefresh";
 import { useLogoutUser } from "../../hooks/CRUD-hooks/useAuth";
 import showToast from "../../utils/showToast";
-import MusicList from "./SubComponents/MusicList";
-import UserPlayLists from "./SubComponents/UserPlayLists";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams, Navigate } from "react-router-dom";
 import extractUUIDPrefix from "../../utils/extractUUIDPrefix";
 import SearchInput from "./SubComponents/SearchInput";
-
-export default function Sidebar({
-  user,
-  playlists,
-  triggerRefreshHandler,
-  songs,
-  activePlaylist,
-}) {
+import Discover from "./Tabs/Discover";
+import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
+import MyLibrary from "./Tabs/MyLibrary";
+export default function Sidebar() {
+  const { currentUserUUID } = useParams();
+  const { user } = useMusicPlayer();
   const { userUUID } = user;
+  if (userUUID !== "") {
+    if (currentUserUUID !== userUUID) return <Navigate to="/" replace />;
+  }
   const [refreshUserFlag] = useRefresh();
   const navigate = useNavigate();
   const [isNavbarActive, setIsNavbarActive] = useState(false);
@@ -49,32 +48,21 @@ export default function Sidebar({
       )
     );
   };
-  const playlistTitle = ` ${activePlaylist?.name} - ${
-    activePlaylist?.visibility?.charAt(0).toUpperCase() +
-    activePlaylist?.visibility?.slice(1)
-  } Playlist`;
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "My Library":
         return (
           <div className="tab-content body">
-            <UserPlayLists
-              playlists={playlists}
-              triggerRefreshHandler={triggerRefreshHandler}
-            />
-            <MusicList
-              title={
-                !!activePlaylist ? `${playlistTitle}` : "Freshly Added Songs"
-              }
-              songs={songs}
-              activePlaylist={activePlaylist}
-              playlists={playlists}
-              triggerRefreshHandler={triggerRefreshHandler}
-            />
+            <MyLibrary />
           </div>
         );
       case "Discover":
-        return <div className="tab-content"></div>;
+        return (
+          <div className="tab-content">
+            <Discover userUUID={userUUID} />
+          </div>
+        );
       case "Settings":
         return <div className="tab-content"></div>;
       default:
@@ -103,6 +91,7 @@ export default function Sidebar({
 
           <ul className="menu-list">
             <li
+              title="My Library"
               className={`menu-item ${
                 activeTab === "My Library" ? "active" : ""
               }`}
@@ -113,6 +102,7 @@ export default function Sidebar({
               </div>
             </li>
             <li
+              title="Discover"
               className={`menu-item ${
                 activeTab === "Discover" ? "active" : ""
               }`}
@@ -123,6 +113,7 @@ export default function Sidebar({
               </div>
             </li>
             <li
+              title="Settings"
               className={`menu-item ${
                 activeTab === "Settings" ? "active" : ""
               }`}

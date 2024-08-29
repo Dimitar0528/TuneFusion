@@ -64,7 +64,7 @@ router.delete('/delete-playlist/:playlistUUID', async (req, res) => {
     }
 
 })
-const getIncludeOptions = () => {
+const getPlaylistIncludeOptions = (includeCreatedByField = true) => {
     return {
         include: [
             {
@@ -77,7 +77,7 @@ const getIncludeOptions = () => {
             },
         ],
         attributes: {
-            exclude: ['updatedAt', 'UserUuid', 'created_by', 'createdAt'],
+            exclude: ['updatedAt', 'UserUuid', includeCreatedByField === false && 'created_by', 'createdAt'],
         },
         order: [
             ['createdAt', 'DESC'],
@@ -85,22 +85,37 @@ const getIncludeOptions = () => {
         ],
     };
 };
-
 router.get('/publicPlaylists', async (req, res) => {
     try {
         const publicPlaylists = await PlayList.findAll({
             where: { visibility: 'public' },
-            ...getIncludeOptions(),
-        })
-        if (!publicPlaylists) {
+            ...getPlaylistIncludeOptions(),
+        });
+
+        if (!publicPlaylists || publicPlaylists.length === 0) {
             return res.status(404).json({ error: "No public playlists found!" });
         }
-        res.status(200).json(publicPlaylists);
+
+        const playlistsWithUsernames = await Promise.all(publicPlaylists.map(async (playlist) => {
+            const user = await User.findOne({
+                where: { uuid: playlist.created_by },
+                attributes: ['name'],
+            });
+            const playlistData = playlist.toJSON();
+            delete playlistData.created_by;
+
+            return {
+                ...playlistData,
+                created_by: user ? user.dataValues.name : null,
+            };
+        }));
+        res.status(200).json(playlistsWithUsernames);
     } catch (error) {
         console.error('Error fetching public playlists:', error);
         res.status(500).json({ error: 'There was an error while trying to fetch the public playlists!' });
     }
-})
+});
+
 router.get('/:userUUID', async (req, res) => {
     const userUUID = req.params.userUUID;
     try {
@@ -109,7 +124,7 @@ router.get('/:userUUID', async (req, res) => {
                 Sequelize.fn('LEFT', Sequelize.col('created_by'), 6),
                 userUUID
             ),
-            ...getIncludeOptions(),
+            ...getPlaylistIncludeOptions(false),
         });
         const user = await User.findOne({
             where: Sequelize.where(

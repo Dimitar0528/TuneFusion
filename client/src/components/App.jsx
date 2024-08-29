@@ -4,7 +4,7 @@ import LandingPage from "./LandingPage/LandingPage";
 import AboutUs from "./Navigation/Information/AboutUs";
 import Login from "./Login/Login";
 import Faq from "./Navigation/Information/Faq";
-import MyMusic from "./MyMusic/MyMusic";
+import Sidebar from "./MyMusic/Sidebar";
 import SongManagerHandler from "./Account/SubComponents/SongManagerHandler";
 import ProtectedRouteGuard from "./ProtectedRouteGuard";
 import ContactUs from "./Navigation/Information/ContactUs";
@@ -47,7 +47,7 @@ export default function App() {
         <Route
           path={"/musicplayer/:currentUserUUID"}
           element={
-            userUUID !== null ? <MyMusic /> : <Navigate to="/sign-in" replace />
+            userUUID !== null ? <Sidebar /> : <Navigate to="/sign-in" replace />
           }
         />
 
@@ -83,7 +83,7 @@ export default function App() {
           />
         </Route>
 
-        <Route path="*" element={<Navigate to={"/"} />} />
+        {/* <Route path="*" element={<Navigate to={"/"} />} /> */}
       </Routes>
 
       <Footer userUUID={userUUID} />

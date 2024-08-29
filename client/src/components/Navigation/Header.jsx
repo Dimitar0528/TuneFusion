@@ -61,9 +61,10 @@ export default function Header({ btnText, goToLocation, userUUID }) {
         <NavLink
           to={
             activePlaylist
-              ? `/musicplayer/${userUUID}?playlist=${
-                  activePlaylist?.name
-                }&page=${currentPage + 1}`
+              ? `/musicplayer/${userUUID}?playlist=${activePlaylist?.name.replace(
+                  /\s+/g,
+                  ""
+                )}&page=${currentPage + 1}`
               : `/musicplayer/${userUUID}?page=${currentPage + 1}`
           }
           className={({ isActive }) =>

@@ -29,11 +29,13 @@ export default function MusicList({
     clearLyrics,
     setIsPlaying,
     isPlaying,
-    currentPage,
+    currentPage: page,
     setCurrentPage,
     handleKeyPressWhenTabbed,
   } = useMusicPlayer();
   const location = useLocation();
+  const savedPage = localStorage.getItem("CP");
+  const currentPage = savedPage ? Number(savedPage) - 1 : page;
 
   const searchParams = new URLSearchParams(location.search);
   useEffect(() => {

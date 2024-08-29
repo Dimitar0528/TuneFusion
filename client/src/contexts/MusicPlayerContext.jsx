@@ -145,11 +145,7 @@ export function MusicPlayerProvider({ children }) {
   const handleLoopSong = () => {
     setIsLooped((isLooped) => !isLooped);
     showToast(
-      `${
-        isLooped
-          ? "Repeat disabled successfully"
-          : "Repeat enabled successfully"
-      } `,
+      `Repeat ${!shuffle ? "enabled" : "disabled"} successfully!`,
       "success"
     );
   };
