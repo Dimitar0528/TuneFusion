@@ -58,6 +58,22 @@ export const useGetUserPlaylists = (userUUID, refreshFlag) => {
     return [playlists, loading];
 };
 
+export const useGetPublicPlaylists = (refreshFlag) => {
+    const [playlists, setPlaylists] = useState([]);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        const fetchPublicPlaylists = async () => {
+            const result = await playlistsAPI.getPublicPlaylists();
+            if (result.error) return showToast(`Error: ${result.error}`, "error")
+            setPlaylists(result);
+            setLoading(false);
+        };
+        fetchPublicPlaylists();
+    }, [refreshFlag]);
+
+    return [playlists, loading];
+};
+
 export function useEditPlaylist() {
     const editPlaylistHandler = async (playlistName, playlistData, triggerRefreshHandler) => {
         const result = await playlistsAPI.editPlaylist(playlistName, playlistData);
