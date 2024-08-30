@@ -30,7 +30,7 @@ router.post('/create-playlist', async (req, res) => {
             name,
             description,
             img_src: img_src || null,
-            visibility,
+            visibility: visibility || 'private',
             created_by: user.uuid,
         })
         res.status(200).json({ message: 'Playlist created successfully!' })
@@ -277,7 +277,6 @@ router.post('/addExternalSong', async (req, res) => {
                         ]
                     }
                 });
-
 
                 const existingPlaylistSongs = await PlaylistSong.findAll({
                     where: {

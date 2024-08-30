@@ -51,6 +51,14 @@ export default function SearchSong() {
     }
 
     setLoading(false);
+    return () => {
+      if (activePlaylist) {
+        setFilteredSongs(activePlaylist.Songs);
+        triggerRefreshPlaylistsHandler();
+      }
+      setFilteredSongs(songs.slice(0, 20));
+      setCurrentPage(0);
+    };
   }, [
     searchTerm,
     songs,

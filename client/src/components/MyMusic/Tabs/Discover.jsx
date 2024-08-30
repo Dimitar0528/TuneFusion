@@ -17,6 +17,7 @@ export default function Discover({ userUUID }) {
   const handlePlaylistClick = (playlist) => {
     setActivePlaylist(playlist);
     navigate(`?playlist=${playlist?.name.replace(/\s+/g, "")}&page=1`);
+    localStorage.setItem("CP", `${1}`);
   };
 
   const handleCloseBtnClick = () => {
@@ -36,9 +37,11 @@ export default function Discover({ userUUID }) {
 
   if (isPublicPlaylistLoading) {
     return (
-      <div>
-        <h2>Discover</h2>
-        <Skeleton height={40} width={200} style={{ marginBottom: "10px" }} />
+      <div style={{ marginBottom: "1rem" }}>
+        <div className="discover-header">
+          <Skeleton height={30} width={200} />
+          <Skeleton height={30} width={100} />
+        </div>
         <div className="discover-playlists">
           {Array.from({ length: 8 }).map((_, index) => (
             <div key={index} className="playlist-card">
@@ -54,13 +57,15 @@ export default function Discover({ userUUID }) {
 
   return (
     <div style={{ marginBottom: "1rem" }}>
-      <h2>Discover</h2>
-      <button
-        style={{ cursor: "pointer" }}
-        disabled={!activePlaylist}
-        onClick={handleCloseBtnClick}>
-        Back
-      </button>
+      <div className="discover-header">
+        <h2>Discover</h2>
+        <button
+          style={{ cursor: "pointer" }}
+          disabled={!activePlaylist}
+          onClick={handleCloseBtnClick}>
+          Back
+        </button>
+      </div>
       {!activePlaylist ? (
         <div className="discover-playlists">
           {publicPlaylists.length ? (
@@ -78,7 +83,6 @@ export default function Discover({ userUUID }) {
                   className="playlist-cover"
                 />
                 <h3>{playlist.name}</h3>
-                <p>{playlist.description}</p>
               </div>
             ))
           ) : (

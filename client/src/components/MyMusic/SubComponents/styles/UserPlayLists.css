@@ -4,6 +4,7 @@
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.18);
     width: clamp(390px, 28rem, 100%);
+    max-height: clamp(680px, 36vw, 80vh);
     text-align: center;
     border: 1px solid #ccc;
     border-radius: 5px;

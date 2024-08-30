@@ -260,7 +260,7 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
               description: playlist.description,
               img_src: playlist.images[0]?.url,
             };
-            const extractedTracks = playlist.tracks.slice(0, 3).map((track) => {
+            const extractedTracks = playlist.tracks.map((track) => {
               const { name, artists, album } = track;
 
               const artistNames = artists

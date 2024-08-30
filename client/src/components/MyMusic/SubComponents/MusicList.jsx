@@ -36,7 +36,6 @@ export default function MusicList({
   const location = useLocation();
   const savedPage = localStorage.getItem("CP");
   const currentPage = savedPage ? Number(savedPage) - 1 : page;
-
   const searchParams = new URLSearchParams(location.search);
   useEffect(() => {
     const page = Number(searchParams.get("page")) || 0;
