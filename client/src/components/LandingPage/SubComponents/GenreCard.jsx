@@ -1,7 +1,10 @@
+import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import styles from "../styles/LandingPage.module.css";
 
 import { Link } from "react-router-dom";
 export default function GenreCard({ imageUrl, genreName, userUUID }) {
+  const { activePlaylist, currentPage } = useMusicPlayer();
+
   return (
     <div className={styles["genre__card"]}>
       <div className={styles["genre__image"]}>
@@ -9,7 +12,16 @@ export default function GenreCard({ imageUrl, genreName, userUUID }) {
         <div className={styles["genre__link"]}>
           <Link
             className={styles.link}
-            to={userUUID ? `/musicplayer/${userUUID}` : "/sign-in"}>
+            to={
+              userUUID
+                ? activePlaylist
+                  ? `/musicplayer/${userUUID}?playlist=${activePlaylist?.name.replace(
+                      /\s+/g,
+                      ""
+                    )}&page=${currentPage + 1}`
+                  : `/musicplayer/${userUUID}?page=${currentPage + 1}`
+                : "/sign-in"
+            }>
             <i className="fas fa-arrow-up-right-from-square"></i>
           </Link>
         </div>

@@ -6,8 +6,10 @@ import GenreCard from "./SubComponents/GenreCard";
 import FeatureCard from "./SubComponents/FeatureCard";
 import ClientCard from "./SubComponents/ClientCard";
 import { Link, useNavigate } from "react-router-dom";
+import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 
 export default function LandingPage({ userUUID }) {
+  const { activePlaylist, currentPage } = useMusicPlayer();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -94,7 +96,16 @@ export default function LandingPage({ userUUID }) {
                 className={styles["btn"]}
                 onClick={() => {
                   userUUID
-                    ? navigate(`/musicplayer/${userUUID}`)
+                    ? activePlaylist
+                      ? navigate(
+                          `/musicplayer/${userUUID}?playlist=${activePlaylist?.name.replace(
+                            /\s+/g,
+                            ""
+                          )}&page=${currentPage + 1}`
+                        )
+                      : navigate(
+                          `/musicplayer/${userUUID}?page=${currentPage + 1}`
+                        )
                     : navigate("/sign-in");
                 }}>
                 {" "}

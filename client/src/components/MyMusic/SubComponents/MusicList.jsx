@@ -99,19 +99,22 @@ export default function MusicList({
   );
 
   const constructNavigatePlayListUrl = (page) => {
-    return query
-      ? navigate(`?q=${query}&page=${page + 1}`)
-      : activePlaylist
-      ? navigate(
-          `?playlist=${activePlaylist.name.replace(/\s+/g, "")}&page=${
-            page + 1
-          }`
-        )
-      : navigate(`?page=${page + 1}`);
+    const newPage = page + 1;
+    if (query) {
+      navigate(`?q=${query}&page=${newPage}`);
+    } else if (activePlaylist) {
+      navigate(
+        `?playlist=${activePlaylist.name.replace(/\s+/g, "")}&page=${newPage}`
+      );
+    } else {
+      navigate(`?page=${newPage}`);
+    }
   };
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(0);
+    localStorage.setItem("CP", `${1}`);
     constructNavigatePlayListUrl(0);
   };
 

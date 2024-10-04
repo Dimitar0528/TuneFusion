@@ -129,7 +129,7 @@ export default function PlayerControls({
       </div>
       <i
         id="shuffle"
-        className={`fa-solid ${shuffle ? "fa-ban" : "fa-shuffle"}`}
+        className={`fa-solid ${shuffle ? "fa-repeat" : "fa-shuffle"}`}
         title={`${shuffle ? "Disable" : "Enable"} Shuffle (Shift + S)`}
         onClick={handleShufflePlayList}
         tabIndex={0}

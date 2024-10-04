@@ -112,17 +112,6 @@ export default function Sidebar() {
                 <span className="menu-link-text">Discover</span>
               </div>
             </li>
-            <li
-              title="Settings"
-              className={`menu-item ${
-                activeTab === "Settings" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("Settings")}>
-              <div className="menu-link">
-                <i className="fas fa-gear"></i>
-                <span className="menu-link-text">Settings</span>
-              </div>
-            </li>
           </ul>
         </div>
 
