@@ -145,6 +145,50 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
     return response.json();
   };
 
+  const fetchPlaylistTracks = async (token, playlistId) => {
+    let allTracks = [];
+    let offset = 0;
+    const limit = 100;
+
+    while (true) {
+      const playlistTracksResponse = await fetch(
+        `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=${limit}&offset=${offset}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!playlistTracksResponse.ok) {
+        if (playlistTracksResponse.status === 401) {
+          const refreshToken = localStorage.getItem("SP_RT");
+          const newToken = await refreshAccessToken(refreshToken);
+          localStorage.setItem("SP_AT", newToken.access_token);
+
+          return fetchPlaylistTracks(newToken.access_token, playlistId);
+        } else {
+          throw new Error("Failed to fetch playlist tracks");
+        }
+      }
+
+      const playlistTracksData = await playlistTracksResponse.json();
+      allTracks = [
+        ...allTracks,
+        ...playlistTracksData.items.map((item) => item.track),
+      ];
+
+      // If the number of tracks returned is less than the limit, we've fetched all tracks
+      if (playlistTracksData.items.length < limit) {
+        break;
+      }
+
+      offset += limit;
+    }
+
+    return allTracks;
+  };
+
   const fetchPlaylists = async (token, userId) => {
     const playlistsResponse = await fetch(
       "https://api.spotify.com/v1/me/playlists",
@@ -154,6 +198,7 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
         },
       }
     );
+
     if (!playlistsResponse.ok) {
       if (playlistsResponse.status === 401) {
         const refreshToken = localStorage.getItem("SP_RT");
@@ -165,34 +210,17 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
         throw new Error("Failed to fetch playlists");
       }
     }
+
     const data = await playlistsResponse.json();
     const allPlaylists = data.items;
 
+    // Fetch tracks for each playlist
     const playlistsWithTracks = await Promise.all(
       allPlaylists.map(async (playlist) => {
-        const playlistTracksResponse = await fetch(
-          `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (!playlistTracksResponse.ok) {
-          if (playlistTracksResponse.status === 401) {
-            const refreshToken = localStorage.getItem("SP_RT");
-            const newToken = await refreshAccessToken(refreshToken);
-            localStorage.setItem("SP_AT", newToken.access_token);
-
-            return fetchPlaylists(newToken.access_token, userId);
-          } else {
-            throw new Error("Failed to fetch playlist tracks");
-          }
-        }
-        const playlistTracksData = await playlistTracksResponse.json();
+        const tracks = await fetchPlaylistTracks(token, playlist.id);
         return {
           ...playlist,
-          tracks: playlistTracksData.items.map((item) => item.track),
+          tracks,
         };
       })
     );
@@ -230,7 +258,7 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
     <div className={styles.spotifyIntegration}>
       <h1>Your Spotify Playlists</h1>
       <p style={{ marginBottom: "1rem" }}>
-        Here you can see the first 100 songs from playlists, that are either
+        Here you can see the Spotify playlists that are either
         created or liked by you.
       </p>
       <div className="select-container" style={{ marginBottom: "1rem" }}>

@@ -123,6 +123,7 @@ export default function MusicList({
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(0);
+    localStorage.setItem("CP", `${1}`);
     localStorage.setItem("IPP", Number(e.target.value));
     constructNavigatePlayListUrl(0);
   };

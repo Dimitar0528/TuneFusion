@@ -31,6 +31,7 @@ export default function SearchSong() {
     triggerRefreshPlaylistsHandler
   );
   useEffect(() => {
+    localStorage.setItem("CP", `${1}`);
     let filteredSongs;
     if (activePlaylist) {
       localStorage.removeItem("activePlaylist");
@@ -57,7 +58,7 @@ export default function SearchSong() {
         triggerRefreshPlaylistsHandler();
       }
       setFilteredSongs(songs.slice(0, 20));
-      setCurrentPage(0);
+      setCurrentPage(1);
     };
   }, [
     searchTerm,
