@@ -130,7 +130,9 @@ export default function ViewAllSongs({
       />
       {isModalOpen && (
         <ConfirmDeleteModal
-        itemType="song"
+          actionType='Deletion'
+          action='delete'
+          itemType="song"
           itemName={songToDelete.name}
           onConfirm={confirmDelete}
           onCancel={cancelDelete}

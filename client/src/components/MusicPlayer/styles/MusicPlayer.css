@@ -129,7 +129,7 @@ label {
     }
 }
 
-.img-area {
+.img-area,.youtube-player {
     @starting-style {
         opacity: 0;
     }
@@ -141,18 +141,27 @@ label {
 }
 
 .wrapper.collapsed #playback-speed,
-.wrapper.collapsed .lyrics-wrapper {
+.wrapper.collapsed .lyrics-wrapper,
+.wrapper.collapsed .youtube-player-wrapper {
     display: none;
 }
-
-.wrapper.collapsed .img-area {
+.wrapper.collapsed .img-area,
+.wrapper.collapsed .youtube-player {
     display: none;
     opacity: 0;
     transition-property: display opacity;
     transition-duration: .6s;
     transition-behavior: allow-discrete;
 }
-
+.wrapper.collapsed .main-audio{
+    margin-top: -36rem !important;
+}
+.wrapper:not(.collapsed) #loop {
+    display: none
+}
+.wrapper:not(.collapsed).more-width {
+    width: clamp(min(350px, 100%), 55vw, 100%);
+}
 .wrapper.picture-in-picture {
     grid-template-columns: repeat(3, 1fr);
     width: max(250px, 90vw);
@@ -201,7 +210,7 @@ label {
     }
 }
 
-.wrapper.picture-in-picture #loop,
+.wrapper.picture-in-picture .youtube-player-wrapper,
 .wrapper.picture-in-picture #edit {
     display: none;
 }
@@ -398,8 +407,8 @@ label {
     transition-property: display opacity;
     transition-duration: .5s;
     transition-behavior: allow-discrete;
-    bottom: 5.9rem;
-    right: -2.2rem;
+    bottom: 5.85rem;
+    right: -2.15rem;
     position: absolute;
 
 }
@@ -438,11 +447,14 @@ label {
     }
 }
 
-.lyrics-wrapper {
+.lyrics-wrapper,.youtube-player-wrapper {
     max-width: 100%;
     position: relative;
 }
-
+.youtube-player-wrapper.disabled{
+    opacity: .5;
+    cursor: not-allowed;
+}
 .lyrics {
     max-height: clamp(330px, 26.875rem, 100%);
     overflow-y: auto;

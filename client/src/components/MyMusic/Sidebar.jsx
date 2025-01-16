@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./styles/Sidebar.css";
 import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
 import { useRefresh } from "../../hooks/useRefresh";
@@ -10,21 +10,22 @@ import SearchInput from "./SubComponents/SearchInput";
 import Discover from "./Tabs/Discover";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import MyLibrary from "./Tabs/MyLibrary";
+
 export default function Sidebar() {
   const { currentUserUUID } = useParams();
   const { user } = useMusicPlayer();
   const { userUUID } = user;
-  if (userUUID !== "") {
-    if (currentUserUUID !== userUUID) return <Navigate to="/" replace />;
-  }
   const [refreshUserFlag] = useRefresh();
   const navigate = useNavigate();
   const [isNavbarActive, setIsNavbarActive] = useState(false);
   const [currentUser] = useGetUserDetails(userUUID, refreshUserFlag);
   const logoutUser = useLogoutUser();
-
+  
   const [activeTab, setActiveTab] = useState("My Library");
-
+  
+  if (userUUID !== "") {
+    if (currentUserUUID !== userUUID) return <Navigate to="/" replace />;
+  }
   const toggleNavbar = () => {
     setIsNavbarActive(!isNavbarActive);
   };

@@ -24,16 +24,18 @@ export default function PlayerControls({
     setVolume,
     handleVolumeChange,
     handleKeyPressWhenTabbed,
+    toggleYoutubePlayer,
+    showYoutubePlayer
   } = useMusicPlayer();
   const [previousVolume, setPreviousVolume] = useState(volume);
 
   const handleVolumeChangeKeyPress = (e) => {
-    if (e.key === "ArrowRight") {
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
       e.preventDefault();
       handleVolumeChange({
         target: { value: Math.min(volume + 0.01, 1) },
       });
-    } else if (e.key === "ArrowLeft") {
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
       e.preventDefault();
       handleVolumeChange({
         target: { value: Math.max(volume - 0.01, 0) },
@@ -165,6 +167,44 @@ export default function PlayerControls({
         onClick={handleLoopSong}
         tabIndex={0}
         onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleLoopSong)}></i>
+      <div
+        className={`youtube-player-wrapper | fa-solid ${lyrics && "disabled"} `}
+        title={`${
+          showYoutubePlayer ? "Hide Youtube Player" : "Show Youtube Player"
+        }`}
+        onClick={() => {
+          !lyrics && toggleYoutubePlayer();
+        }}
+        tabIndex={0}
+        onKeyDown={(e) =>
+          handleKeyPressWhenTabbed(e, () => {
+            !lyrics && toggleYoutubePlayer();
+          })
+        }>
+        {showYoutubePlayer ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={24}
+            height={24}
+            viewBox="0 0 22 22"
+            fill="currentColor">
+            <path d="M19 19H5V5h14m0-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m-9 5v8l5-4z" />
+            <path d="M21 5v11q0 .5-.312.75T20 17t-.687-.262t-.313-.763V5H8q-.5 0-.75-.312T7 4t.25-.687T8 3h11q.825 0 1.413.588T21 5M5 21q-.825 0-1.412-.587T3 19V5.8l-.9-.9q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l17 17q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-.9-.9zm9.175-4H7q-.3 0-.45-.275t.05-.525l2-2.675q.15-.2.4-.2t.4.2L11.25 16l.825-1.1L5 7.825V19h11.175zM10.6 13.4" />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 22 22">
+            <path
+              fill="currentColor"
+              d="M19 19H5V5h14m0-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m-9 5v8l5-4z"
+            />
+          </svg>
+        )}
+      </div>
+
       <div
         className="lyrics-wrapper | fa-solid"
         title={`${lyrics ? "Hide Lyrics" : "Show Lyrics"}`}

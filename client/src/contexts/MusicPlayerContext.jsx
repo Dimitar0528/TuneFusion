@@ -8,6 +8,7 @@ import useStoredActivePlaylist from "./hooks/useStoredActivePlaylist";
 import useUpdateActivePlaylist from "./hooks/useUpdateActivePlaylist";
 import { useRefresh } from "../hooks/useRefresh";
 import { useGetUserPlaylists } from "../hooks/CRUD-hooks/usePlaylists";
+import PropTypes from "prop-types";
 
 const MusicPlayerContext = createContext();
 
@@ -41,13 +42,15 @@ export function MusicPlayerProvider({ children }) {
     () => Number(JSON.parse(localStorage.getItem("currentTime"))) || 0
   );
 
+  const [showYoutubePlayer, setShowYotubePlayer] = useState(false);
+
   const [playlists, isPlaylistLoading] = useGetUserPlaylists(
     user?.userUUID,
     refreshPlaylistsFlag
   );
   const playerRef = useRef();
 
-  useStoredActivePlaylist(playlists, setActivePlaylist);
+  useStoredActivePlaylist(playlists, setActivePlaylist, user?.userUUID);
 
   useLocalStorage("currentSongUUID", currentSongUUID);
 
@@ -68,12 +71,11 @@ export function MusicPlayerProvider({ children }) {
   const currentSong = songs.find(
     (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
   );
-  const currentIndex = filteredSongs?.findIndex(
-    (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
-  );
 
-  const [lyrics, islyricsLoading, fetchLyrics, clearLyrics] =
-    useGetSongLyrics(currentSong);
+  const [lyrics, islyricsLoading, fetchLyrics, clearLyrics] = useGetSongLyrics(
+    currentSong,
+    setShowYotubePlayer
+  );
 
   useEffect(() => {
     document.title = isPlaying
@@ -89,19 +91,25 @@ export function MusicPlayerProvider({ children }) {
   };
 
   const handleNextSong = () => {
+    const songsToPlay =
+      currentFilteredSongs.length > 0 ? currentFilteredSongs : filteredSongs;
+
     if (shuffle) {
       let randomIndex;
       do {
-        randomIndex = Math.floor(Math.random() * filteredSongs.length);
+        randomIndex = Math.floor(Math.random() * songsToPlay.length);
       } while (
-        extractUUIDPrefix(filteredSongs[randomIndex].uuid) === currentSongUUID
+        extractUUIDPrefix(songsToPlay[randomIndex].uuid) === currentSongUUID
       );
-      setCurrentSongUUID(extractUUIDPrefix(filteredSongs[randomIndex].uuid));
+      setCurrentSongUUID(extractUUIDPrefix(songsToPlay[randomIndex].uuid));
       setIsPlaying(true);
       clearLyrics();
     } else {
-      const nextIndex = (currentIndex + 1) % filteredSongs.length;
-      setCurrentSongUUID(extractUUIDPrefix(filteredSongs[nextIndex].uuid));
+      const currentIndex = songsToPlay.findIndex(
+        (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
+      );
+      const nextIndex = (currentIndex + 1) % songsToPlay.length;
+      setCurrentSongUUID(extractUUIDPrefix(songsToPlay[nextIndex].uuid));
       setIsPlaying(true);
       clearLyrics();
     }
@@ -122,9 +130,14 @@ export function MusicPlayerProvider({ children }) {
   };
 
   const handlePreviousSong = () => {
+    const songsToPlay =
+      currentFilteredSongs.length > 0 ? currentFilteredSongs : filteredSongs;
+    const currentIndex = songsToPlay.findIndex(
+      (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
+    );
     const prevIndex =
-      (currentIndex - 1 + filteredSongs.length) % filteredSongs.length;
-    setCurrentSongUUID(extractUUIDPrefix(filteredSongs[prevIndex].uuid));
+      (currentIndex - 1 + songsToPlay.length) % songsToPlay.length;
+    setCurrentSongUUID(extractUUIDPrefix(songsToPlay[prevIndex].uuid));
     setIsPlaying(true);
     clearLyrics();
     setCurrentTime(0);
@@ -145,7 +158,7 @@ export function MusicPlayerProvider({ children }) {
   const handleLoopSong = () => {
     setIsLooped((isLooped) => !isLooped);
     showToast(
-      `Repeat ${!shuffle ? "enabled" : "disabled"} successfully!`,
+      `Repeat ${!isLooped ? "enabled" : "disabled"} successfully!`,
       "success"
     );
   };
@@ -187,6 +200,18 @@ export function MusicPlayerProvider({ children }) {
     setPlayBackSpeed(playBackSpeeds[nextIndex]);
     showToast(`Playback speed set to: ${playBackSpeeds[nextIndex]}`, "success");
   };
+
+  const toggleYoutubePlayer = () => {
+    setShowYotubePlayer((prev) => !prev);
+    !showYoutubePlayer &&
+      showToast(
+        "Action successful! Double tap on the video to enter / leave Full Screen Mode",
+        "success",
+        2800
+      );
+  };
+
+  const [currentFilteredSongs, setCurrentFilteredSongs] = useState([]);
 
   const contextValue = {
     songs,
@@ -231,6 +256,10 @@ export function MusicPlayerProvider({ children }) {
     setCurrentPage,
     user,
     handleKeyPressWhenTabbed,
+    showYoutubePlayer,
+    toggleYoutubePlayer,
+    currentFilteredSongs,
+    setCurrentFilteredSongs,
   };
 
   return (
@@ -247,3 +276,7 @@ export function useMusicPlayer() {
   }
   return context;
 }
+
+MusicPlayerProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};

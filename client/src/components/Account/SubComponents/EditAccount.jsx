@@ -327,7 +327,10 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
               <button
                 type="button"
                 className={`${styles.button} ${styles.closeBtn}`}
-                onClick={() => setPasswordModalOpen(false)}>
+                onClick={() => {
+                  setPasswordModalOpen(false);
+                  setPasswordValuesWrapper(initialPasswordData);
+                }}>
                 Cancel
               </button>
             </div>
@@ -336,6 +339,8 @@ export default function EditAccount({ user, triggerRefreshHandler }) {
       </div>
       {isModalOpen && (
         <ConfirmDialog
+         actionType='Deletion'
+         action='delete'
           itemType="account"
           itemName={userToDelete.name}
           onConfirm={confirmDelete}

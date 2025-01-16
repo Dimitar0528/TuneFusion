@@ -21,8 +21,13 @@ export default function ViewAllUsers({
     (user) => extractUUIDPrefix(user.uuid) !== userUUID
   );
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // State for deletion dialog
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+
+  // State for edit dialog
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [userToEdit, setUserToEdit] = useState(null);
 
   const handleDeleteUser = async (uuid) => {
     const displayMessage = () => {
@@ -32,28 +37,40 @@ export default function ViewAllUsers({
     deleteUser(uuid, displayMessage);
   };
 
-  const handleDeleteClick = (user) => {
+  const handleDeleteAction = (user) => {
     setUserToDelete(user);
-    setIsModalOpen(true);
+    setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDeleteAction = () => {
     if (userToDelete) {
       handleDeleteUser(userToDelete.uuid);
-      setIsModalOpen(false);
+      setIsDeleteModalOpen(false);
       setUserToDelete(null);
     }
   };
 
-  const cancelDelete = () => {
-    setIsModalOpen(false);
+  const cancelDeleteAction = () => {
+    setIsDeleteModalOpen(false);
     setUserToDelete(null);
   };
 
-  const handleChangeUserRole = async (user) => {
-    if (!window.confirm("Are you sure you want to change this user's role?"))
-      return;
-    changeUserRole(user.uuid, user, triggerRefreshHandler);
+  const handleEditAction = (user) => {
+    setUserToEdit(user);
+    setIsEditModalOpen(true);
+  };
+
+  const confirmEditAction = () => {
+    if (userToEdit) {
+      changeUserRole(userToEdit.uuid, userToEdit, triggerRefreshHandler);
+      setIsEditModalOpen(false);
+      setUserToEdit(null);
+    }
+  };
+
+  const cancelEditAction = () => {
+    setIsEditModalOpen(false);
+    setUserToEdit(null);
   };
 
   return (
@@ -73,8 +90,8 @@ export default function ViewAllUsers({
               <div
                 style={{ flexDirection: "row" }}
                 className="cta-admin-buttons">
-                <button onClick={() => handleDeleteClick(user)}>Delete</button>
-                <button onClick={() => handleChangeUserRole(user)}>
+                <button onClick={() => handleDeleteAction(user)}>Delete</button>
+                <button onClick={() => handleEditAction(user)}>
                   {user.role === "user" ? "Make admin" : "Remove admin"}
                 </button>
               </div>
@@ -82,12 +99,29 @@ export default function ViewAllUsers({
           </tr>
         )}
       />
-      {isModalOpen && (
+      {isDeleteModalOpen && (
         <ConfirmDialog
+          actionType="Deletion"
+          action="delete"
           itemType="user"
           itemName={userToDelete.name}
-          onConfirm={confirmDelete}
-          onCancel={cancelDelete}
+          onConfirm={confirmDeleteAction}
+          onCancel={cancelDeleteAction}
+        />
+      )}
+      {isEditModalOpen && (
+        <ConfirmDialog
+          actionType="Edit Role"
+          action="edit"
+          itemType="user role"
+          itemName={`${
+            users.find((user) => user.uuid === userToEdit.uuid).role ===
+            "admin"
+              ? "Remove admin"
+              : "Make admin"
+          }`}
+          onConfirm={confirmEditAction}
+          onCancel={cancelEditAction}
         />
       )}
     </div>

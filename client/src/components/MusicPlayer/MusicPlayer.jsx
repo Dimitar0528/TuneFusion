@@ -19,6 +19,7 @@ export default function MusicPlayer({
     isCollapsed,
     handleCollapseToggle,
     handleKeyPressWhenTabbed,
+    showYoutubePlayer
   } = useMusicPlayer();
   const [pipWindow, setPiPWindow] = useState(documentPictureInPicture.window);
 
@@ -42,7 +43,7 @@ export default function MusicPlayer({
         pipWindow &&
         applyStylesWhenInPiPModeFlag === true &&
         "picture-in-picture"
-      }`}>
+      } ${showYoutubePlayer && 'more-width'}`}>
       <div className="top-section">
         {userRole === "admin" && (
           <i

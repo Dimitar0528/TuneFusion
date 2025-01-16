@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import ReactPlayer from "react-player/lazy";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatTime } from "../../../utils/formatTime";
+import SkipNotification from "../../SkipNotification";
+
 export default function ProgressArea() {
   const {
     playerRef,
@@ -14,9 +16,13 @@ export default function ProgressArea() {
     isLooped,
     playBackSpeed,
     handleKeyPressWhenTabbed,
+    showYoutubePlayer,
   } = useMusicPlayer();
 
   const [isDragging, setIsDragging] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [skipValue, setSkipValue] = useState(0);
+
   const progressAreaRef = useRef();
   const progressBarRef = useRef();
 
@@ -26,8 +32,7 @@ export default function ProgressArea() {
       const duration = currentSong.duration;
       const progress = played > 0 ? played : currentTime / duration;
       progressBarRef.current.style.width = `${progress * 100}%`;
-      if (playedSeconds <= 0) return;
-      setCurrentTime(Math.round(playedSeconds));
+      if (playedSeconds > 0) setCurrentTime(Math.round(playedSeconds));
     }
   };
 
@@ -38,6 +43,7 @@ export default function ProgressArea() {
   const handleProgressBarDragEnd = () => {
     setIsDragging(false);
   };
+
   const handleProgressBarDrag = useCallback(
     (e) => {
       if (isDragging) {
@@ -55,7 +61,7 @@ export default function ProgressArea() {
         progressBarRef.current.style.width = `${newProgress * 100}%`;
       }
     },
-    [isDragging, playerRef, progressAreaRef, setCurrentTime, progressBarRef]
+    [isDragging, currentSong, setCurrentTime]
   );
 
   const handleProgressBarClick = (e) => {
@@ -66,67 +72,89 @@ export default function ProgressArea() {
     setCurrentTime(newTime);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-      e.preventDefault();
-      let newTime = currentTime;
-      if (e.key === "ArrowLeft") {
-        newTime = Math.max(0, currentTime - 1);
-      } else if (e.key === "ArrowRight") {
-        newTime = Math.min(playerRef.current.getDuration(), currentTime + 1);
+  const handleProgressBarSkip = useCallback(
+    (e) => {
+      if (e.target.id == 'volume-button') return;
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        const skipAmount = e.key === "ArrowLeft" ? -5 : 5;
+        const newTime = Math.max(0,Math.min(playerRef.current.getDuration(), currentTime + skipAmount));
+        setCurrentTime(newTime);
+        const progress = newTime / currentSong.duration;
+        progressBarRef.current.style.width = `${progress * 100}%`;
+        playerRef.current.seekTo(newTime, "seconds");
+        setSkipValue(skipAmount);
+        setIsVisible(true);
+        setTimeout(() => setIsVisible(false), 350);
       }
-      setCurrentTime(newTime);
-      const progress = newTime / currentSong.duration;
-      progressBarRef.current.style.width = `${progress * 100}%`;
-      playerRef.current.seekTo(newTime, "seconds");
-    }
-  };
+    },
+    [currentTime, playerRef, currentSong]
+  );
 
   useEffect(() => {
     document.addEventListener("mousemove", handleProgressBarDrag);
     document.addEventListener("mouseup", handleProgressBarDragEnd);
-
+    document.addEventListener("keydown", handleProgressBarSkip);
     return () => {
       document.removeEventListener("mousemove", handleProgressBarDrag);
       document.removeEventListener("mouseup", handleProgressBarDragEnd);
+      document.removeEventListener("keydown", handleProgressBarSkip);
     };
-  }, [handleProgressBarDrag]);
-
+  }, [handleProgressBarDrag, handleProgressBarSkip]);
   return (
-    <div
-      className="progress-area"
-      ref={progressAreaRef}
-      onClick={handleProgressBarClick}
-      onMouseDown={handleProgressBarDragStart}
-      onKeyDown={handleKeyDown}>
+    <>
       <div
-        className="progress-bar"
-        ref={progressBarRef}
-        tabIndex={0}
-        onKeyDown={(e) =>
-          handleKeyPressWhenTabbed(e, handleProgressBarClick)
-        }></div>
-      <div className="timer">
-        <span className="current">{formatTime(currentTime) || 0}</span>
-        <span className="duration">
-          {formatTime(currentSong?.duration || 0)}
-        </span>
+        className="progress-area"
+        ref={progressAreaRef}
+        onClick={handleProgressBarClick}
+        onMouseDown={handleProgressBarDragStart}>
+        <div
+          className="progress-bar"
+          ref={progressBarRef}
+          tabIndex={0}
+          onKeyDown={(e) =>
+            handleKeyPressWhenTabbed(e, handleProgressBarClick)
+          }></div>
+        <div className="timer">
+          <span className="current">{formatTime(currentTime) || 0}</span>
+          <span className="duration">
+            {formatTime(currentSong?.duration || 0)}
+          </span>
+        </div>
+        <div
+          className="youtube-player"
+          style={{
+            borderRadius: "2rem",
+            overflow: "clip",
+            width: "clamp(300px,60vw,100%)",
+            height: 410,
+            pointerEvents: showYoutubePlayer ? "auto" : "none",
+          }}>
+          <ReactPlayer
+            style={{
+              marginTop: "-33.2rem",
+              visibility: showYoutubePlayer ? "visible" : "hidden",
+              opacity: showYoutubePlayer ? 1 : 0,
+              transition: "opacity 0.3s ease-in-out",
+            }}
+            ref={playerRef}
+            className="main-audio"
+            url={currentSong?.audio_src}
+            playing={isPlaying}
+            volume={volume}
+            onProgress={handleMusicPlayerProgress}
+            onEnded={handleNextSong}
+            width="100%"
+            height="100%"
+            progressInterval={10}
+            playsinline={true}
+            loop={isLooped}
+            playbackRate={playBackSpeed}
+            controls={false}
+          />
+        </div>
       </div>
-      <ReactPlayer
-        ref={playerRef}
-        className="main-audio"
-        url={currentSong?.audio_src}
-        playing={isPlaying}
-        volume={volume}
-        onProgress={handleMusicPlayerProgress}
-        onEnded={handleNextSong}
-        width="0"
-        height="0"
-        progressInterval={100}
-        playsinline={true}
-        loop={isLooped}
-        playbackRate={playBackSpeed}
-      />
-    </div>
+      <SkipNotification skipValue={skipValue} isVisible={isVisible} />
+    </>
   );
 }

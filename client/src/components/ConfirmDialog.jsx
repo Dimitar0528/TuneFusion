@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../styles/ConfirmDialog.css";
-const ConfirmDialog = ({ itemType, itemName, onConfirm, onCancel }) => {
+const ConfirmDialog = ({ actionType,action,itemType, itemName, onConfirm, onCancel }) => {
   const [inputValue, setInputValue] = useState("");
   const [isConfirmed, setIsConfirmed] = useState(false);
 
@@ -18,16 +18,17 @@ const ConfirmDialog = ({ itemType, itemName, onConfirm, onCancel }) => {
   return (
     <div className="confirm-delete-modal">
       <div className="modal-content">
-        <h2>Confirm Deletion</h2>
+        <h2>Confirm {actionType}</h2>
         <p>
-          To delete the specific {itemType}, please type{" "}
+          To {action} the specific {itemType}, please type{" "}
           <strong>{itemName}</strong> below:
         </p>
         <input
           type="text"
+          name="input"
           value={inputValue}
           onChange={handleInputChange}
-          placeholder={`Type "${itemName}" to delete the ${itemType}`}
+          placeholder={`Type "${itemName}" to ${action} the ${itemType}`}
           className="confirm-input"
         />
         <div className="modal-actions">
