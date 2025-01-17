@@ -39,7 +39,13 @@
     word-wrap: break-word;
 }
 
-.albumList,
+.albumList {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 40px;
+}
+
 .singleList,
 .suggestedArtists {
     display: grid;
@@ -57,7 +63,6 @@
     padding: 10px;
     border-radius: 10px;
     transition: background-color 0.3s ease;
-
 }
 
 .h2 {
@@ -79,11 +84,12 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.album div,
+.album div:not(.addBtns),
 .single div:not(.addBtns),
 .suggested-artist div {
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
 .album p,
@@ -123,15 +129,97 @@
     display: flex;
     margin-left: auto;
     gap: .25rem;
+    justify-content: center;
 }
 
 .addBtn {
     cursor: pointer;
-    padding: .2rem .5rem;
+    padding: .35rem .6rem;
     border-radius: 100vmin;
     border: transparent;
 
     &:where(:hover, :focus-visible) {
         background-color: hsl(from var(--accent-clr-light) h s 85%);
     }
+}
+
+.toggleButton {
+    margin-left: auto;
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--accent-clr-light);
+    font-size: 1.2rem;
+    transition: .25s;
+    border: transparent;
+    &:where(:hover,:focus-visible){
+        scale: 1.2;
+    }
+}
+
+.albumSongs {
+    display: flex;
+    flex-direction: column;
+    margin-top: -.5rem;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background-color: var(--text-dark-clr);
+    color: #fff;
+}
+
+.headerRow {
+    background-color: var(--secondary-clr);
+    text-align: left;
+}
+
+.headerCell {
+    padding: 12px;
+    font-weight: bold;
+}
+
+.songCell {
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.addBtnsTd{
+    width: 100px;
+}
+@media (max-width: 600px) {
+ .addBtnsTd{
+    width: unset;
+ }
+    .songCell,
+    .headerCell {
+        padding: 8px;
+    }
+
+    .table tr {
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    .table td,
+    .table th {
+        display: block;
+        text-align: center;
+      
+     
+    }
+
+    .table td::before,
+    .table th::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+        .addBtns{
+            margin-top: 1rem;
+        }
 }

@@ -1,8 +1,8 @@
 import { toast } from "react-toastify";
 
-export default function showToast(message, type, autoClose = 1800, triggerRefresh = false, triggerFullReload = false) {
+export default function showToast(message, message_type, autoClose = 2000, triggerRefresh = false, triggerFullReload = false) {
     toast(message, {
-        type: type,
+        type: message_type,
         position: 'top-right',
         autoClose: autoClose,
         hideProgressBar: false,

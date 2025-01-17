@@ -123,7 +123,7 @@ export function useGetIndividualSong() {
     return [song, loading, fetchIndividualSong];
 }
 
-export function useGetSongLyrics(currentSong) {
+export function useGetSongLyrics(currentSong, setShowYotubePlayer) {
     const [lyrics, setLyrics] = useState("");
     const [loading, setIsLoading] = useState(false);
     const clearLyrics = () => {
@@ -131,9 +131,10 @@ export function useGetSongLyrics(currentSong) {
     }
     const fetchLyrics = useCallback(async () => {
         if (lyrics) return clearLyrics();
+        setShowYotubePlayer(false);
         setIsLoading(true);
         const result = await songsAPI.getSongLyrics(currentSong.artist.split(', ')[0], currentSong.name);
-        result.error ? setLyrics(result.error) : setLyrics(result);
+        result.error ? showToast(result.error, 'error') : setLyrics(result);
         setIsLoading(false);
 
     }, [currentSong, lyrics]);

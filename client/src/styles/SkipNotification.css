@@ -1,0 +1,41 @@
+.skip-notification {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    background: rgba(0, 0, 0, 0.75);
+    border-radius: .5rem;
+    padding: 1rem 1.6rem;
+    opacity: 0;
+    pointer-events: none;
+    animation: fadeUp .35s ease-in-out forwards;
+}
+
+.skip-notification.forward::before {
+    content: '>>';
+    margin-right: 10px;
+}
+
+.skip-notification.backward::before {
+    content: '<<';
+    margin-right: 10px;
+}
+
+@keyframes fadeUp {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -55%);
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -100%);
+    }
+}

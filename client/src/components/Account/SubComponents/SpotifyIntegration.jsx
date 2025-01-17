@@ -11,22 +11,16 @@ import {
   useAddExternalSongToPlaylist,
   useCreatePlaylist,
 } from "../../../hooks/CRUD-hooks/usePlaylists";
+import { useGetUserDetails } from "../../../hooks/CRUD-hooks/useUsers";
+
 export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
   const { userUUID, role } = user;
+  const [currentUser] = useGetUserDetails(userUUID);
   const createPlaylist = useCreatePlaylist();
   const addExternalSongToPlaylist = useAddExternalSongToPlaylist();
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState();
 
-  const handleAddSongToPlayList = (song) => {
-    setSelectedSong(song);
-    setShowModal(true);
-  };
-
-  const handleModalClose = () => {
-    setShowModal(false);
-    setSelectedSong(null);
-  };
   const {
     handleKeyPressWhenTabbed,
     triggerRefreshSongsHandler,
@@ -40,15 +34,6 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
   const REDIRECT_URI = "http://localhost:5173/callback";
   const SCOPES = ["playlist-read-private", "playlist-read-collaborative"];
 
-  const getAuthUrl = (userUUID) => {
-    const state = encodeURIComponent(
-      `userUUID=${userUUID}&tab=Spotify-Playlists`
-    );
-    return `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(
-      REDIRECT_URI
-    )}&scope=${encodeURIComponent(SCOPES.join(" "))}&state=${state}`;
-  };
-
   const [playlists, setPlaylists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -58,6 +43,29 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
   const [addExternalSongToDB, songLoading] = useAddExternalSongToDB(
     triggerRefreshSongsHandler
   );
+  const [isFetchingPlaylists, setIsFetchingPlaylists] = useState(true);
+  const [playlistsFetched, setPlaylistsFetched] = useState(0);
+  const [totalPlaylists, setTotalPlaylists] = useState(0);
+
+  const getAuthUrl = (userUUID) => {
+    const state = encodeURIComponent(
+      `userUUID=${userUUID}&tab=Spotify-Playlists`
+    );
+    return `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(
+      REDIRECT_URI
+    )}&scope=${encodeURIComponent(SCOPES.join(" "))}&state=${state}`;
+  };
+
+  const handleAddSongToPlayList = (song) => {
+    setSelectedSong(song);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setSelectedSong(null);
+  };
+
   const handleItemsPerPageChange = (e) => {
     setPlaylistsPerPage(Number(e.target.value));
     setPlaylistPage(0);
@@ -66,12 +74,12 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
   const movePlaylistToTuneFusionHandler = (values, playlistTracks) => {
     const reqObj = {
       ...values,
-      created_by: userUUID,
+      created_by: currentUser.name,
     };
     const playlistTracksObj = {
       ...playlistTracks,
       playlistName: values.name,
-      created_by: userUUID,
+      created_by: currentUser.name,
       userRole: role,
     };
     createPlaylist(reqObj, triggerRefreshHandler);
@@ -94,8 +102,7 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
         }
 
         const userProfile = await fetchUserProfile(token);
-        const playlistsWithTracks = await fetchPlaylists(token, userProfile.id);
-        setPlaylists(playlistsWithTracks);
+        fetchPlaylists(token, userProfile.id);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -178,7 +185,6 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
         ...playlistTracksData.items.map((item) => item.track),
       ];
 
-      // If the number of tracks returned is less than the limit, we've fetched all tracks
       if (playlistTracksData.items.length < limit) {
         break;
       }
@@ -190,42 +196,46 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
   };
 
   const fetchPlaylists = async (token, userId) => {
-    const playlistsResponse = await fetch(
-      "https://api.spotify.com/v1/me/playlists",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    try {
+      const playlistsResponse = await fetch(
+        "https://api.spotify.com/v1/me/playlists",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!playlistsResponse.ok) {
+        if (playlistsResponse.status === 429) {
+          setError(await playlistsResponse.text());
+        }
+        if (playlistsResponse.status === 401) {
+          const refreshToken = localStorage.getItem("SP_RT");
+          const newToken = await refreshAccessToken(refreshToken);
+          localStorage.setItem("SP_AT", newToken.access_token);
+          return fetchPlaylists(newToken.access_token, userId);
+        } else {
+          throw new Error("Failed to fetch playlists");
+        }
       }
-    );
 
-    if (!playlistsResponse.ok) {
-      if (playlistsResponse.status === 401) {
-        const refreshToken = localStorage.getItem("SP_RT");
-        const newToken = await refreshAccessToken(refreshToken);
-        localStorage.setItem("SP_AT", newToken.access_token);
+      const data = await playlistsResponse.json();
+      setTotalPlaylists(data.items.length);
 
-        return fetchPlaylists(newToken.access_token, userId);
-      } else {
-        throw new Error("Failed to fetch playlists");
-      }
-    }
-
-    const data = await playlistsResponse.json();
-    const allPlaylists = data.items;
-
-    // Fetch tracks for each playlist
-    const playlistsWithTracks = await Promise.all(
-      allPlaylists.map(async (playlist) => {
+      for (const playlist of data.items) {
         const tracks = await fetchPlaylistTracks(token, playlist.id);
-        return {
-          ...playlist,
-          tracks,
-        };
-      })
-    );
-
-    return playlistsWithTracks;
+        setPlaylists((prevPlaylists) => [
+          ...prevPlaylists,
+          { ...playlist, tracks },
+        ]);
+        setPlaylistsFetched((prev) => prev + 1);
+      }
+      setIsFetchingPlaylists(false);
+    } catch (error) {
+      setError(error.message);
+      setIsFetchingPlaylists(false);
+    }
   };
 
   const handlePageChange = (playlistId, direction) => {
@@ -249,17 +259,20 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
       </div>
     );
 
-  const playlistsToShow = playlists.slice(
+  const uniquePlaylists = playlists.filter(
+    (playlist, index, self) =>
+      index === self.findIndex((p) => p.id === playlist.id)
+  );
+
+  const playlistsToShow = uniquePlaylists.slice(
     playlistPage * playlistsPerPage,
     (playlistPage + 1) * playlistsPerPage
   );
-
   return (
     <div className={styles.spotifyIntegration}>
       <h1>Your Spotify Playlists</h1>
       <p style={{ marginBottom: "1rem" }}>
-        Here you can see the Spotify playlists that are either
-        created or liked by you.
+        Here you can see the playlists that are owned or followed by you.
       </p>
       <div className="select-container" style={{ marginBottom: "1rem" }}>
         <label htmlFor="number-of-songs">Playlists per page: &nbsp;</label>
@@ -273,191 +286,183 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
           <option value={20}>20 per page</option>
         </select>
       </div>
-      {playlists.length === 0 ? (
-        <p>No playlists created by you.</p>
-      ) : (
-        <>
-          {playlistsToShow.map((playlist) => {
-            const currentPage = trackPage[playlist.id] || 0;
-            const tracksToShow = playlist.tracks.slice(
-              currentPage * 10,
-              (currentPage + 1) * 10
-            );
-            const playlistValues = {
-              name: playlist.name,
-              description: playlist.description,
-              img_src: playlist.images[0]?.url,
-            };
-            const extractedTracks = playlist.tracks.map((track) => {
-              const { name, artists, album } = track;
+      {playlistsToShow.map((playlist) => {
+        const currentPage = trackPage[playlist.id] || 0;
+        const tracksToShow = playlist.tracks.slice(
+          currentPage * 10,
+          (currentPage + 1) * 10
+        );
+        const playlistValues = {
+          name: playlist.name,
+          description: playlist.description,
+          img_src: playlist.images[0]?.url,
+        };
+        const extractedTracks = playlist.tracks.map((track) => {
+          const { name, artists, album } = track;
+          const artistNames = artists.map((artist) => artist.name).join(", ");
+          const albumImage =
+            album.images && album.images[0] ? album.images[0].url : "";
+          return { name, artistNames, albumImage };
+        });
 
-              const artistNames = artists
-                .map((artist) => artist.name)
-                .join(", ");
-
-              const albumImage =
-                album.images && album.images[0] ? album.images[0].url : "";
-
-              return {
-                name,
-                artistNames,
-                albumImage,
-              };
-            });
-
-            return (
-              <div key={playlist.id} className={styles.playlistContainer}>
-                <div className={styles.playlistHeader}>
-                  <img
-                    width={70}
-                    src={playlist.images[0]?.url}
-                    alt={playlist.name}
-                    className={styles.playlistImage}
-                  />
-                  <h2 className={styles.playlistName}>{playlist.name}</h2>
-                  <button
-                    onClick={() =>
-                      movePlaylistToTuneFusionHandler(
-                        playlistValues,
-                        extractedTracks
-                      )
-                    }
-                    className={styles.movePlaylistBtn}>
-                    <span> Transfer playlist</span>
-                  </button>
-                </div>
-                <table className={styles.playlistTable}>
-                  <thead>
-                    <tr>
-                      <th>Image</th>
-                      <th>Track Name</th>
-                      <th>Artists</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tracksToShow.map((track) => {
-                      const songDetails = `${track.name}-${track.artists[0].name}`;
-                      return (
-                        <tr key={track.id}>
-                          <td>
-                            <img
-                              src={track.album.images[2]?.url}
-                              alt={track.name}
-                              className={styles.trackImage}
-                            />
-                          </td>
-                          <td>{track.name}</td>
-                          <td>
-                            {track.artists.map((artist, index) => (
-                              <React.Fragment key={artist.id}>
-                                <Link
-                                  to={`/artist/${artist.name}/description`}
-                                  className={styles.songArtist}>
-                                  {artist.name}
-                                </Link>
-                                {index < track.artists.length - 1 && ", "}
-                              </React.Fragment>
-                            ))}
-                          </td>
-                          <td>
-                            <div
+        return (
+          <div key={playlist.id} className={styles.playlistContainer}>
+            <div className={styles.playlistHeader}>
+              <img
+                width={70}
+                src={playlist.images[0]?.url}
+                alt={playlist.name}
+                className={styles.playlistImage}
+              />
+              <h2 className={styles.playlistName}>{playlist.name}</h2>
+              <button
+                onClick={() =>
+                  movePlaylistToTuneFusionHandler(
+                    playlistValues,
+                    extractedTracks
+                  )
+                }
+                className={styles.movePlaylistBtn}>
+                <span>Transfer playlist</span>
+              </button>
+            </div>
+            <table className={styles.playlistTable}>
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Track Name</th>
+                  <th>Artists</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tracksToShow.map((track) => {
+                  const songDetails = `${track.name}-${track.artists[0].name}`;
+                  return (
+                    <tr key={track.id}>
+                      <td>
+                        <img
+                          src={track.album.images[2]?.url}
+                          alt={track.name}
+                          className={styles.trackImage}
+                        />
+                      </td>
+                      <td>{track.name}</td>
+                      <td>
+                        {track.artists.map((artist, index) => (
+                          <React.Fragment key={artist.id}>
+                            <Link
+                              to={`/artist/${artist.name}/description`}
+                              className={styles.songArtist}>
+                              {artist.name}
+                            </Link>
+                            {index < track.artists.length - 1 && ", "}
+                          </React.Fragment>
+                        ))}
+                      </td>
+                      <td>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-evenly",
+                          }}>
+                          {role === "admin" && (
+                            <button
+                              disabled={songLoading}
+                              className={styles.addBtn}
                               style={{
-                                display: "flex",
-                                justifyContent: "space-evenly",
+                                backgroundColor: "white",
+                                border: "transparent",
                               }}>
-                              {role === "admin" && (
-                                <button
-                                  disabled={songLoading}
-                                  className={styles.addBtn}
-                                  style={{
-                                    backgroundColor: "white",
-                                    border: "transparent",
-                                  }}>
-                                  <i
-                                    style={{ color: "var(--primary-clr)" }}
-                                    tabIndex={0}
-                                    disabled={songLoading}
-                                    className={
-                                      songLoading
-                                        ? "fas fa-spinner fa-spin"
-                                        : "fa-solid fa-square-plus"
-                                    }
-                                    onClick={() =>
-                                      addExternalSongToDB(songDetails)
-                                    }
-                                    onKeyDown={(e) =>
-                                      handleKeyPressWhenTabbed(e, () => {
-                                        addExternalSongToDB(songDetails);
-                                      })
-                                    }
-                                    title={
-                                      songLoading
-                                        ? "Loading"
-                                        : "Add to Database"
-                                    }></i>
-                                </button>
-                              )}
-                              <div
-                                className={styles.addBtn}
-                                style={{ backgroundColor: "white" }}>
-                                <i
-                                  tabIndex={0}
-                                  className="fa-solid fa-plus"
-                                  onClick={() => handleAddSongToPlayList(track)}
-                                  onKeyDown={(e) =>
-                                    handleKeyPressWhenTabbed(e, () => {
-                                      handleAddSongToPlayList(track);
-                                    })
-                                  }
-                                  title="Add to playlist"></i>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                <div className={styles.pagination}>
-                  <button
-                    onClick={() => handlePageChange(playlist.id, -1)}
-                    disabled={currentPage <= 0}>
-                    Previous Songs
-                  </button>
-                  <button
-                    onClick={() => handlePageChange(playlist.id, 1)}
-                    disabled={(currentPage + 1) * 10 >= playlist.tracks.length}>
-                    Next Songs
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-          <div className={styles.pagination}>
-            <button
-              onClick={() => handlePlaylistPageChange(-1)}
-              disabled={playlistPage <= 0}>
-              Previous Playlists
-            </button>
-            <button
-              onClick={() => handlePlaylistPageChange(1)}
-              disabled={
-                (playlistPage + 1) * playlistsPerPage >= playlists.length
-              }>
-              Next Playlists
-            </button>
+                              <i
+                                style={{ color: "var(--primary-clr)" }}
+                                tabIndex={0}
+                                disabled={songLoading}
+                                className={
+                                  songLoading
+                                    ? "fas fa-spinner fa-spin"
+                                    : "fa-solid fa-square-plus"
+                                }
+                                onClick={() => addExternalSongToDB(songDetails)}
+                                onKeyDown={(e) =>
+                                  handleKeyPressWhenTabbed(e, () =>
+                                    addExternalSongToDB(songDetails)
+                                  )
+                                }
+                                title={
+                                  songLoading
+                                    ? "Loading"
+                                    : "Add the song to the Database"
+                                }></i>
+                            </button>
+                          )}
+                          <div
+                            className={styles.addBtn}
+                            style={{ backgroundColor: "white" }}>
+                            <i
+                              tabIndex={0}
+                              className="fa-solid fa-plus"
+                              onClick={() => handleAddSongToPlayList(track)}
+                              onKeyDown={(e) =>
+                                handleKeyPressWhenTabbed(e, () =>
+                                  handleAddSongToPlayList(track)
+                                )
+                              }
+                              title="Add to playlist"></i>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <div className={styles.pagination}>
+              <button
+                onClick={() => handlePageChange(playlist.id, -1)}
+                disabled={currentPage <= 0}>
+                Previous Songs
+              </button>
+              <button
+                onClick={() => handlePageChange(playlist.id, 1)}
+                disabled={(currentPage + 1) * 10 >= playlist.tracks.length}>
+                Next Songs
+              </button>
+            </div>
           </div>
-          <AddSongToPlaylistModal
-            playlists={TuneFusionPlaylists}
-            triggerRefreshHandler={triggerRefreshPlaylistsHandler}
-            showModal={showModal}
-            handleModalClose={handleModalClose}
-            selectedSong={selectedSong}
-            checkIfSongIsInDBFlag={true}
-          />
-        </>
+        );
+      })}
+      {isFetchingPlaylists && (
+        <div className={styles.loadingContainer}>
+          <Skeleton height={300} className={styles.playlistSkeleton} />
+          <p className={styles.loadingText}>
+            Fetching more playlists... ({playlistsFetched}/{totalPlaylists})
+          </p>
+        </div>
       )}
+      {!isFetchingPlaylists && playlists.length === 0 && (
+        <p>No playlists found</p>
+      )}
+      <div className={styles.pagination}>
+        <button
+          onClick={() => handlePlaylistPageChange(-1)}
+          disabled={playlistPage <= 0}>
+          Previous Playlists
+        </button>
+        <button
+          onClick={() => handlePlaylistPageChange(1)}
+          disabled={(playlistPage + 1) * playlistsPerPage >= playlists.length}>
+          Next Playlists
+        </button>
+      </div>
+      <AddSongToPlaylistModal
+        playlists={TuneFusionPlaylists}
+        triggerRefreshHandler={triggerRefreshPlaylistsHandler}
+        showModal={showModal}
+        handleModalClose={handleModalClose}
+        selectedSong={selectedSong}
+        checkIfSongIsInDBFlag={true}
+      />
     </div>
   );
 }
