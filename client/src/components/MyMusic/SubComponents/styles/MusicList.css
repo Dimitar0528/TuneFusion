@@ -44,7 +44,7 @@
 
     &:where(:hover, :focus-visible) {
         opacity: 1;
-        color: var(--secondary-clr);
+        color: var(--primary-clr);
         pointer-events: all;
     }
 }
@@ -242,11 +242,15 @@
     margin-block: .5rem;
     gap: 1rem;
 
+
     & p:not(:empty) {
         font-weight: 600;
         background-color: var(--secondary-clr-light);
         padding: .25rem 1rem;
         border-radius: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 
@@ -288,4 +292,25 @@
 
 .sort-controls .search-container {
     flex: 1;
+}
+
+.music-table tr.drag-over {
+    border-top: 2px solid #1db954;
+}
+
+.music-table tr.selected {
+    background-color: var(--secondary-clr-light);
+    color: var(--text-dark-clr);
+}
+
+.music-table tr.selected:hover {
+    background-color: var(--secondary-clr);
+}
+
+.music-table tr.selected .song-artist {
+    color: var(--text-dark-clr);
+}
+
+.music-table tr {
+    user-select: none;
 }

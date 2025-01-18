@@ -13,7 +13,7 @@ export const validatePlaylist = (values) => {
 export function useCreatePlaylist() {
     const createPlaylistHandler = async (playlistData, triggerRefreshHandler) => {
         const result = await playlistsAPI.createPlaylist(playlistData);
-        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success');
+        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success',);
         triggerRefreshHandler();
     }
     return createPlaylistHandler
@@ -33,7 +33,7 @@ export function useAddExternalSongToPlaylist() {
     const addExternalSongToPlaylistHandler = async (playlistData, triggerRefreshHandler, triggerRefreshSongsHandler) => {
         const result = await playlistsAPI.addExternalSongToPlaylist(playlistData);
         result.warn && showToast(`Warning: ${result.warn}`, "warning", 2500);
-        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success');
+        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success', 3000);
         triggerRefreshHandler();
         triggerRefreshSongsHandler();
     }
@@ -58,12 +58,12 @@ export const useGetUserPlaylists = (userUUID, refreshFlag) => {
     return [playlists, loading];
 };
 
-export const useGetPublicPlaylists = (refreshFlag) => {
+export const useGetPublicPlaylists = (refreshFlag, userUUID) => {
     const [playlists, setPlaylists] = useState([]);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         const fetchPublicPlaylists = async () => {
-            const result = await playlistsAPI.getPublicPlaylists();
+            const result = await playlistsAPI.getPublicPlaylists(userUUID);
             if (result.error) return showToast(`Error: ${result.error}`, "error")
             setPlaylists(result);
             setLoading(false);
@@ -101,4 +101,30 @@ export function useRemoveSongFromPlaylist() {
         triggerRefreshHandler();
     }
     return removeSongHanlder
+}
+
+export function useUpdateSongPositions() {
+    const updateSongPositionsHandler = async (playlistName, updates, userUUID, triggerRefreshHandler) => {
+        await playlistsAPI.editSongPositions(playlistName, { updates, userUUID });
+        triggerRefreshHandler();
+    }
+    return updateSongPositionsHandler;
+}
+
+export function useLikePlaylist() {
+    const likePlaylistHandler = async (playlistUUID, userUUID, triggerRefreshHandler) => {
+        const result = await playlistsAPI.likePlaylist({ playlistUUID, userUUID });
+        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success');
+        triggerRefreshHandler();
+    }
+    return likePlaylistHandler;
+}
+
+export function useUnlikePlaylist() {
+    const unlikePlaylistHandler = async (playlistUUID, userUUID, triggerRefreshHandler) => {
+        const result = await playlistsAPI.unlikePlaylist({ playlistUUID, userUUID });
+        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success');
+        triggerRefreshHandler();
+    }
+    return unlikePlaylistHandler;
 }

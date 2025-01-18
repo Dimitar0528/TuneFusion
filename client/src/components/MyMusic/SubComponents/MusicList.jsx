@@ -1,4 +1,4 @@
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState, Fragment, useMemo, useCallback } from "react";
 import "./styles/MusicList.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
@@ -7,19 +7,24 @@ import ReactPaginate from "react-paginate";
 import { formatTime } from "../../../utils/formatTime";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import {
   useAddSongToPlaylist,
   useRemoveSongFromPlaylist,
 } from "../../../hooks/CRUD-hooks/usePlaylists";
 import AddSongToPlaylistModal from "./AddSongToPlaylistModal";
+import { useGetUserDetails } from "../../../hooks/CRUD-hooks/useUsers";
+import PropTypes from "prop-types";
+import { useUpdateSongPositions } from "../../../hooks/CRUD-hooks/usePlaylists";
+
 export default function MusicList({
   songs,
   title,
-  activePlaylist,
   playlists,
   triggerRefreshHandler,
+  activePlaylist,
   styles,
+  hideRemoveSongButton = false,
 }) {
   const {
     user,
@@ -32,22 +37,32 @@ export default function MusicList({
     currentPage: page,
     setCurrentPage,
     handleKeyPressWhenTabbed,
+    triggerRefreshSongsHandler,
+    setCurrentFilteredSongs,
   } = useMusicPlayer();
   const location = useLocation();
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const currentUserUUID = searchParams.get("userUUID") || user.userUUID;  
+  const [currentUser] = useGetUserDetails(currentUserUUID);
+
   const savedPage = localStorage.getItem("CP");
   const currentPage = savedPage ? Number(savedPage) - 1 : page;
-  const searchParams = new URLSearchParams(location.search);
   useEffect(() => {
     const page = Number(searchParams.get("page")) || 0;
     setCurrentPage(page - 1);
-  }, []);
+  }, [setCurrentPage, searchParams]);
   const query = searchParams.get("q");
   const navigate = useNavigate();
   const addSongToPlaylist = useAddSongToPlaylist();
   const removeSongFromPlaylist = useRemoveSongFromPlaylist();
+  const updateSongPositions = useUpdateSongPositions();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("date-added-desc");
+  const [sortOption, setSortOption] = useState("custom");
+
   const [itemsPerPage, setItemsPerPage] = useState(
     () => JSON.parse(localStorage.getItem("IPP")) || 20
   );
@@ -58,6 +73,13 @@ export default function MusicList({
     return storedLikedSongs ? JSON.parse(storedLikedSongs) : [];
   });
   const [hoveredSongUUID, setHoveredSongUUID] = useState();
+  const [draggedSong, setDraggedSong] = useState(null);
+  const [dragOverSong, setDragOverSong] = useState(null);
+  const [selectedSongs, setSelectedSongs] = useState([]);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
+  const [sortHistory, setSortHistory] = useState([]);
+
+  const [currentHistoryIndex, setCurrentHistoryIndex] = useState(-1);
   if (!activePlaylist && songs.length > 20) {
     songs = songs.filter((song, index) => index !== songs.length - 1);
   }
@@ -87,6 +109,13 @@ export default function MusicList({
         return a.duration - b.duration;
       case "duration-desc":
         return b.duration - a.duration;
+      case "custom":
+        if (a.PlaylistSong && b.PlaylistSong) {
+          return (
+            (a.PlaylistSong.position || 0) - (b.PlaylistSong.position || 0)
+          );
+        }
+        return 0;
       default:
         return 0;
     }
@@ -116,6 +145,13 @@ export default function MusicList({
     setCurrentPage(0);
     localStorage.setItem("CP", `${1}`);
     constructNavigatePlayListUrl(0);
+
+    const newFilteredSongs = songs.filter(
+      (song) =>
+        song.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+        song.artist.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setCurrentFilteredSongs(newFilteredSongs);
   };
 
   const handleSortChange = (e) => setSortOption(e.target.value);
@@ -206,6 +242,135 @@ export default function MusicList({
     }
   };
 
+  const currentPlayerPlaylists = playlists.filter(
+    (playlist) =>
+      playlist?.created_by === currentUser?.name &&
+      playlist.name != "Liked Songs"
+  );
+
+  const handleSongSelect = useCallback(
+    (song, index, ctrlKey, shiftKey) => {
+      if (ctrlKey) {
+        setSelectedSongs((prev) =>
+          prev.includes(song.uuid)
+            ? prev.filter((uuid) => uuid !== song.uuid)
+            : [...prev, song.uuid]
+        );
+        setLastSelectedIndex(index);
+      } else if (shiftKey && lastSelectedIndex !== null) {
+        const start = Math.min(lastSelectedIndex, index);
+        const end = Math.max(lastSelectedIndex, index);
+        const rangeSelection = currentSongs
+          .slice(start, end + 1)
+          .map((s) => s.uuid);
+        setSelectedSongs(rangeSelection);
+      } else {
+        setSelectedSongs(song.uuid === selectedSongs[0] ? [] : [song.uuid]);
+        setLastSelectedIndex(index);
+      }
+    },
+    [lastSelectedIndex, currentSongs, selectedSongs]
+  );
+
+  const handleDragAndDrop = async () => {
+    if (!dragOverSong || !activePlaylist) return;
+
+    const newSongs = [...currentSongs];
+    const draggedSongs =
+      selectedSongs.length > 0 ? selectedSongs : [draggedSong];
+
+    if (!draggedSongs.includes(draggedSong)) return;
+
+    const dragIndices = draggedSongs
+      .map((uuid) => newSongs.findIndex((song) => song.uuid === uuid))
+      .sort((a, b) => a - b);
+    const dropIndex = newSongs.findIndex((song) => song.uuid === dragOverSong);
+
+    const removedSongs = dragIndices
+      .reverse()
+      .map((index) => newSongs.splice(index, 1)[0]);
+
+    const insertIndex =
+      dropIndex > dragIndices[0]
+        ? dropIndex - dragIndices.length + 1
+        : dropIndex;
+    newSongs.splice(insertIndex, 0, ...removedSongs.reverse());
+
+    const newHistory = sortHistory.slice(0, currentHistoryIndex + 1);
+    newHistory.push(newSongs);
+    setSortHistory(newHistory);
+    setCurrentHistoryIndex(newHistory.length - 1);
+
+    const updates = newSongs.map((song, index) => ({
+      songUUID: song.uuid,
+      position: index,
+    }));
+
+    await updateSongPositions(
+      activePlaylist.name,
+      updates,
+      user.userUUID,
+      triggerRefreshHandler
+    );
+    triggerRefreshSongsHandler();
+
+    setDraggedSong(null);
+    setDragOverSong(null);
+    setSelectedSongs([]);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.key === "z" && sortOption === "custom") {
+        e.preventDefault();
+        if (currentHistoryIndex > 0) {
+          const previousState = sortHistory[currentHistoryIndex - 1];
+          updateSongPositions(
+            activePlaylist.name,
+            previousState.map((song, index) => ({
+              songUUID: song.uuid,
+              position: index,
+            })),
+            user.userUUID,
+            triggerRefreshHandler
+          );
+          setCurrentHistoryIndex((prev) => prev - 1);
+        }
+      } else if (e.ctrlKey && e.key === "y") {
+        // Redo functionality (Ctrl+Y)
+        e.preventDefault();
+        if (currentHistoryIndex < sortHistory.length - 1) {
+          const nextState = sortHistory[currentHistoryIndex + 1];
+          updateSongPositions(
+            activePlaylist.name,
+            nextState.map((song, index) => ({
+              songUUID: song.uuid,
+              position: index,
+            })),
+            user.userUUID,
+            triggerRefreshHandler
+          );
+          setCurrentHistoryIndex((prev) => prev + 1);
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    sortHistory,
+    currentHistoryIndex,
+    activePlaylist,
+    sortOption,
+    user.userUUID,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      setCurrentFilteredSongs([]);
+    };
+  }, [setCurrentFilteredSongs]);
+
   return (
     <div className="music-list" style={styles}>
       <div className="header">
@@ -223,6 +388,7 @@ export default function MusicList({
       <div className="sort-controls">
         <div className="search-container">
           <input
+            name="input"
             id="song-search"
             type="search"
             placeholder="Search by artist or name"
@@ -233,10 +399,11 @@ export default function MusicList({
         <div className="select-container">
           <label htmlFor="sort-by">Sort By:</label>
           <select id="sort-by" value={sortOption} onChange={handleSortChange}>
+            <option value="custom">Custom (Default)</option>
+            <option value="date-added-asc">Date (ASC)</option>
+            <option value="date-added-desc">Date (DESC)</option>
             <option value="name-asc">Name (A-Z)</option>
             <option value="name-desc">Name (Z-A)</option>
-            <option value="date-added-asc">Date (ASC)</option>
-            <option value="date-added-desc">Date (DESC) (Default)</option>
             <option value="duration-asc">Duration (Least to Most)</option>
             <option value="duration-desc">Duration (Most to Least)</option>
           </select>
@@ -340,11 +507,58 @@ export default function MusicList({
               return (
                 <tr
                   key={song.uuid}
-                  className={
-                    extractUUIDPrefix(song.uuid) === currentSongUUID
-                      ? "playing"
-                      : "tr"
+                  className={`
+                    ${
+                      extractUUIDPrefix(song.uuid) === currentSongUUID
+                        ? "playing"
+                        : "tr"
+                    }
+                    ${
+                      sortOption === "custom" && dragOverSong === song.uuid
+                        ? "drag-over"
+                        : ""
+                    }
+                    ${selectedSongs.includes(song.uuid) ? "selected" : ""}
+                  `}
+                  draggable={
+                    sortOption === "custom" &&
+                    activePlaylist?.created_by === currentUser.name &&
+                    activePlaylist?.name !== "Liked Songs" &&
+                    (selectedSongs.length === 0 ||
+                      selectedSongs.includes(song.uuid))
                   }
+                  onClick={(e) => {
+                    if ((e.ctrlKey || e.shiftKey) && 
+                     activePlaylist && activePlaylist.created_by === currentUser.name
+                    && activePlaylist.name !== 'Liked Songs'
+                    ) {
+                      handleSongSelect(song, index, e.ctrlKey, e.shiftKey);
+                    }
+                  }}
+                  onDragStartCapture={(e) => {
+                    if (
+                      sortOption === "custom" &&
+                      activePlaylist.created_by === currentUser.name
+                    ) {
+                      setDraggedSong(song.uuid);
+                      e.target.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragOver={(e) => {
+                    if (
+                      sortOption === "custom" &&
+                      activePlaylist.created_by === currentUser.name
+                    ) {
+                      e.preventDefault();
+                      setDragOverSong(song.uuid);
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    sortOption === "custom" &&
+                      activePlaylist.created_by === currentUser.name &&
+                      handleDragAndDrop();
+                    e.target.style.opacity = "1";
+                  }}
                   onMouseEnter={() => setHoveredSongUUID(song.uuid)}
                   onMouseLeave={() => setHoveredSongUUID(null)}
                   onDoubleClick={() => handleMusicListSong(song)}
@@ -453,7 +667,9 @@ export default function MusicList({
                         }
                         title="Add to playlist"></i>
                       {activePlaylist &&
-                        activePlaylist.name !== "Liked Songs" && (
+                        activePlaylist.name !== "Liked Songs" &&
+                        hideRemoveSongButton === false 
+                        && activePlaylist?.created_by === currentUser.name && (
                           <i
                             tabIndex={0}
                             className="fa-solid fa-delete-left"
@@ -498,7 +714,7 @@ export default function MusicList({
       </p>
 
       <AddSongToPlaylistModal
-        playlists={playlists}
+        playlists={currentPlayerPlaylists}
         triggerRefreshHandler={triggerRefreshHandler}
         showModal={showModal}
         handleModalClose={handleModalClose}
@@ -507,3 +723,19 @@ export default function MusicList({
     </div>
   );
 }
+
+MusicList.propTypes = {
+  songs: PropTypes.arrayOf(PropTypes.object).isRequired,
+  title: PropTypes.string.isRequired,
+  activePlaylist: PropTypes.shape({
+    name: PropTypes.string,
+    description: PropTypes.string,
+    Songs: PropTypes.arrayOf(PropTypes.object),
+    created_by: PropTypes.string,
+    sortable: PropTypes.bool,
+  }),
+  playlists: PropTypes.arrayOf(PropTypes.object).isRequired,
+  triggerRefreshHandler: PropTypes.func.isRequired,
+  styles: PropTypes.object,
+  hideRemoveSongButton: PropTypes.bool,
+};

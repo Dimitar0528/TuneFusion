@@ -17,9 +17,14 @@ async function requester(method, url, data, credentials) {
 const get = requester.bind(null, "GET");
 const post = requester.bind(null, "POST");
 const put = requester.bind(null, "PUT");
+const patch = requester.bind(null, "PATCH");
 const del = requester.bind(null, "DELETE");
 
 const request = {
-    get, put, post, del
+    get,
+    put,
+    patch,
+    post,
+    del
 }
 export default request

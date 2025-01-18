@@ -1,21 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-import { useGetPublicPlaylists } from "../../../hooks/CRUD-hooks/usePlaylists";
+import {
+  useGetPublicPlaylists,
+  useLikePlaylist,
+  useUnlikePlaylist,
+} from "../../../hooks/CRUD-hooks/usePlaylists";
 import MusicList from "../SubComponents/MusicList";
 import "./styles/Discover.css";
 import { useNavigate } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import ReactPaginate from "react-paginate";
+import { useGetUserDetails } from "../../../hooks/CRUD-hooks/useUsers";
+import { getPlaylistImage } from "../../../utils/getPlaylistImage";
 
 export default function Discover({ userUUID }) {
   const navigate = useNavigate();
-  const { refreshPlaylistsFlag, activePlaylist, setActivePlaylist } =
-    useMusicPlayer();
+  const {
+    refreshPlaylistsFlag,
+    triggerRefreshPlaylistsHandler,
+    activePlaylist,
+    setActivePlaylist,
+  } = useMusicPlayer();
   const [publicPlaylists, isPublicPlaylistLoading] =
-    useGetPublicPlaylists(refreshPlaylistsFlag);
+    useGetPublicPlaylists(refreshPlaylistsFlag,userUUID);
+    const newPublicPlaylists = publicPlaylists.filter(playlist => playlist.name !== 'Liked Songs');
   const [currentPage, setCurrentPage] = useState(0);
   const playlistsPerPage = 8;
+  const [currentUser] = useGetUserDetails(userUUID);
+  const likePlaylist = useLikePlaylist();
+  const unlikePlaylist = useUnlikePlaylist();
 
   const handlePlaylistClick = (playlist) => {
     setActivePlaylist(playlist);
@@ -42,10 +56,20 @@ export default function Discover({ userUUID }) {
     setCurrentPage(data.selected);
   };
 
-  const currentPlaylists = publicPlaylists.slice(
+  const currentPlaylists = newPublicPlaylists.slice(
     currentPage * playlistsPerPage,
     (currentPage + 1) * playlistsPerPage
   );
+
+  const handleLikePlaylist = (e,playlist) => {
+    e.stopPropagation();
+    const isLiked = playlist.liked_by?.includes(currentUser?.name);
+    if (isLiked) {
+      unlikePlaylist(playlist.uuid, userUUID, triggerRefreshPlaylistsHandler);
+    } else {
+      likePlaylist(playlist.uuid, userUUID, triggerRefreshPlaylistsHandler);
+    }
+  };
 
   if (isPublicPlaylistLoading) {
     return (
@@ -85,17 +109,35 @@ export default function Discover({ userUUID }) {
               {currentPlaylists.map((playlist) => (
                 <div
                   key={playlist.uuid}
-                  className="playlist-card"
+                  className="playlist-card "
                   onClick={() => handlePlaylistClick(playlist)}>
                   <img
-                    src={
-                      playlist.img_src ||
-                      "https://cdn-icons-png.freepik.com/512/5644/5644664.png"
-                    }
+                    src={getPlaylistImage(playlist)}
                     alt={playlist.name}
                     className="playlist-cover"
                   />
                   <h3>{playlist.name}</h3>
+                  {playlist?.created_by !== currentUser.name && (
+                    <button
+                      title={
+                        playlist.liked_by?.includes(currentUser.name)
+                          ? "Unlike this playlist"
+                          : "Like this playlist"
+                      }
+                      className={`like-btn ${
+                        playlist.liked_by?.includes(currentUser.name)
+                          ? "liked"
+                          : ""
+                      }`}
+                      onClick={(e) => handleLikePlaylist(e, playlist)}>
+                      <i
+                        className={`fa-${
+                          playlist.liked_by?.includes(currentUser?.name)
+                            ? "solid"
+                            : "regular"
+                        } fa-heart`}></i>
+                    </button>
+                  )}
                 </div>
               ))}
             </>
@@ -109,8 +151,9 @@ export default function Discover({ userUUID }) {
           songs={activePlaylist.Songs}
           activePlaylist={activePlaylist}
           playlists={publicPlaylists}
-          triggerRefreshHandler={refreshPlaylistsFlag}
+          triggerRefreshHandler={triggerRefreshPlaylistsHandler}
           styles={{ width: "95%", marginInline: "auto", maxHeight: "100vh" }}
+          hideRemoveSongButton={true}
         />
       )}
       <ReactPaginate

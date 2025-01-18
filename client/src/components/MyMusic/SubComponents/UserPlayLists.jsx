@@ -9,10 +9,13 @@ import {
   useCreatePlaylist,
   useEditPlaylist,
   useDeletePlaylist,
+  useUnlikePlaylist,
 } from "../../../hooks/CRUD-hooks/usePlaylists";
 import ConfirmDialog from "../../ConfirmDialog";
 import { useNavigate } from "react-router-dom";
-
+import { useGetUserDetails } from "../../../hooks/CRUD-hooks/useUsers";
+import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
+import { getPlaylistImage } from "../../../utils/getPlaylistImage";
 const initialPlaylistValues = {
   name: "",
   description: "",
@@ -40,11 +43,12 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
   const createPlaylist = useCreatePlaylist();
   const editPlaylist = useEditPlaylist();
   const deletePlaylist = useDeletePlaylist();
-
+  const unlikePlaylist = useUnlikePlaylist();
+  const [currentUser] = useGetUserDetails(userUUID);
   const onSubmit = async (values) => {
     const reqObj = {
       ...values,
-      created_by: userUUID,
+      created_by: currentUser.name,
     };
     if (editingPlaylist) {
       const updatedPlaylist = await editPlaylist(
@@ -114,16 +118,6 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     setShowDialog(false);
   };
 
-  const getPlaylistImage = (playlist) => {
-    if (!playlist.img_src && playlist.Songs && playlist.Songs.length > 0) {
-      playlist.img_src = playlist.Songs.at(-1).img_src;
-    }
-    return (
-      playlist.img_src ||
-      "https://cdn-icons-png.freepik.com/512/5644/5644664.png"
-    );
-  };
-
   const handleDeletePlaylist = async (playlist) => {
     const callback = () => {
       if (playlist.name === activePlaylist?.name) {
@@ -158,9 +152,27 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     setSearchTerm(e.target.value);
   };
 
-  const filteredPlaylists = playlists.filter((playlist) =>
-    playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPlaylists = playlists.filter((playlist) => {
+    const isOwnPlaylist = playlist.created_by === currentUser?.name;
+    const isLikedPlaylist = playlist.liked_by?.includes(currentUser?.name);
+    return (
+      (isOwnPlaylist || isLikedPlaylist) &&
+      playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+  const handleUnlikePlaylist = (e, playlist) => {
+    e.stopPropagation();
+    if (playlist.name === activePlaylist?.name) {
+      localStorage.removeItem("activePlaylist");
+      setActivePlaylist(null);
+    }
+      unlikePlaylist(
+        playlist.uuid,
+        extractUUIDPrefix(currentUser.uuid),
+        triggerRefreshHandler
+      );
+  };
 
   return (
     <>
@@ -180,6 +192,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
 
         <div className="sort-controls | playlist-controls">
           <input
+            name="input"
             id="playlist-search"
             type="search"
             placeholder="Search by name"
@@ -229,36 +242,45 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
                     style={{ objectFit: "cover" }}
                   />{" "}
                   <h3>{playlist.name}</h3>
-                  {playlist.name !== "Liked Songs" && (
+                  {playlist.liked_by?.includes(currentUser?.name) && (
                     <div className="action-btns">
                       <i
-                        tabIndex={0}
-                        title="Edit Playlist"
-                        className="fa-solid fa-pen-to-square"
-                        onClick={(е) => {
-                          handleEditPlaylist(е, playlist);
-                        }}
-                        onKeyDown={(e) =>
-                          handleKeyPressWhenTabbed(e, () =>
-                            handleEditPlaylist(e, playlist)
-                          )
-                        }
-                      />
-
-                      <i
-                        tabIndex={0}
-                        title="Delete PlayList"
-                        className="fa-solid fa-delete-left"
-                        onClick={(e) => {
-                          handleDeleteClick(e, playlist);
-                        }}
-                        onKeyDown={(e) =>
-                          handleKeyPressWhenTabbed(e, () =>
-                            handleDeleteClick(e, playlist)
-                          )
-                        }></i>
+                        title="Unlike this playlist"
+                        className="fa-solid fa-heart liked-indicator"
+                        onClick={(e) => handleUnlikePlaylist(e, playlist)}></i>
                     </div>
                   )}
+                  {playlist.name !== "Liked Songs" &&
+                    playlist?.created_by === currentUser?.name && (
+                      <div className="action-btns">
+                        <i
+                          tabIndex={0}
+                          title="Edit Playlist"
+                          className="fa-solid fa-pen-to-square"
+                          onClick={(е) => {
+                            handleEditPlaylist(е, playlist);
+                          }}
+                          onKeyDown={(e) =>
+                            handleKeyPressWhenTabbed(e, () =>
+                              handleEditPlaylist(e, playlist)
+                            )
+                          }
+                        />
+
+                        <i
+                          tabIndex={0}
+                          title="Delete PlayList"
+                          className="fa-solid fa-delete-left"
+                          onClick={(e) => {
+                            handleDeleteClick(e, playlist);
+                          }}
+                          onKeyDown={(e) =>
+                            handleKeyPressWhenTabbed(e, () =>
+                              handleDeleteClick(e, playlist)
+                            )
+                          }></i>
+                      </div>
+                    )}
                 </div>
               </div>
             ))}
@@ -267,7 +289,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
           <dialog open className="modal">
             <div className="playlist-dialog">
               <h2>
-                {editingPlaylist ? "Edit Playlist" : "Create New Playlist"}
+                {editingPlaylist ? "Edit Details" : "Create New Playlist"}
               </h2>
               <form method="dialog" onSubmit={submitHandler}>
                 <label style={{ marginTop: "1rem" }} htmlFor="name">
@@ -328,6 +350,8 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
       </div>
       {isModalOpen && (
         <ConfirmDialog
+          actionType="Deletion"
+          action="delete"
           itemType="playlist"
           itemName={playlistToDelete.name}
           onConfirm={confirmDelete}

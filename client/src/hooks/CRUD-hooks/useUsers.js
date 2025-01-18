@@ -75,7 +75,7 @@ export function useGetAllUsers(refreshFlag) {
     }, [refreshFlag]);
     return [users]
 }
-export function useGetUserDetails(userUUID, refreshFlag) {
+export function useGetUserDetails(userUUID, refreshFlag = false) {
     const [user, setUser] = useState({});
 
     useEffect(() => {
