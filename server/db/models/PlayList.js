@@ -29,14 +29,17 @@ PlayList.init(
             allowNull: false,
         },
         created_by: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
+            type: DataTypes.STRING,
             references: {
                 model: User,
-                key: "uuid",
+                key: "name",
             },
+        }, 
+        liked_by: {
+            type: DataTypes.JSON,
+            allowNull: true,
+            defaultValue: [],
         },
-
     },
     {
         sequelize: sequelizeInstance,

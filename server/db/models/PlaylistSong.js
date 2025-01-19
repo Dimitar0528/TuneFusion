@@ -22,11 +22,23 @@ PlaylistSong.init(
             },
             allowNull: false,
         },
+        createdAt: {
+            type: DataTypes.TIME(3),
+            allowNull: false,
+            defaultValue: DataTypes.NOW,
+        },
+        position: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+        }
     },
     {
         updatedAt: false,
         sequelize: sequelizeInstance,
         modelName: "PlaylistSong",
+        tableName: "playlistsongs",
+
     }
 );
 

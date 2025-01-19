@@ -1,6 +1,6 @@
 import PlayList from './PlayList.js';
 import Song from './Song.js';
-import PlaylistSong from './PlayListSong.js';
+import PlaylistSong from './PlaylistSong.js';
 import User from './User.js';
 
 PlayList.belongsToMany(Song, {

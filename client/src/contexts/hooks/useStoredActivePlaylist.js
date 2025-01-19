@@ -13,6 +13,7 @@ const useStoredActivePlaylist = (playlists, setActivePlaylist) => {
                     ...storedActivePlaylist,
                     Songs: playlist.Songs,
                     description: playlist.description,
+                    created_by: playlist.created_by
                 });
             }
         }

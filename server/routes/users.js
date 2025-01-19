@@ -26,7 +26,6 @@ router.get('/', async (req, res) => {
 
 router.get('/:userid', async (req, res) => {
     const userId = req.params.userid;
-
     try {
         const user = await User.findOne({
             where: Sequelize.where(
@@ -34,9 +33,9 @@ router.get('/:userid', async (req, res) => {
                 userId
             ),
         });
-        if (!user) {
-            return res.status(404).json({ error: 'User not found!' });
-        }
+        // if (!user) {
+        //     return res.status(404).json({ error: 'User not found!' });
+        // }
 
         return res.status(200).json(user);
     } catch (error) {
@@ -71,8 +70,8 @@ router.put('/changeUserRole/:userUUID', async (req, res) => {
 });
 
 
-router.put('/editAccount/:userid', async (req, res) => {
-    const userUUID = req.params.userid;
+router.put('/editAccount/:userUUID', async (req, res) => {
+    const userUUID = req.params.userUUID;
     try {
         const { name, first_name, last_name, email_address, phone_number, gender } = req.body;
 
@@ -142,10 +141,12 @@ router.put('/resetPassword/:user_email_address', async (req, res) => {
 
 router.delete('/deleteUser/:userUUID', async (req, res) => {
     const userUUID = req.params.userUUID;
-
     try {
+        const user = await User.findOne({
+            where: { uuid: userUUID }
+        });
         const hasPlaylists = await PlayList.findAll({
-            where: { created_by: userUUID },
+            where: { created_by: user.name },
         });
 
         const playlistUUIDs = hasPlaylists.map(playlist => playlist.dataValues.uuid);
