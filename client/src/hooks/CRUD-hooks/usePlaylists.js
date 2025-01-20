@@ -29,15 +29,15 @@ export function useAddSongToPlaylist() {
     return addSongToPlaylistHandler
 }
 
-export function useAddExternalSongToPlaylist() {
-    const addExternalSongToPlaylistHandler = async (playlistData, triggerRefreshHandler, triggerRefreshSongsHandler) => {
-        const result = await playlistsAPI.addExternalSongToPlaylist(playlistData);
+export function useTransferSongsToPlaylist() {
+    const transferSongsToPlaylistHandler = async (playlistData, triggerRefreshHandler, triggerRefreshSongsHandler) => {
+        const result = await playlistsAPI.transferSongsToPlaylist(playlistData);
         result.warn && showToast(`Warning: ${result.warn}`, "warning", 2500);
         result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success', 3000);
         triggerRefreshHandler();
         triggerRefreshSongsHandler();
     }
-    return addExternalSongToPlaylistHandler
+    return transferSongsToPlaylistHandler
 }
 
 

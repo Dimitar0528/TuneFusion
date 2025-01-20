@@ -3,7 +3,7 @@ import Genius from 'genius-lyrics';
 import { Song, PlaylistSong, PlayList } from '../db/models/index.js'
 import gis from 'async-g-i-s';
 import { searchMusics, getSuggestions, getArtist, searchArtists } from 'node-youtube-music';
-import { Sequelize,Op } from 'sequelize';
+import { Sequelize, Op } from 'sequelize';
 import extractUUIDPrefix from '../../client/src/utils/extractUUIDPrefix.js';
 import { User } from '../db/models/index.js';
 const router = express.Router();
@@ -13,6 +13,39 @@ import YTMusic from "ytmusic-api"
 
 const ytmusic = new YTMusic()
 await ytmusic.initialize()
+
+router.post('/', async (req, res) => {
+    const { name, artist, img_src, audio_src, duration } = req.body;
+    const modifiedArtist = artist.replace(/&/g, ',').replace(/ ,/g, ",");
+    const uuid = crypto.randomUUID();
+    try {
+        const song = await Song.findOne({
+            where: {
+                name: name,
+                artist: {
+                    [Op.like]: `%${modifiedArtist}%`,
+                },
+            },
+        })
+        if (song) {
+            return res.status(400).json({ error: 'The song has already been added to the database!' });
+        }
+        await Song.create({
+            uuid,
+            name,
+            artist: modifiedArtist,
+            img_src,
+            audio_src,
+            duration: duration
+        });
+
+        res.status(200).json({ message: "Song added to database successfully!" });
+    } catch (error) {
+        console.error('Error creating song:', error);
+        res.status(500).json({ error: 'There was an error while trying to create the song!' });
+    }
+});
+
 
 router.get('/', async (req, res) => {
     try {
@@ -115,8 +148,6 @@ router.get('/specificSongs', async (req, res) => {
     }
 });
 
-
-
 router.get('/:name', async (req, res) => {
     const name = req.params.name;
 
@@ -134,88 +165,73 @@ router.get('/:name', async (req, res) => {
     }
 });
 
-
-router.post('/addsong', async (req, res) => {
-    const { name, artist, img_src, audio_src, duration } = req.body;
-    const modifiedArtist = artist.replace(/&/g, ',').replace(/ ,/g, ",");
-    const uuid = crypto.randomUUID();
+router.get('/lyrics/:artist/:song', async (req, res) => {
+    const { artist, song } = req.params;
     try {
-        const song = await Song.findOne({
-            where: {
-                name: name,
-                artist: {
-                    [Op.like]: `%${modifiedArtist}%`,
-                },
-            },
-        })
-        if (song) {
-            return res.status(400).json({ error: 'The song has already been added to the database!' });
-        }
-        await Song.create({
-            uuid,
-            name,
-            artist: modifiedArtist,
-            img_src,
-            audio_src,
-            duration: duration
+        const searches = await Client.songs.search(song);
+        const songByArtist = searches.find((song) => {
+            return song.artist.name
+                .trim()
+                .toLowerCase()
+                .includes(artist.trim().toLowerCase());
         });
-
-        res.status(200).json({ message: "Song added to database successfully!" });
-    } catch (error) {
-        console.error('Error creating song:', error);
-        res.status(500).json({ error: 'There was an error while trying to create the song!' });
-    }
-});
-
-router.delete('/deleteSong/:uuid', async (req, res) => {
-    const songUUID = req.params.uuid;
-
-    try {
-        await Song.destroy({ where: { uuid: songUUID } });
-
-        const hasPlayListSongs = await PlaylistSong.findAll({
-            where: { song_uuid: songUUID }
-        })
-        hasPlayListSongs && (await PlaylistSong.destroy({
-            where: { song_uuid: songUUID },
-        }));
-        return res.status(200).json({ message: 'Song deleted successfully!' });
-    } catch (error) {
-        return res.status(500).json({ error: 'There was an error while trying to delete the song!' });
-    }
-});
-
-
-
-router.put('/updatesong/:name', async (req, res) => {
-    const name = req.params.name;
-    const body = req.body;
-
-    try {
-        const song = await Song.findOne({ where: { name: name } });
-
-        if (!song) {
-            return res.status(404).json({ error: "Song not found!" });
+        if (!songByArtist) {
+            return res.status(404).json({ error: 'Lyrics for the specified song not found!' });
         }
-
-        await Song.update(
-            {
-                name: body.name || song.name,
-                artist: body.artist || song.artist,
-                img_src: body.img_src || song.img_src,
-                audio_src: body.audio_src || song.audio_src,
-                duration: body.duration || song.duration,
-            },
-            { where: { uuid: song.uuid } }
-        );
-
-        return res.status(200).json({ message: "Song updated successfully!" });
+        const lyrics = await songByArtist.lyrics();
+        return res.status(200).json(lyrics);
     } catch (error) {
-        console.error('Error updating song:', error);
-        return res.status(500).json({ error: "There was an error while trying to update the song data!" });
+        console.error("Error fetching lyrics:", error);
+        return res.status(500).json({ error: 'There was an error while trying to fetch the lyrics!' });
     }
 });
-router.get('/addIndividualSong/:songDetails', async (req, res) => {
+
+router.get('/artist/:artistName', async (req, res) => {
+    try {
+        const artistName = req.params.artistName
+        const [firstArtist] = await ytmusic.searchArtists(artistName)
+        const artist = await ytmusic.getArtist(firstArtist.artistId);
+        const albumSongsPromises = artist.topAlbums.map(album => ytmusic.getAlbum(album.albumId));
+        const albumSongs = await Promise.all(albumSongsPromises);
+        const reqObj = {
+            ...artist,
+            albumSongs,
+        }
+        res.status(200).json(reqObj);
+    } catch (error) {
+        console.error('Error fetching artist data:', error);
+        res.status(500).json({ error: 'There is no available information for this artist!' });
+    }
+})
+
+router.get('/search/:query', async (req, res) => {
+    try {
+        const query = req.params.query.toLowerCase();
+        const songs = await ytmusic.searchVideos(query);
+        const songList = await Promise.all(songs.map(async (song) => {
+            const { artist, name, videoId, duration } = song;
+            const audio_src = `https://www.youtube.com/watch?v=${videoId}`;
+            const searchTerm = artist.name + name;
+            const [{ url: img_src } = {}] = await gis(searchTerm);
+            return {
+                name,
+                artist: artist.name,
+                img_src,
+                audio_src,
+                duration,
+            }
+        }))
+
+        res.status(200).json(songList);
+
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('There was an error while trying to fetch the suggested songs!');
+    }
+});
+
+router.get('/search-song/:songDetails', async (req, res) => {
     try {
         const songDetails = req.params.songDetails
         const [firstSong] = await ytmusic.searchVideos(songDetails);
@@ -247,73 +263,50 @@ router.get('/addIndividualSong/:songDetails', async (req, res) => {
     }
 });
 
+router.put('/:name', async (req, res) => {
+    const name = req.params.name;
+    const body = req.body;
 
-router.get('/search/:query', async (req, res) => {
     try {
-        const query = req.params.query.toLowerCase();
-        const songs = await ytmusic.searchVideos(query);
-        const songList = await Promise.all(songs.map(async (song) => {
-            const { artist, name, videoId, duration } = song;
-            const audio_src = `https://www.youtube.com/watch?v=${videoId}`;
-            const searchTerm = artist.name + name;
-            const [{ url: img_src } = {}] = await gis(searchTerm);
-            return {
-                name,
-                artist: artist.name,
-                img_src,
-                audio_src,
-                duration,
-            }
-        }))
+        const song = await Song.findOne({ where: { name: name } });
 
-        res.status(200).json(songList);
+        if (!song) {
+            return res.status(404).json({ error: "Song not found!" });
+        }
 
+        await Song.update(
+            {
+                name: body.name || song.name,
+                artist: body.artist || song.artist,
+                img_src: body.img_src || song.img_src,
+                audio_src: body.audio_src || song.audio_src,
+                duration: body.duration || song.duration,
+            },
+            { where: { uuid: song.uuid } }
+        );
 
+        return res.status(200).json({ message: "Song updated successfully!" });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('There was an error while trying to fetch the suggested songs!');
+        console.error('Error updating song:', error);
+        return res.status(500).json({ error: "There was an error while trying to update the song data!" });
     }
 });
 
-router.get('/artist/:artistName', async (req, res) => {
-    try {
-        const artistName = req.params.artistName
-        const [firstArtist] = await ytmusic.searchArtists(artistName)
-        const artist = await ytmusic.getArtist(firstArtist.artistId);
-        // const featuredOnPlaylistsPromises = artist.featuredOn.map(feature => ytmusic.getPlaylist(feature.playlistId))
-        // const featuredOnPlaylists = await Promise.all(featuredOnPlaylistsPromises)
-        // console.log(featuredOnPlaylists)
-        const albumSongsPromises = artist.topAlbums.map(album => ytmusic.getAlbum(album.albumId));
-        const albumSongs = await Promise.all(albumSongsPromises);
-        const reqObj = {
-            ...artist,
-            albumSongs,
-        }
-        res.status(200).json(reqObj);
-    } catch (error) {
-        console.error('Error fetching artist data:', error);
-        res.status(500).json({ error: 'There is no available information for this artist!' });
-    }
-})
+router.delete('/:songUUID', async (req, res) => {
+    const songUUID = req.params.songUUID;
 
-router.get('/:artist/:song', async (req, res) => {
-    const { artist, song } = req.params;
     try {
-        const searches = await Client.songs.search(song);
-        const songByArtist = searches.find((song) => {
-            return song.artist.name
-                .trim()
-                .toLowerCase()
-                .includes(artist.trim().toLowerCase());
-        });
-        if (!songByArtist) {
-            return res.status(404).json({ error: 'Lyrics for the specified song not found!' });
-        }
-        const lyrics = await songByArtist.lyrics();
-        return res.status(200).json(lyrics);
+        await Song.destroy({ where: { uuid: songUUID } });
+
+        const hasPlayListSongs = await PlaylistSong.findAll({
+            where: { song_uuid: songUUID }
+        })
+        hasPlayListSongs && (await PlaylistSong.destroy({
+            where: { song_uuid: songUUID },
+        }));
+        return res.status(200).json({ message: 'Song deleted successfully!' });
     } catch (error) {
-        console.error("Error fetching lyrics:", error);
-        return res.status(500).json({ error: 'There was an error while trying to fetch the lyrics!' });
+        return res.status(500).json({ error: 'There was an error while trying to delete the song!' });
     }
 });
 

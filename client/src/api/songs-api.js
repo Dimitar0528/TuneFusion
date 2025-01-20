@@ -19,17 +19,17 @@ const getSpecificSongs = async (activePlaylist, currentSongUUID, userUUID) => {
 
 const getSong = (songName) => request.get(`${BASE_URL}/${songName}`)
 
-const createSong = (songData) => request.post(`${BASE_URL}/addsong`, songData)
+const createSong = (songData) => request.post(`${BASE_URL}/`, songData)
 
-const deleteSong = (songId) => request.del(`${BASE_URL}/deleteSong/${songId}`)
+const deleteSong = (songId) => request.del(`${BASE_URL}/${songId}`)
 
-const updateSong = (songName, data) => request.put(`${BASE_URL}/updateSong/${songName}`, data)
+const updateSong = (songName, data) => request.put(`${BASE_URL}/${songName}`, data)
 
-const getSongLyrics = (songArtist, songName) => request.get(`${BASE_URL}/${songArtist}/${songName}`)
+const getSongLyrics = (songArtist, songName) => request.get(`${BASE_URL}/lyrics/${songArtist}/${songName}`)
 
 const getSongSuggestions = (query) => request.get(`${BASE_URL}/search/${query}`);
 
-const addIndividualSong = (songDetails) => request.get(`${BASE_URL}/addIndividualSong/${songDetails}`);
+const searchSong = (songDetails) => request.get(`${BASE_URL}/search-song/${songDetails}`);
 
 const getArtistDescription = (artistName) => request.get(`${BASE_URL}/artist/${artistName}`)
 
@@ -42,7 +42,7 @@ const songsAPI = {
     updateSong,
     getSongLyrics,
     getSongSuggestions,
-    addIndividualSong,
+    searchSong,
     getArtistDescription
 }
 

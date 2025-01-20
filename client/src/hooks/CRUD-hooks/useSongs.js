@@ -106,21 +106,21 @@ export function useGetSongSuggestions() {
     return [songs, loading, fetchSuggestedSongs];
 }
 
-export function useGetIndividualSong() {
+export function useSearchSong() {
     const [song, setSong] = useState({});
     const [loading, setLoading] = useState(false);
 
-    const fetchIndividualSong = useCallback(async (songDetails) => {
+    const searchSong = useCallback(async (songDetails) => {
 
         setLoading(true);
         setSong({});
-        const result = await songsAPI.addIndividualSong(songDetails);
+        const result = await songsAPI.searchSong(songDetails);
         setSong(result);
         setLoading(false);
         return result
     }, []);
 
-    return [song, loading, fetchIndividualSong];
+    return [song, loading, searchSong];
 }
 
 export function useGetSongLyrics(currentSong, setShowYotubePlayer) {

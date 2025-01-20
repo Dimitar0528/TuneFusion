@@ -24,13 +24,13 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:userid', async (req, res) => {
-    const userId = req.params.userid;
+router.get('/:userUUID', async (req, res) => {
+    const userUUID = req.params.userUUID;
     try {
         const user = await User.findOne({
             where: Sequelize.where(
                 Sequelize.fn('LEFT', Sequelize.col('uuid'), 6),
-                userId
+                userUUID
             ),
         });
         // if (!user) {
@@ -43,34 +43,8 @@ router.get('/:userid', async (req, res) => {
         return res.status(500).json({ error: 'There was an error while trying to fetch the specific user!' });
     }
 });
-router.put('/changeUserRole/:userUUID', async (req, res) => {
-    const userUUID = req.params.userUUID;
-    const { role } = req.body;
-    let newRole;
-    role === 'user' ? newRole = 'admin' : newRole = 'user';
-    try {
-        const user = await User.findOne({
-            where: { uuid: userUUID }
-        });
-        if (!user) {
-            return res.status(404).json({ error: 'User not found!' });
-        }
 
-        await User.update({ role: newRole }, {
-            where: { uuid: user.uuid },
-        });
-
-        return res.status(200).json({
-            message: "User role updated successfully!",
-        });
-    } catch (error) {
-        console.error('Error fetching user:', error);
-        return res.status(500).json({ error: 'There was an error while trying to change the role of the user!' });
-    }
-});
-
-
-router.put('/editAccount/:userUUID', async (req, res) => {
+router.put('/:userUUID', async (req, res) => {
     const userUUID = req.params.userUUID;
     try {
         const { name, first_name, last_name, email_address, phone_number, gender } = req.body;
@@ -111,7 +85,34 @@ router.put('/editAccount/:userUUID', async (req, res) => {
         return res.status(500).json({ error: 'There was an error while trying to update the user data!' });
     }
 });
-router.put('/resetPassword/:user_email_address', async (req, res) => {
+
+router.put('/change-user-role/:userUUID', async (req, res) => {
+    const userUUID = req.params.userUUID;
+    const { role } = req.body;
+    let newRole;
+    role === 'user' ? newRole = 'admin' : newRole = 'user';
+    try {
+        const user = await User.findOne({
+            where: { uuid: userUUID }
+        });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found!' });
+        }
+
+        await User.update({ role: newRole }, {
+            where: { uuid: user.uuid },
+        });
+
+        return res.status(200).json({
+            message: "User role updated successfully!",
+        });
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        return res.status(500).json({ error: 'There was an error while trying to change the role of the user!' });
+    }
+});
+
+router.put('/reset-password:user_email_address', async (req, res) => {
     const userEmail = req.params.user_email_address;
     const { newPassword } = req.body;
     try {
@@ -139,7 +140,7 @@ router.put('/resetPassword/:user_email_address', async (req, res) => {
     }
 });
 
-router.delete('/deleteUser/:userUUID', async (req, res) => {
+router.delete('/:userUUID', async (req, res) => {
     const userUUID = req.params.userUUID;
     try {
         const user = await User.findOne({

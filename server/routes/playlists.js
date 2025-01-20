@@ -8,94 +8,6 @@ import YTMusic from "ytmusic-api"
 const ytmusic = new YTMusic()
 await ytmusic.initialize();
 
-router.post('/create-playlist', async (req, res) => {
-    const { name, description, created_by, img_src, visibility } = req.body;
-    const uuid = crypto.randomUUID();
-    const user = await User.findOne({
-        where: { name: created_by }
-    });
-    try {
-        const existingPlaylist = await PlayList.findOne({
-            where: {
-                name,
-                created_by: user.name
-            }
-        });
-
-        if (existingPlaylist) {
-            return res.status(400).json({ error: 'You have already created a playlist with the same name!' });
-        }
-
-        await PlayList.create({
-            uuid,
-            name,
-            description,
-            img_src: img_src || null,
-            visibility: visibility || 'private',
-            created_by: user.name,
-        })
-        res.status(200).json({ message: 'Playlist created successfully!' })
-
-    } catch (error) {
-        console.error('Error creating playlist:', error);
-        res.status(500).json({ error: 'There was an error while trying to create the playlist!' });
-
-    }
-})
-
-const getPlaylistIncludeOptions = () => {
-    return {
-        include: [
-            {
-                model: Song,
-                attributes: ['uuid', 'name', 'artist', 'duration', 'img_src'],
-                through: {
-                    model: PlaylistSong,
-                    attributes: ['createdAt', 'position'],
-                },
-            },
-        ],
-        attributes: {
-            exclude: ['updatedAt', 'UserUuid', 'createdAt'],
-        },
-        order: [
-            ['createdAt', 'DESC'],
-            [Song, PlaylistSong, 'createdAt', 'DESC'],
-        ],
-    };
-};
-router.get('/publicPlaylists', async (req, res) => {
-    const { UI: userUUID} = req.query;
-    const user = await User.findOne({
-        where: Sequelize.where(
-            Sequelize.fn('LEFT', Sequelize.col('uuid'), 6),
-            userUUID
-        ),
-    });
-    try {
-        const publicPlaylists = await PlayList.findAll({
-            where: { visibility: 'public' },
-            ...getPlaylistIncludeOptions(),
-        });
-
-        const likedSongsPlaylists = await PlayList.findAll({
-            where: { name: 'Liked Songs', created_by: user.name },
-            ...getPlaylistIncludeOptions(),
-        });
-
-        const allPlaylists = [...publicPlaylists, ...likedSongsPlaylists];
-
-        if (!allPlaylists || allPlaylists.length === 0) {
-            return res.status(404).json({ error: "No playlists found!" });
-        }
-
-        res.status(200).json(allPlaylists);
-    } catch (error) {
-        console.error('Error fetching playlists:', error);
-        res.status(500).json({ error: 'There was an error while trying to fetch the playlists!' });
-    }
-});
-
 router.get('/:userUUID', async (req, res) => {
     const userUUID = req.params.userUUID;
     try {
@@ -135,36 +47,131 @@ router.get('/:userUUID', async (req, res) => {
     }
 });
 
-router.put('/update-playlist/:playlistName', async (req, res) => {
-    const playListName = req.params.playlistName;
-    const body = req.body;
+const getPlaylistIncludeOptions = () => {
+    return {
+        include: [
+            {
+                model: Song,
+                attributes: ['uuid', 'name', 'artist', 'duration', 'img_src'],
+                through: {
+                    model: PlaylistSong,
+                    attributes: ['createdAt', 'position'],
+                },
+            },
+        ],
+        attributes: {
+            exclude: ['updatedAt', 'UserUuid', 'createdAt'],
+        },
+        order: [
+            ['createdAt', 'DESC'],
+            [Song, PlaylistSong, 'createdAt', 'DESC'],
+        ],
+    };
+};
+
+router.get('/public-playlists', async (req, res) => {
+    const { UI: userUUID } = req.query;
+    const user = await User.findOne({
+        where: Sequelize.where(
+            Sequelize.fn('LEFT', Sequelize.col('uuid'), 6),
+            userUUID
+        ),
+    });
     try {
-        const playlist = await PlayList.findOne({ where: { name: playListName } });
+        const publicPlaylists = await PlayList.findAll({
+            where: { visibility: 'public' },
+            ...getPlaylistIncludeOptions(),
+        });
+
+        const likedSongsPlaylists = await PlayList.findAll({
+            where: { name: 'Liked Songs', created_by: user.name },
+            ...getPlaylistIncludeOptions(),
+        });
+
+        const allPlaylists = [...publicPlaylists, ...likedSongsPlaylists];
+
+        if (!allPlaylists || allPlaylists.length === 0) {
+            return res.status(404).json({ error: "No playlists found!" });
+        }
+
+        res.status(200).json(allPlaylists);
+    } catch (error) {
+        console.error('Error fetching playlists:', error);
+        res.status(500).json({ error: 'There was an error while trying to fetch the playlists!' });
+    }
+});
+
+router.post('/', async (req, res) => {
+    const { name, description, created_by, img_src, visibility } = req.body;
+    const uuid = crypto.randomUUID();
+    const user = await User.findOne({
+        where: { name: created_by }
+    });
+    try {
+        const existingPlaylist = await PlayList.findOne({
+            where: {
+                name,
+                created_by: user.name
+            }
+        });
+
+        if (existingPlaylist) {
+            return res.status(400).json({ error: 'You have already created a playlist with the same name!' });
+        }
+
+        await PlayList.create({
+            uuid,
+            name,
+            description,
+            img_src: img_src || null,
+            visibility: visibility || 'private',
+            created_by: user.name,
+        })
+        res.status(200).json({ message: 'Playlist created successfully!' })
+
+    } catch (error) {
+        console.error('Error creating playlist:', error);
+        res.status(500).json({ error: 'There was an error while trying to create the playlist!' });
+
+    }
+})
+
+router.post('/like-playlist', async (req, res) => {
+    const { playlistUUID, userUUID } = req.body;
+    try {
+        const user = await User.findOne({
+            where: Sequelize.where(
+                Sequelize.fn('LEFT', Sequelize.col('uuid'), 6),
+                userUUID
+            ),
+        });
+
+        const playlist = await PlayList.findOne({
+            where: { uuid: playlistUUID }
+        });
 
         if (!playlist) {
-            return res.status(404).json({ error: "Playlist not found!" });
+            return res.status(404).json({ error: 'Playlist not found' });
+        }
+
+        // Add liked_by field to playlist if it doesn't exist
+        const likedBy = playlist.liked_by || [];
+
+        if (likedBy.includes(user.name)) {
+            return res.status(400).json({ error: 'You have already liked this playlist' });
         }
 
         await PlayList.update(
-            {
-                name: body.name || playlist.name,
-                description: body.description !== undefined ? body.description : playlist.description,
-                img_src: body.img_src || playlist.img_src,
-                visibility: body.visibility || playlist.visibility
-            },
-            { where: { uuid: playlist.uuid } }
+            { liked_by: [...likedBy, user.name] },
+            { where: { uuid: playlistUUID } }
         );
-        const updatedPlaylist = await PlayList.findOne({ where: { uuid: playlist.uuid } });
-        const resObj = {
-            updatedPlaylist,
-            message: "Playlist updated successfully!"
-        }
-        return res.status(200).json(resObj);
+
+        res.status(200).json({ message: 'Playlist liked successfully!' });
     } catch (error) {
-        console.error('Error updating playlist:', error);
-        return res.status(500).json({ error: "There was an error while trying to update the playlist data!" });
+        console.error('Error liking playlist:', error);
+        res.status(500).json({ error: 'Failed to like playlist' });
     }
-})
+});
 
 router.post('/add-song', async (req, res) => {
     const { songName, playlistUUID } = req.body;
@@ -205,7 +212,7 @@ router.post('/add-song', async (req, res) => {
     }
 });
 
-router.post('/addExternalSong', async (req, res) => {
+router.post('/playlist/transfer-songs', async (req, res) => {
     try {
         const { playlistName, created_by, userRole, ...songs } = req.body;
 
@@ -320,6 +327,36 @@ router.post('/addExternalSong', async (req, res) => {
     }
 });
 
+router.put('/:playlistName', async (req, res) => {
+    const playListName = req.params.playlistName;
+    const body = req.body;
+    try {
+        const playlist = await PlayList.findOne({ where: { name: playListName } });
+
+        if (!playlist) {
+            return res.status(404).json({ error: "Playlist not found!" });
+        }
+
+        await PlayList.update(
+            {
+                name: body.name || playlist.name,
+                description: body.description !== undefined ? body.description : playlist.description,
+                img_src: body.img_src || playlist.img_src,
+                visibility: body.visibility || playlist.visibility
+            },
+            { where: { uuid: playlist.uuid } }
+        );
+        const updatedPlaylist = await PlayList.findOne({ where: { uuid: playlist.uuid } });
+        const resObj = {
+            updatedPlaylist,
+            message: "Playlist updated successfully!"
+        }
+        return res.status(200).json(resObj);
+    } catch (error) {
+        console.error('Error updating playlist:', error);
+        return res.status(500).json({ error: "There was an error while trying to update the playlist data!" });
+    }
+})
 
 router.patch("/:playlistName/song-positions", async (req, res) => {
     try {
@@ -362,43 +399,6 @@ router.patch("/:playlistName/song-positions", async (req, res) => {
     }
 });
 
-router.post('/like-playlist', async (req, res) => {
-    const { playlistUUID, userUUID } = req.body;
-    try {
-        const user = await User.findOne({
-            where: Sequelize.where(
-                Sequelize.fn('LEFT', Sequelize.col('uuid'), 6),
-                userUUID
-            ),
-        });
-
-        const playlist = await PlayList.findOne({
-            where: { uuid: playlistUUID }
-        });
-
-        if (!playlist) {
-            return res.status(404).json({ error: 'Playlist not found' });
-        }
-
-        // Add liked_by field to playlist if it doesn't exist
-        const likedBy = playlist.liked_by || [];
-
-        if (likedBy.includes(user.name)) {
-            return res.status(400).json({ error: 'You have already liked this playlist' });
-        }
-
-        await PlayList.update(
-            { liked_by: [...likedBy, user.name] },
-            { where: { uuid: playlistUUID } }
-        );
-
-        res.status(200).json({ message: 'Playlist liked successfully!' });
-    } catch (error) {
-        console.error('Error liking playlist:', error);
-        res.status(500).json({ error: 'Failed to like playlist' });
-    }
-});
-
 router.delete('/unlike-playlist', async (req, res) => {
     const { playlistUUID, userUUID } = req.body;
     try {
@@ -431,7 +431,7 @@ router.delete('/unlike-playlist', async (req, res) => {
 });
 
 
-router.delete('/delete-playlist/:playlistUUID', async (req, res) => {
+router.delete('/:playlistUUID', async (req, res) => {
     const playlistUUID = req.params.playlistUUID;
     try {
         const hasPlayListSongs = await PlaylistSong.findAll({
