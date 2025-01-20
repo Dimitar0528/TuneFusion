@@ -8,44 +8,6 @@ import YTMusic from "ytmusic-api"
 const ytmusic = new YTMusic()
 await ytmusic.initialize();
 
-router.get('/:userUUID', async (req, res) => {
-    const userUUID = req.params.userUUID;
-    try {
-        const user = await User.findOne({
-            where: Sequelize.where(
-                Sequelize.fn('LEFT', Sequelize.col('uuid'), 6),
-                userUUID
-            ),
-        });
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found!' });
-        }
-
-        // Fetch playlists created by the user
-        const createdPlaylists = await PlayList.findAll({
-            where: { created_by: user.name },
-            ...getPlaylistIncludeOptions(),
-        });
-
-        // Fetch playlists liked by the user
-        const likedPlaylists = await PlayList.findAll({
-            where: Sequelize.literal(`JSON_CONTAINS(liked_by, '"${user.name}"')`),
-            ...getPlaylistIncludeOptions(),
-        });
-
-        const combinedPlaylists = [...createdPlaylists, ...likedPlaylists];
-
-        if (combinedPlaylists.length === 0) {
-            return res.status(404).json({ error: 'No playlists found for this user!' });
-        }
-
-        res.status(200).json(combinedPlaylists);
-    } catch (error) {
-        console.error('Error fetching playlists:', error);
-        res.status(500).json({ error: 'There was an error while trying to fetch playlists!' });
-    }
-});
 
 const getPlaylistIncludeOptions = () => {
     return {
@@ -98,6 +60,45 @@ router.get('/public-playlists', async (req, res) => {
     } catch (error) {
         console.error('Error fetching playlists:', error);
         res.status(500).json({ error: 'There was an error while trying to fetch the playlists!' });
+    }
+});
+
+router.get('/:userUUID', async (req, res) => {
+    const userUUID = req.params.userUUID;
+    try {
+        const user = await User.findOne({
+            where: Sequelize.where(
+                Sequelize.fn('LEFT', Sequelize.col('uuid'), 6),
+                userUUID
+            ),
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found!' });
+        }
+
+        // Fetch playlists created by the user
+        const createdPlaylists = await PlayList.findAll({
+            where: { created_by: user.name },
+            ...getPlaylistIncludeOptions(),
+        });
+
+        // Fetch playlists liked by the user
+        const likedPlaylists = await PlayList.findAll({
+            where: Sequelize.literal(`JSON_CONTAINS(liked_by, '"${user.name}"')`),
+            ...getPlaylistIncludeOptions(),
+        });
+
+        const combinedPlaylists = [...createdPlaylists, ...likedPlaylists];
+
+        if (combinedPlaylists.length === 0) {
+            return res.status(404).json({ error: 'No playlists found for this user!' });
+        }
+
+        res.status(200).json(combinedPlaylists);
+    } catch (error) {
+        console.error('Error fetching playlists:', error);
+        res.status(500).json({ error: 'There was an error while trying to fetch playlists!' });
     }
 });
 
@@ -212,7 +213,7 @@ router.post('/add-song', async (req, res) => {
     }
 });
 
-router.post('/playlist/transfer-songs', async (req, res) => {
+router.post('/transfer-songs', async (req, res) => {
     try {
         const { playlistName, created_by, userRole, ...songs } = req.body;
 
@@ -312,7 +313,7 @@ router.post('/playlist/transfer-songs', async (req, res) => {
                     if (userRole !== 'admin') {
                         return res.status(422).json({ warn: `Some songs couldn't be added because they aren't available in our database yet!` });
                     }
-                    return res.status(200).json({ message: 'Playlist transferred successfully' });
+                    return res.status(200).json({ message: 'Playlist transferred successfully!' });
                 }
             }, 50);
 

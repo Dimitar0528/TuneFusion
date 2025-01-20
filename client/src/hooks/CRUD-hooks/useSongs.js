@@ -133,7 +133,8 @@ export function useGetSongLyrics(currentSong, setShowYotubePlayer) {
         if (lyrics) return clearLyrics();
         setShowYotubePlayer(false);
         setIsLoading(true);
-        const result = await songsAPI.getSongLyrics(currentSong.artist.split(', ')[0], currentSong.name);
+        const songDetails = `${currentSong.artist.split(', ')[0]}; ${currentSong.name}`;
+        const result = await songsAPI.getSongLyrics(songDetails);
         result.error ? showToast(result.error, 'error') : setLyrics(result);
         setIsLoading(false);
 

@@ -2,7 +2,6 @@ import express from 'express';
 import Genius from 'genius-lyrics';
 import { Song, PlaylistSong, PlayList } from '../db/models/index.js'
 import gis from 'async-g-i-s';
-import { searchMusics, getSuggestions, getArtist, searchArtists } from 'node-youtube-music';
 import { Sequelize, Op } from 'sequelize';
 import extractUUIDPrefix from '../../client/src/utils/extractUUIDPrefix.js';
 import { User } from '../db/models/index.js';
@@ -64,7 +63,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/specificSongs', async (req, res) => {
+router.get('/specific-songs', async (req, res) => {
     const { AP: activePlaylistName, CS: currentSongUUID, UI: userUUID, SP: isOnSearchPage } = req.query;
     let songs = [];
 
@@ -165,10 +164,10 @@ router.get('/:name', async (req, res) => {
     }
 });
 
-router.get('/lyrics/:artist/:song', async (req, res) => {
-    const { artist, song } = req.params;
+router.get('/:songDetails/lyrics', async (req, res) => {
+    const [artist, songName] = req.params.songDetails.split('; ');
     try {
-        const searches = await Client.songs.search(song);
+        const searches = await Client.songs.search(songName);
         const songByArtist = searches.find((song) => {
             return song.artist.name
                 .trim()
@@ -186,7 +185,7 @@ router.get('/lyrics/:artist/:song', async (req, res) => {
     }
 });
 
-router.get('/artist/:artistName', async (req, res) => {
+router.get('/artist/:artistName/description', async (req, res) => {
     try {
         const artistName = req.params.artistName
         const [firstArtist] = await ytmusic.searchArtists(artistName)

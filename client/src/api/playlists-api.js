@@ -17,7 +17,7 @@ const deletePlaylist = (playlistUUID) => request.del(`${BASE_URL}/${playlistUUID
 
 const addSongToPlaylist = (playlistData) => request.post(`${BASE_URL}/add-song`, playlistData)
 
-const transferSongsToPlaylist = (playlistData) => request.post(`${BASE_URL}/playlist/transfer-songs`, playlistData)
+const transferSongsToPlaylist = (playlistData) => request.post(`${BASE_URL}/transfer-songs`, playlistData)
 
 const removeSongFromPlaylist = (playlistData) => request.del(`${BASE_URL}/remove-song`, playlistData)
 

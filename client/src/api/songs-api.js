@@ -8,7 +8,7 @@ const getSpecificSongs = async (activePlaylist, currentSongUUID, userUUID) => {
     const isOnSearchPage = location.pathname === '/search';
     const playlistName = activePlaylist?.name;
 
-    const url = `${BASE_URL}/specificSongs?CS=${currentSongUUID}`
+    const url = `${BASE_URL}/specific-songs?CS=${currentSongUUID}`
         + (playlistName ? `&AP=${playlistName}` : '')
         + (playlistName === 'Liked Songs' ? `&UI=${userUUID}` : '')
         + (isOnSearchPage ? '&SP=true' : '');
@@ -25,13 +25,13 @@ const deleteSong = (songId) => request.del(`${BASE_URL}/${songId}`)
 
 const updateSong = (songName, data) => request.put(`${BASE_URL}/${songName}`, data)
 
-const getSongLyrics = (songArtist, songName) => request.get(`${BASE_URL}/lyrics/${songArtist}/${songName}`)
+const getSongLyrics = (songDetails) => request.get(`${BASE_URL}/${songDetails}/lyrics`)
 
 const getSongSuggestions = (query) => request.get(`${BASE_URL}/search/${query}`);
 
 const searchSong = (songDetails) => request.get(`${BASE_URL}/search-song/${songDetails}`);
 
-const getArtistDescription = (artistName) => request.get(`${BASE_URL}/artist/${artistName}`)
+const getArtistDescription = (artistName) => request.get(`${BASE_URL}/artist/${artistName}/description`)
 
 const songsAPI = {
     getSong,

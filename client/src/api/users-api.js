@@ -10,7 +10,7 @@ const deleteUser = (userUUID) => request.del(`${BASE_URL}/${userUUID}`)
 
 const editUser = (userUUID, userData) => request.put(`${BASE_URL}/${userUUID}`, userData)
 
-const resetUserPassword = (userEmail, passwordData) => request.put(`${BASE_URL}/reset-password${userEmail}`, passwordData)
+const resetUserPassword = (userEmail, passwordData) => request.put(`${BASE_URL}/reset-password/${userEmail}`, passwordData)
 
 const changeUserRole = (userUUID, userData) => request.put(`${BASE_URL}/change-user-role/${userUUID}`, userData)
 

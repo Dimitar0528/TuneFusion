@@ -112,7 +112,7 @@ router.put('/change-user-role/:userUUID', async (req, res) => {
     }
 });
 
-router.put('/reset-password:user_email_address', async (req, res) => {
+router.put('/reset-password/:user_email_address', async (req, res) => {
     const userEmail = req.params.user_email_address;
     const { newPassword } = req.body;
     try {
