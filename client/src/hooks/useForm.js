@@ -15,6 +15,7 @@ export const useForm = (initialValues, onSubmit, validate) => {
 
     const submitHandler = async (e) => {
         e.preventDefault();
+        setErrors({});
         const validationErrors = validate(values);
         if (Object.keys(validationErrors).length === 0) {
             await onSubmit(values);

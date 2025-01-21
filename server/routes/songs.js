@@ -230,7 +230,7 @@ router.get('/search/:query', async (req, res) => {
     }
 });
 
-router.get('/search-song/:songDetails', async (req, res) => {
+router.get('/add-external-song/:songDetails', async (req, res) => {
     try {
         const songDetails = req.params.songDetails
         const [firstSong] = await ytmusic.searchVideos(songDetails);
@@ -249,19 +249,30 @@ router.get('/search-song/:songDetails', async (req, res) => {
         if (song) {
             return res.status(400).json({ error: 'The song has already been added to the database!' });
         }
-        res.status(200).json({
+       const newSong =  await Song.create({
+            uuid: crypto.randomUUID(),
             name: name,
             artist: artist.name,
             img_src: img_src,
             audio_src,
             duration,
         });
+        const reqObj = {
+            newSong: newSong.dataValues,
+            message: "Song added to database successfully!"
+        }
+      
+        res.status(200).json(reqObj);
     } catch (error) {
         console.error('Error occurred:', error);
         res.status(500).json({ error: 'There was an error while trying to fetch the selected song!' });
     }
 });
 
+router.post('/add-external-album', async (req, res) => {
+    const { name, artist, img_src, audio_src, duration } = req.body;
+    const uuid = crypto.randomUUID();
+})
 router.put('/:name', async (req, res) => {
     const name = req.params.name;
     const body = req.body;

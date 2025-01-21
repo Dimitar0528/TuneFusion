@@ -93,7 +93,7 @@ export function useGetSongSuggestions() {
     const [songs, setSongs] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchSuggestedSongs = useCallback(async (query) => {
+    const fetchSuggestedSongsHandler = useCallback(async (query) => {
 
         setLoading(true);
         setSongs([]);
@@ -103,25 +103,30 @@ export function useGetSongSuggestions() {
         return result
     }, []);
 
-    return [songs, loading, fetchSuggestedSongs];
+    return [songs, loading, fetchSuggestedSongsHandler];
 }
 
-export function useSearchSong() {
-    const [song, setSong] = useState({});
+export const useAddFetchedSongToDB = (triggerRefreshSongsHandler) => {
     const [loading, setLoading] = useState(false);
+    const [song, setSong] = useState({});
 
-    const searchSong = useCallback(async (songDetails) => {
-
+    const addExternalSongToDBHandler = useCallback(async (songName, artistName) => {
+        const songDetails = `${songName} , ${artistName}`;
+        showToast("Loading... Please wait!", "info", 3000);
         setLoading(true);
         setSong({});
-        const result = await songsAPI.searchSong(songDetails);
-        setSong(result);
-        setLoading(false);
-        return result
-    }, []);
+            const result = await songsAPI.addExternalSong(songDetails);
+            setSong(result.newSong);
+            setLoading(false);
+            triggerRefreshSongsHandler();
+            result.error
+                ? showToast(`Error: ${result.error}`, "error")
+                : showToast(result.message, "success");
+            return result;        
+    }, [triggerRefreshSongsHandler]);
 
-    return [song, loading, searchSong];
-}
+    return [addExternalSongToDBHandler, loading, song];
+};
 
 export function useGetSongLyrics(currentSong, setShowYotubePlayer) {
     const [lyrics, setLyrics] = useState("");
@@ -129,7 +134,7 @@ export function useGetSongLyrics(currentSong, setShowYotubePlayer) {
     const clearLyrics = () => {
         setLyrics("");
     }
-    const fetchLyrics = useCallback(async () => {
+    const fetchLyricsHandler = useCallback(async () => {
         if (lyrics) return clearLyrics();
         setShowYotubePlayer(false);
         setIsLoading(true);
@@ -140,7 +145,7 @@ export function useGetSongLyrics(currentSong, setShowYotubePlayer) {
 
     }, [currentSong, lyrics]);
 
-    return [lyrics, loading, fetchLyrics, clearLyrics];
+    return [lyrics, loading, fetchLyricsHandler, clearLyrics];
 }
 
 export function useUpdateSong() {

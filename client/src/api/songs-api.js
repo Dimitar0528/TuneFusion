@@ -29,7 +29,7 @@ const getSongLyrics = (songDetails) => request.get(`${BASE_URL}/${songDetails}/l
 
 const getSongSuggestions = (query) => request.get(`${BASE_URL}/search/${query}`);
 
-const searchSong = (songDetails) => request.get(`${BASE_URL}/search-song/${songDetails}`);
+const addExternalSong = (songDetails) => request.get(`${BASE_URL}/add-external-song/${songDetails}`);
 
 const getArtistDescription = (artistName) => request.get(`${BASE_URL}/artist/${artistName}/description`)
 
@@ -42,7 +42,7 @@ const songsAPI = {
     updateSong,
     getSongLyrics,
     getSongSuggestions,
-    searchSong,
+    addExternalSong,
     getArtistDescription
 }
 
