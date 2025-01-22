@@ -134,12 +134,17 @@
 
 .addBtn {
     cursor: pointer;
-    padding: .35rem .6rem;
+    padding: .3rem .6rem;
     border-radius: 100vmin;
     border: transparent;
 
     &:where(:hover, :focus-visible) {
         background-color: hsl(from var(--accent-clr-light) h s 85%);
+    }
+
+    &:disabled {
+        opacity: .75;
+        cursor: not-allowed;
     }
 }
 
@@ -149,23 +154,61 @@
     background-color: transparent;
     color: var(--accent-clr-light);
     font-size: 1.2rem;
-    transition: .25s;
+    transition: transform 0.3s ease;
     border: transparent;
-    &:where(:hover,:focus-visible){
+
+    &:where(:hover, :focus-visible) {
         scale: 1.2;
     }
 }
 
+.toggleButton.expanded {
+    transform: rotate(180deg);
+}
+
 .albumSongs {
-    display: flex;
-    flex-direction: column;
-    margin-top: -.5rem;
+    animation: expandAlbum .2s ease-out forwards;
+    transform-origin: top;
+    background-color: var(--primary-clr-light-dark);
+    margin-top: -0.5rem;
+    border-radius: 0 0 10px 10px;
+}
+
+.albumCollapse {
+    animation: collapseAlbum .2s ease-out forwards;
+}
+
+@keyframes expandAlbum {
+    from {
+        max-height: 0;
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    to {
+        max-height: 1000px;
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+@keyframes collapseAlbum {
+    from {
+        max-height: 1000px;
+        opacity: 1;
+        transform: scaleY(1);
+    }
+
+    to {
+        max-height: 0;
+        opacity: 0;
+        transform: scaleY(0);
+    }
 }
 
 .table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1rem;
     background-color: var(--text-dark-clr);
     color: #fff;
 }
@@ -181,16 +224,19 @@
 }
 
 .songCell {
-    padding: 10px;
+    padding:4px 10px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
-.addBtnsTd{
+
+.addBtnsTd {
     width: 100px;
 }
+
 @media (max-width: 600px) {
- .addBtnsTd{
-    width: unset;
- }
+    .addBtnsTd {
+        width: unset;
+    }
+
     .songCell,
     .headerCell {
         padding: 8px;
@@ -205,8 +251,8 @@
     .table th {
         display: block;
         text-align: center;
-      
-     
+
+
     }
 
     .table td::before,
@@ -219,7 +265,8 @@
         font-weight: bold;
         text-align: left;
     }
-        .addBtns{
-            margin-top: 1rem;
-        }
+
+    .addBtns {
+        margin-top: 1rem;
+    }
 }

@@ -1,20 +1,28 @@
 import { Link, useParams } from "react-router-dom";
-import { useState } from "react";
+import React, { useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./styles/ArtistDescription.module.css";
-import { useGetArtistDescription } from "../../hooks/CRUD-hooks/useSongs";
-import { useAddExternalSongToDB } from "../../hooks/useAddExternalSongToDB";
+import {
+  useGetArtistDescription,
+  useAddFetchedSongToDB,
+  useAddAlbumToDB,
+} from "../../hooks/CRUD-hooks/useSongs";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import AddSongToPlaylistModal from "../MyMusic/SubComponents/AddSongToPlaylistModal";
 import { formatTime } from "../../utils/formatTime";
+import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
+import { useTransferSongsToPlaylist } from "../../hooks/CRUD-hooks/usePlaylists";
 
 export default function ArtistDescription() {
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState();
-  const [expandedAlbum, setExpandedAlbum] = useState(null); 
+  const [selectedSongs, setSelectedSongs] = useState([]);
+  const [expandedAlbums, setExpandedAlbums] = useState([]);
+  const [closingAlbums, setClosingAlbums] = useState([]);
 
   const handleAddSongToPlayList = (song) => {
+    setSelectedSongs([]);
     setSelectedSong(song);
     setShowModal(true);
   };
@@ -22,9 +30,19 @@ export default function ArtistDescription() {
   const handleModalClose = () => {
     setShowModal(false);
     setSelectedSong(null);
+    setSelectedSongs([]);
   };
   const toggleAlbum = (albumId) => {
-    setExpandedAlbum(expandedAlbum === albumId ? null : albumId); // Toggle album open/close
+    if (expandedAlbums.includes(albumId)) {
+      setClosingAlbums((prev) => [...prev, albumId]);
+
+      setTimeout(() => {
+        setExpandedAlbums((prev) => prev.filter((id) => id !== albumId));
+        setClosingAlbums((prev) => prev.filter((id) => id !== albumId));
+      }, 200);
+    } else {
+      setExpandedAlbums((prev) => [...prev, albumId]);
+    }
   };
 
   const {
@@ -34,12 +52,52 @@ export default function ArtistDescription() {
     handleKeyPressWhenTabbed,
     triggerRefreshPlaylistsHandler,
   } = useMusicPlayer();
-  const { role } = user;
+
+  const { role, userUUID } = user;
   const { artistName } = useParams();
   const [artist, isArtistLoading] = useGetArtistDescription(artistName);
-  const [addExternalSongToDB, loading] = useAddExternalSongToDB(
+  const [addFetchedSongToDB, loading] = useAddFetchedSongToDB(
     triggerRefreshSongsHandler
   );
+  const [currentUser] = useGetUserDetails(userUUID);
+  const currentPlayerPlaylists = playlists.filter(
+    (playlist) =>
+      playlist?.created_by === currentUser?.name &&
+      playlist.name != "Liked Songs"
+  );
+  const [addArtistAlbumToDB, isAddingToDB] = useAddAlbumToDB(
+    triggerRefreshSongsHandler
+  );
+  const transferSongsToPlaylist = useTransferSongsToPlaylist();
+
+  async function handleAddAlbumToDB(e, albumId, albumSongs) {
+    e.stopPropagation();
+    const selectedAlbum = albumSongs.find(
+      (albumSong) => albumSong.albumId === albumId
+    );
+    await addArtistAlbumToDB(selectedAlbum.songs, artistName);
+  }
+
+  async function handleAddAlbumToPlaylist(e, albumId, albumSongs) {
+    e.stopPropagation();
+    const selectedAlbum = albumSongs.find(
+      (albumSong) => albumSong.albumId === albumId
+    );
+
+    if (selectedAlbum?.songs) {
+      setSelectedSong(null);
+      setSelectedSongs(
+        selectedAlbum.songs.map((song) => ({
+          name: song.name,
+          artist: artistName,
+          img_src: song.thumbnails?.[0]?.url,
+          duration: song.duration,
+        }))
+      );
+      setShowModal(true);
+    }
+  }
+
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>About &nbsp; {artistName}</h1>
@@ -77,9 +135,8 @@ export default function ArtistDescription() {
               </div>
             ))
           : artist.topAlbums?.map((album) => (
-              <>
+              <React.Fragment key={album.albumId}>
                 <div
-                  key={album.albumId}
                   className={styles.album}
                   onClick={() => toggleAlbum(album.albumId)}
                   style={{ cursor: "pointer" }}>
@@ -94,15 +151,18 @@ export default function ArtistDescription() {
                       <p>{album.name}</p>
                       <p>{album.year}</p>
                     </div>
-                    <button
-                      title="Toggle Album"
-                      className={styles.toggleButton}>
-                      {expandedAlbum === album.albumId ? "▲" : "▼"}
-                    </button>
-                    <button style={{ marginLeft: "1rem" }}>
+                    <div className={styles.addBtns}>
                       {role === "admin" && (
                         <button
-                          disabled={loading}
+                          onClick={(e) =>
+                            handleAddAlbumToDB(
+                              e,
+                              album.albumId,
+                              artist?.albumSongs
+                            )
+                          }
+                          tabIndex={-1}
+                          disabled={isAddingToDB}
                           className={styles.addBtn}
                           style={{
                             backgroundColor: "white",
@@ -110,25 +170,58 @@ export default function ArtistDescription() {
                           <i
                             style={{ color: "var(--primary-clr)" }}
                             tabIndex={0}
-                            disabled={loading}
+                            disabled={isAddingToDB}
                             className={
-                              loading
+                              isAddingToDB
                                 ? "fas fa-spinner fa-spin"
                                 : "fa-solid fa-square-plus"
                             }
-                            onClick={(e) => e.stopPropagation()}
                             title={
-                              loading
+                              isAddingToDB
                                 ? "Loading"
                                 : "Add the album to the Database"
                             }></i>
                         </button>
                       )}
-                    </button>
+                      <div
+                        className={styles.addBtn}
+                        style={{
+                          backgroundColor: "white",
+                          marginRight: "1rem",
+                        }}>
+                        <i
+                          tabIndex={0}
+                          className="fa-solid fa-plus"
+                          title="Add the album to a playlist"
+                          onClick={(e) =>
+                            handleAddAlbumToPlaylist(
+                              e,
+                              album.albumId,
+                              artist?.albumSongs
+                            )
+                          }></i>
+                      </div>
+                      <button
+                        title="Toggle Album"
+                        className={`${styles.toggleButton} ${
+                          expandedAlbums.includes(album.albumId)
+                            ? styles.expanded
+                            : ""
+                        }`}
+                        onClick={() => toggleAlbum(album.albumId)}>
+                        ▼
+                      </button>
+                    </div>
                   </>
                 </div>
-                {expandedAlbum === album.albumId && (
-                  <div className={`${styles.album} ${styles.albumSongs}`}>
+                {(expandedAlbums.includes(album.albumId) ||
+                  closingAlbums.includes(album.albumId)) && (
+                  <div
+                    className={`${styles.albumSongs} ${
+                      closingAlbums.includes(album.albumId)
+                        ? styles.albumCollapse
+                        : ""
+                    }`}>
                     <table className={styles.table}>
                       <thead>
                         <tr className={styles.headerRow}>
@@ -140,17 +233,18 @@ export default function ArtistDescription() {
                       <tbody>
                         {artist?.albumSongs?.map((albumSong) => {
                           if (albumSong.albumId !== album.albumId) return null;
-
                           return albumSong.songs.map((song) => (
-                            <tr key={song.id} className={styles.songRow}>
+                            <tr key={song.videoId} className={styles.songRow}>
                               <td className={styles.songCell}>{song.name}</td>
                               <td className={styles.songCell}>
                                 {formatTime(song.duration)}
                               </td>
-                              <td className={styles.addBtnsTd}>
+                              <td
+                                className={`${styles.songCell} ${styles.addBtnsTd}`}>
                                 <div className={styles.addBtns}>
                                   {role === "admin" && (
                                     <button
+                                      tabIndex={-1}
                                       disabled={loading}
                                       className={styles.addBtn}
                                       style={{
@@ -166,14 +260,14 @@ export default function ArtistDescription() {
                                             : "fa-solid fa-square-plus"
                                         }
                                         onClick={() =>
-                                          addExternalSongToDB(
+                                          addFetchedSongToDB(
                                             song.name,
                                             artistName
                                           )
                                         }
                                         onKeyDown={(e) =>
                                           handleKeyPressWhenTabbed(e, () => {
-                                            addExternalSongToDB(
+                                            addFetchedSongToDB(
                                               song.name,
                                               artistName
                                             );
@@ -213,7 +307,7 @@ export default function ArtistDescription() {
                     </table>
                   </div>
                 )}
-              </>
+              </React.Fragment>
             ))}
       </div>
       {artist?.topSingles?.length > 0 && <h2 className={styles.h2}>Singles</h2>}
@@ -257,11 +351,11 @@ export default function ArtistDescription() {
                             : "fa-solid fa-square-plus"
                         }
                         onClick={() =>
-                          addExternalSongToDB(single.name, artistName)
+                          addFetchedSongToDB(single.name, artistName)
                         }
                         onKeyDown={(e) =>
                           handleKeyPressWhenTabbed(e, () => {
-                            addExternalSongToDB(single.name, artistName);
+                            addFetchedSongToDB(single.name, artistName);
                           })
                         }
                         title={loading ? "Loading" : "Add to Database"}></i>
@@ -319,11 +413,12 @@ export default function ArtistDescription() {
             ))}
       </div>
       <AddSongToPlaylistModal
-        playlists={playlists}
+        playlists={currentPlayerPlaylists}
         triggerRefreshHandler={triggerRefreshPlaylistsHandler}
         showModal={showModal}
         handleModalClose={handleModalClose}
         selectedSong={selectedSong}
+        selectedSongs={selectedSongs}
         checkIfSongIsInDBFlag={true}
       />
     </div>

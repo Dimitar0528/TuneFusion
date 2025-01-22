@@ -33,6 +33,8 @@ const addExternalSong = (songDetails) => request.get(`${BASE_URL}/add-external-s
 
 const getArtistDescription = (artistName) => request.get(`${BASE_URL}/artist/${artistName}/description`)
 
+const addAlbumToDB = (data) => request.post(`${BASE_URL}/add-external-album`, data);
+
 const songsAPI = {
     getSong,
     getAllSongs,
@@ -43,7 +45,8 @@ const songsAPI = {
     getSongLyrics,
     getSongSuggestions,
     addExternalSong,
-    getArtistDescription
+    getArtistDescription,
+    addAlbumToDB
 }
 
 export default songsAPI;

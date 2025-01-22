@@ -97,7 +97,7 @@ export function useGetSongSuggestions() {
 
         setLoading(true);
         setSongs([]);
-        const result = await songsAPI.getSongSuggestions(query);;
+        const result = await songsAPI.getSongSuggestions(query);
         setSongs(result);
         setLoading(false);
         return result
@@ -115,14 +115,14 @@ export const useAddFetchedSongToDB = (triggerRefreshSongsHandler) => {
         showToast("Loading... Please wait!", "info", 3000);
         setLoading(true);
         setSong({});
-            const result = await songsAPI.addExternalSong(songDetails);
-            setSong(result.newSong);
-            setLoading(false);
-            triggerRefreshSongsHandler();
-            result.error
-                ? showToast(`Error: ${result.error}`, "error")
-                : showToast(result.message, "success");
-            return result;        
+        const result = await songsAPI.addExternalSong(songDetails);
+        setSong(result.newSong);
+        setLoading(false);
+        triggerRefreshSongsHandler();
+        result.error
+            ? showToast(`Error: ${result.error}`, "error")
+            : showToast(result.message, "success");
+        return result;
     }, [triggerRefreshSongsHandler]);
 
     return [addExternalSongToDBHandler, loading, song];
@@ -164,4 +164,27 @@ export function useDeleteSong() {
         triggerRefreshPlaylistsHandler();
     }
     return songDeleteHandler;
+}
+
+export function useAddAlbumToDB(triggerRefreshHandler) {
+    const [loading, setLoading] = useState(false);
+
+    const addAlbumToDBHandler = async (albumSongs, artistName) => {
+        setLoading(true);
+        showToast("Adding songs to database... Please wait!", "info", 3500);
+            const result = await songsAPI.addAlbumToDB({ albumSongs, artistName });
+            if (result.error) {
+                setTimeout(() => {
+                    showToast(result.error, 'warning', 3500);
+                }, 1000);
+            }
+            if (result.addedSongs?.length > 0) {
+                showToast(result.message, 'success', 3500);
+                triggerRefreshHandler();
+            } 
+            setLoading(false);
+            return result.addedSongs;
+    };
+
+    return [addAlbumToDBHandler, loading];
 }

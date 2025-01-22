@@ -25,6 +25,8 @@ const likePlaylist = (data) => request.post(`${BASE_URL}/like-playlist`, data);
 
 const unlikePlaylist = (data) => request.del(`${BASE_URL}/unlike-playlist`, data);
 
+const addAlbumToPlaylist = (data) => request.post(`${BASE_URL}/add-album`, data);
+
 const playlistsAPI = {
     getUserPlaylists,
     getPublicPlaylists,
@@ -37,6 +39,7 @@ const playlistsAPI = {
     removeSongFromPlaylist,
     likePlaylist,
     unlikePlaylist,
+    addAlbumToPlaylist,
 }
 
 export default playlistsAPI;

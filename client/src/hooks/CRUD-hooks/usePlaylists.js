@@ -128,3 +128,25 @@ export function useUnlikePlaylist() {
     }
     return unlikePlaylistHandler;
 }
+
+export function useAddAlbumToPlaylist() {
+    const addAlbumToPlaylistHandler = async (songs, playlistUUID, triggerRefreshHandler) => {
+            showToast("Adding songs to playlist...", "info", 3000);
+            const result = await playlistsAPI.addAlbumToPlaylist({
+                songs,
+                playlistUUID
+            });
+
+            if (result.error) {
+                setTimeout(() => {
+                    showToast(result.error, 'warning', 3000);
+                }, 1000);
+            } else {
+                showToast(result.message, 'success', 3000);
+            }
+            triggerRefreshHandler();
+            return result;
+    };
+
+    return addAlbumToPlaylistHandler;
+}

@@ -249,7 +249,7 @@ router.get('/add-external-song/:songDetails', async (req, res) => {
         if (song) {
             return res.status(400).json({ error: 'The song has already been added to the database!' });
         }
-       const newSong =  await Song.create({
+        const newSong = await Song.create({
             uuid: crypto.randomUUID(),
             name: name,
             artist: artist.name,
@@ -261,7 +261,7 @@ router.get('/add-external-song/:songDetails', async (req, res) => {
             newSong: newSong.dataValues,
             message: "Song added to database successfully!"
         }
-      
+
         res.status(200).json(reqObj);
     } catch (error) {
         console.error('Error occurred:', error);
@@ -270,9 +270,69 @@ router.get('/add-external-song/:songDetails', async (req, res) => {
 });
 
 router.post('/add-external-album', async (req, res) => {
-    const { name, artist, img_src, audio_src, duration } = req.body;
-    const uuid = crypto.randomUUID();
-})
+    const { albumSongs, artistName } = req.body;
+    try {
+        const addedSongs = [];
+        let errorMessage = '';
+
+        for (const song of albumSongs) {
+            try {
+                const searchQuery = `${song.name} ${artistName}`;
+                const [firstSong] = await ytmusic.searchVideos(searchQuery);
+                if (!firstSong) {
+                    errorMessage = 'Could not find some of the songs!';
+                    continue;
+                }
+                const existingSong = await Song.findOne({
+                    where: {
+                        name: {
+                            [Op.like]: `%${song.name.split('(')[0].trim()}%`,
+                        },
+                        artist: {
+                            [Op.like]: `%${artistName}%`
+                        },
+                    },
+                });
+
+                if (existingSong) {
+                    if (addedSongs.length === 0) {
+                        errorMessage = 'All songs already exist in the database!';
+                        break; 
+                    } else {
+                        continue;
+                    }
+                }
+                const newSong = await Song.create({
+                    uuid: crypto.randomUUID(),
+                    name: song.name,
+                    artist: song.artist.name,
+                    img_src: song.thumbnails?.[3]?.url,
+                    audio_src: `https://www.youtube.com/watch?v=${firstSong.videoId}`,
+                    duration: song.duration
+                });
+
+                addedSongs.push(newSong);
+            } catch (error) {
+                console.error(`Error adding "${song.name}":`, error);
+                errorMessage = 'Failed to add some of the songs!';
+            }
+        }
+        const responseMessage = addedSongs.length === albumSongs.length
+            ? `Added all ${albumSongs.length} songs to the database.`
+            : addedSongs.length > 0
+               && `Added ${addedSongs.length} songs; ${albumSongs.length - addedSongs.length} already exist.`
+               
+        res.status(200).json({
+            addedSongs,
+            error: errorMessage,
+            message: responseMessage
+        });
+    } catch (error) {
+        console.error('Error adding album:', error);
+        res.status(500).json({ error: 'There was an error while trying to add the album to the database!' });
+    }
+});
+
 router.put('/:name', async (req, res) => {
     const name = req.params.name;
     const body = req.body;

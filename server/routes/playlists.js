@@ -190,20 +190,26 @@ router.post('/add-song', async (req, res) => {
             return res.status(404).json({ error: 'Please select an playlist first!' });
         }
 
+        
         const existingEntry = await PlaylistSong.findOne({
             where: {
                 song_uuid: song.uuid,
                 playlist_uuid: playlistUUID
             }
         });
-
+        
         if (existingEntry) {
             return res.status(400).json({ error: 'Song is already in the selected playlist!' });
         }
+        const maxPositionResult = await PlaylistSong.max('position', {
+            where: { playlist_uuid: playlistUUID }
+        });
+        let currentPosition = (maxPositionResult || 0) + 1;
 
         await PlaylistSong.create({
             song_uuid: song.uuid,
-            playlist_uuid: playlistUUID
+            playlist_uuid: playlistUUID,
+            position: currentPosition++
         });
 
         res.status(200).json({ message: 'Song added to playlist successfully!' });
@@ -431,30 +437,6 @@ router.delete('/unlike-playlist', async (req, res) => {
     }
 });
 
-
-router.delete('/:playlistUUID', async (req, res) => {
-    const playlistUUID = req.params.playlistUUID;
-    try {
-        const hasPlayListSongs = await PlaylistSong.findAll({
-            where: { playlist_uuid: playlistUUID }
-        })
-        hasPlayListSongs && (await PlaylistSong.destroy({
-            where: { playlist_uuid: playlistUUID },
-        }));
-
-        await PlayList.destroy({
-            where: { uuid: playlistUUID }
-        })
-        res.status(200).json({ message: 'Playlist deleted successfully!' })
-
-    } catch (error) {
-        console.error('Error deleting playlist:', error);
-        res.status(500).json({ error: 'There was an error while trying to delete the playlist!' });
-
-    }
-
-})
-
 router.delete('/remove-song', async (req, res) => {
     const { songUUID, playlistName, userUUID } = req.body;
     try {
@@ -479,6 +461,113 @@ router.delete('/remove-song', async (req, res) => {
     } catch (error) {
         console.error('Error removing song from playlist:', error);
         res.status(500).json({ error: 'There was an error while trying to remove the song from the playlist!' });
+    }
+});
+
+router.delete('/:playlistUUID', async (req, res) => {
+    const playlistUUID = req.params.playlistUUID;
+    try {
+        const hasPlayListSongs = await PlaylistSong.findAll({
+            where: { playlist_uuid: playlistUUID }
+        })
+        hasPlayListSongs && (await PlaylistSong.destroy({
+            where: { playlist_uuid: playlistUUID },
+        }));
+
+        await PlayList.destroy({
+            where: { uuid: playlistUUID }
+        })
+        res.status(200).json({ message: 'Playlistasdcv deleted successfully!' })
+
+    } catch (error) {
+        console.error('Error deleting playlist:', error);
+        res.status(500).json({ error: 'There was an error while trying to delete the playlist!' });
+
+    }
+
+})
+
+
+router.post('/add-album', async (req, res) => {
+    const { songs, playlistUUID } = req.body;
+
+    try {
+        const playlist = await PlayList.findOne({
+            where: { uuid: playlistUUID }
+        });
+
+        if (!playlist) {
+            return res.status(404).json({ error: 'Playlist not found!' });
+        }
+
+        const addedSongs = [];
+        let errorMessage = '';
+
+        // Get current max position
+        const maxPositionResult = await PlaylistSong.max('position', {
+            where: { playlist_uuid: playlistUUID }
+        });
+        let currentPosition = (maxPositionResult || 0) + 1;
+
+        // Process each song
+        for (const song of songs) {
+            try {
+                const existingSong = await Song.findOne({
+                    where: {
+                        name: {
+                            [Sequelize.Op.like]: `%${song.name.split('(')[0].trim()}%`,
+                        },
+                        artist: {
+                            [Sequelize.Op.like]: `%${song.artist}%`
+                        },
+                    }
+                });
+             
+                if (existingSong) {
+                    const existingPlaylistSong = await PlaylistSong.findOne({
+                        where: {
+                            song_uuid: existingSong.uuid,
+                            playlist_uuid: playlistUUID
+                        }
+                    });
+
+                    if (!existingPlaylistSong) {
+                        await PlaylistSong.create({
+                            song_uuid: existingSong.uuid,
+                            playlist_uuid: playlistUUID,
+                            position: currentPosition++
+                        });
+                        addedSongs.push(existingSong);
+                    } else {
+                        if (addedSongs.length === 0) {
+                            errorMessage = 'All songs already exist in the playlist!';
+                            break;
+                        }
+                        continue;
+                    }
+                } else {
+                    errorMessage = 'Some songs could not be found in the database!';
+                }
+            } catch (error) {
+                console.error(`Error processing song "${song.name}":`, error);
+                errorMessage = 'Failed to add some songs to the playlist!';
+            }
+        }
+        
+        const responseMessage = addedSongs.length === songs.length
+            ? `Added all ${songs.length} songs to the playlist.`
+            : addedSongs.length >= 0
+                && `Added ${addedSongs.length} songs; ${songs.length - addedSongs.length} already exist in the playlist or are not found in our database.`
+
+        res.status(200).json({
+            error: errorMessage,
+            message: responseMessage
+        });
+    } catch (error) {
+        console.error('Error adding album to playlist:', error);
+        res.status(500).json({
+            error: 'There was an error while trying to add the album songs to the playlist!'
+        });
     }
 });
 
