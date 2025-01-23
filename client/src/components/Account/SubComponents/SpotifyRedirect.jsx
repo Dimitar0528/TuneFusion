@@ -5,7 +5,9 @@ export default function SpotifyRedirect() {
   const navigate = useNavigate();
   const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
   const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
-  const REDIRECT_URI = "http://localhost:5173/callback";
+  const host = `${window.location.protocol}//${window.location.host}`;
+
+  const REDIRECT_URI = `${host}/callback`;
 
   useEffect(() => {
     const exchangeCodeForTokens = async (code) => {

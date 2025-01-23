@@ -334,6 +334,91 @@ router.post('/transfer-songs', async (req, res) => {
     }
 });
 
+
+router.post('/add-album', async (req, res) => {
+    const { songs, playlistUUID } = req.body;
+
+    try {
+        const playlist = await PlayList.findOne({
+            where: { uuid: playlistUUID }
+        });
+
+        if (!playlist) {
+            return res.status(404).json({ error: 'Playlist not found!' });
+        }
+
+        const addedSongs = [];
+        let errorMessage = '';
+
+        // Get current max position
+        const maxPositionResult = await PlaylistSong.max('position', {
+            where: { playlist_uuid: playlistUUID }
+        });
+        let currentPosition = (maxPositionResult || 0) + 1;
+
+        // Process each song
+        for (const song of songs) {
+            try {
+                const existingSong = await Song.findOne({
+                    where: {
+                        name: {
+                            [Sequelize.Op.like]: `%${song.name.split('(')[0].trim()}%`,
+                        },
+                        artist: {
+                            [Sequelize.Op.like]: `%${song.artist}%`
+                        },
+                    }
+                });
+
+                if (existingSong) {
+                    const existingPlaylistSong = await PlaylistSong.findOne({
+                        where: {
+                            song_uuid: existingSong.uuid,
+                            playlist_uuid: playlistUUID
+                        }
+                    });
+
+                    if (!existingPlaylistSong) {
+                        await PlaylistSong.create({
+                            song_uuid: existingSong.uuid,
+                            playlist_uuid: playlistUUID,
+                            position: currentPosition++
+                        });
+                        addedSongs.push(existingSong);
+                    } else {
+                        if (addedSongs.length === 0) {
+                            errorMessage = 'All songs already exist in the playlist!';
+                            break;
+                        }
+                        continue;
+                    }
+                } else {
+                    errorMessage = 'Some songs could not be found in the database!';
+                }
+            } catch (error) {
+                console.error(`Error processing song "${song.name}":`, error);
+                errorMessage = 'Failed to add some songs to the playlist!';
+            }
+        }
+
+        const responseMessage = addedSongs.length === songs.length
+            ? `Added all ${songs.length} songs to the playlist.`
+            : addedSongs.length >= 0
+            && `Added ${addedSongs.length} songs; ${songs.length - addedSongs.length} already exist in the playlist or are not found in our database.`
+
+        res.status(200).json({
+            error: errorMessage,
+            message: responseMessage
+        });
+    } catch (error) {
+        console.error('Error adding album to playlist:', error);
+        res.status(500).json({
+            error: 'There was an error while trying to add the album songs to the playlist!'
+        });
+    }
+});
+
+
 router.put('/:playlistName', async (req, res) => {
     const playListName = req.params.playlistName;
     const body = req.body;
@@ -486,90 +571,5 @@ router.delete('/:playlistUUID', async (req, res) => {
     }
 
 })
-
-
-router.post('/add-album', async (req, res) => {
-    const { songs, playlistUUID } = req.body;
-
-    try {
-        const playlist = await PlayList.findOne({
-            where: { uuid: playlistUUID }
-        });
-
-        if (!playlist) {
-            return res.status(404).json({ error: 'Playlist not found!' });
-        }
-
-        const addedSongs = [];
-        let errorMessage = '';
-
-        // Get current max position
-        const maxPositionResult = await PlaylistSong.max('position', {
-            where: { playlist_uuid: playlistUUID }
-        });
-        let currentPosition = (maxPositionResult || 0) + 1;
-
-        // Process each song
-        for (const song of songs) {
-            try {
-                const existingSong = await Song.findOne({
-                    where: {
-                        name: {
-                            [Sequelize.Op.like]: `%${song.name.split('(')[0].trim()}%`,
-                        },
-                        artist: {
-                            [Sequelize.Op.like]: `%${song.artist}%`
-                        },
-                    }
-                });
-             
-                if (existingSong) {
-                    const existingPlaylistSong = await PlaylistSong.findOne({
-                        where: {
-                            song_uuid: existingSong.uuid,
-                            playlist_uuid: playlistUUID
-                        }
-                    });
-
-                    if (!existingPlaylistSong) {
-                        await PlaylistSong.create({
-                            song_uuid: existingSong.uuid,
-                            playlist_uuid: playlistUUID,
-                            position: currentPosition++
-                        });
-                        addedSongs.push(existingSong);
-                    } else {
-                        if (addedSongs.length === 0) {
-                            errorMessage = 'All songs already exist in the playlist!';
-                            break;
-                        }
-                        continue;
-                    }
-                } else {
-                    errorMessage = 'Some songs could not be found in the database!';
-                }
-            } catch (error) {
-                console.error(`Error processing song "${song.name}":`, error);
-                errorMessage = 'Failed to add some songs to the playlist!';
-            }
-        }
-        
-        const responseMessage = addedSongs.length === songs.length
-            ? `Added all ${songs.length} songs to the playlist.`
-            : addedSongs.length >= 0
-                && `Added ${addedSongs.length} songs; ${songs.length - addedSongs.length} already exist in the playlist or are not found in our database.`
-
-        res.status(200).json({
-            error: errorMessage,
-            message: responseMessage
-        });
-    } catch (error) {
-        console.error('Error adding album to playlist:', error);
-        res.status(500).json({
-            error: 'There was an error while trying to add the album songs to the playlist!'
-        });
-    }
-});
-
 
 export default router;

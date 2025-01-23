@@ -151,8 +151,8 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
                 <td data-th="Duration">{formatTime(song.duration)}</td>
                 <td data-th="Actions">
                   <div className="cta-admin-buttons">
-                    <button onClick={() => handleAddToDB(song)}>
-                      Add song to the database
+                    <button title={`Add ${song.name} to DB`} onClick={() => handleAddToDB(song)}>
+                      Add song to DB
                     </button>
                   </div>
                 </td>

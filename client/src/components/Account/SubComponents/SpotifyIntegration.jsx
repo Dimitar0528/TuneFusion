@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
-import { useAddExternalSongToDB } from "../../../hooks/useAddExternalSongToDB";
+import { useAddFetchedSongToDB } from "../../../hooks/CRUD-hooks/useSongs";
 import AddSongToPlaylistModal from "../../MyMusic/SubComponents/AddSongToPlaylistModal";
 import {
-  useAddExternalSongToPlaylist,
+  useTransferSongsToPlaylist,
   useCreatePlaylist,
 } from "../../../hooks/CRUD-hooks/usePlaylists";
 import { useGetUserDetails } from "../../../hooks/CRUD-hooks/useUsers";
@@ -17,7 +17,7 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
   const { userUUID, role } = user;
   const [currentUser] = useGetUserDetails(userUUID);
   const createPlaylist = useCreatePlaylist();
-  const addExternalSongToPlaylist = useAddExternalSongToPlaylist();
+  const transferSongsToPlaylist = useTransferSongsToPlaylist();
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState();
 
@@ -30,8 +30,8 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
 
   const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
   const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
-
-  const REDIRECT_URI = "http://localhost:5173/callback";
+  const host = `${window.location.protocol}//${window.location.host}`;
+  const REDIRECT_URI = `${host}/callback`;
   const SCOPES = ["playlist-read-private", "playlist-read-collaborative"];
 
   const [playlists, setPlaylists] = useState([]);
@@ -40,12 +40,18 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
   const [trackPage, setTrackPage] = useState({});
   const [playlistPage, setPlaylistPage] = useState(0);
   const [playlistsPerPage, setPlaylistsPerPage] = useState(5);
-  const [addExternalSongToDB, songLoading] = useAddExternalSongToDB(
+  const [addFetchedSongToDB, songLoading] = useAddFetchedSongToDB(
     triggerRefreshSongsHandler
   );
   const [isFetchingPlaylists, setIsFetchingPlaylists] = useState(true);
   const [playlistsFetched, setPlaylistsFetched] = useState(0);
   const [totalPlaylists, setTotalPlaylists] = useState(0);
+
+  const currentPlayerPlaylists = TuneFusionPlaylists.filter(
+    (playlist) =>
+      playlist?.created_by === currentUser?.name &&
+      playlist.name != "Liked Songs"
+  );
 
   const getAuthUrl = (userUUID) => {
     const state = encodeURIComponent(
@@ -83,7 +89,7 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
       userRole: role,
     };
     createPlaylist(reqObj, triggerRefreshHandler);
-    addExternalSongToPlaylist(
+    transferSongsToPlaylist(
       playlistTracksObj,
       triggerRefreshHandler,
       triggerRefreshSongsHandler
@@ -263,7 +269,6 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
     (playlist, index, self) =>
       index === self.findIndex((p) => p.id === playlist.id)
   );
-
   const playlistsToShow = uniquePlaylists.slice(
     playlistPage * playlistsPerPage,
     (playlistPage + 1) * playlistsPerPage
@@ -309,7 +314,7 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
           <div key={playlist.id} className={styles.playlistContainer}>
             <div className={styles.playlistHeader}>
               <img
-                width={70}
+                width={60}
                 src={playlist.images[0]?.url}
                 alt={playlist.name}
                 className={styles.playlistImage}
@@ -383,10 +388,10 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
                                     ? "fas fa-spinner fa-spin"
                                     : "fa-solid fa-square-plus"
                                 }
-                                onClick={() => addExternalSongToDB(songDetails)}
+                                onClick={() => addFetchedSongToDB(songDetails)}
                                 onKeyDown={(e) =>
                                   handleKeyPressWhenTabbed(e, () =>
-                                    addExternalSongToDB(songDetails)
+                                    addFetchedSongToDB(songDetails)
                                   )
                                 }
                                 title={
@@ -451,12 +456,14 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
         </button>
         <button
           onClick={() => handlePlaylistPageChange(1)}
-          disabled={(playlistPage + 1) * playlistsPerPage >= playlists.length}>
+          disabled={
+            (playlistPage + 1) * playlistsPerPage >= uniquePlaylists.length
+          }>
           Next Playlists
         </button>
       </div>
       <AddSongToPlaylistModal
-        playlists={TuneFusionPlaylists}
+        playlists={currentPlayerPlaylists}
         triggerRefreshHandler={triggerRefreshPlaylistsHandler}
         showModal={showModal}
         handleModalClose={handleModalClose}
