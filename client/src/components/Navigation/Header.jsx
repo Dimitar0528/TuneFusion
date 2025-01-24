@@ -1,13 +1,26 @@
 import { useEffect, useRef } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router";
 import styles from "../LandingPage/styles/LandingPage.module.css";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
+
 export default function Header({ btnText, goToLocation, userUUID }) {
   const { activePlaylist, currentPage } = useMusicPlayer();
   const menuBtnRef = useRef();
   const navLinksRef = useRef();
   const menuBtnIconRef = useRef();
   const navigate = useNavigate();
+
+  // Add view transition handler
+  const handleNavigation = (to) => {
+    if (!document.startViewTransition) {
+      navigate(to);
+      return;
+    }
+
+    document.startViewTransition(() => {
+      navigate(to);
+    });
+  };
 
   useEffect(() => {
     const menuBtn = menuBtnRef.current;
@@ -16,7 +29,6 @@ export default function Header({ btnText, goToLocation, userUUID }) {
 
     const handleMenuClick = () => {
       navLinks.classList.toggle(styles["open"]);
-
       const isOpen = navLinks.classList.contains(styles["open"]);
       menuBtnIcon.setAttribute(
         "class",
@@ -38,27 +50,37 @@ export default function Header({ btnText, goToLocation, userUUID }) {
     };
   }, []);
 
+  const TransitionNavLink = ({ to, children, className }) => (
+    <NavLink
+      to={to}
+      className={className}
+      onClick={(e) => {
+        e.preventDefault();
+        handleNavigation(to);
+      }}>
+      {children}
+    </NavLink>
+  );
+
   return (
     <nav className={styles["nav"]}>
       <div className={styles["nav__header"]}>
         <div className={styles["nav__logo"]}>
-          <NavLink to="/" className={styles["logo"]}>
+          <TransitionNavLink to="/" className={styles["logo"]}>
             TuneFusion
-          </NavLink>
+          </TransitionNavLink>
         </div>
         <div
           className={styles["nav__menu__btn"]}
           id="menu-btn"
           ref={menuBtnRef}>
           <span>
-            <i
-              className={`fas fa-bars ${styles["menu__icon"]}`}
-              ref={menuBtnIconRef}></i>
+            <i className="fas fa-bars" ref={menuBtnIconRef}></i>
           </span>
         </div>
       </div>
       <ul className={styles["nav__links"]} id="nav-links" ref={navLinksRef}>
-        <NavLink
+        <TransitionNavLink
           to={
             activePlaylist
               ? `/musicplayer/${userUUID}?playlist=${activePlaylist?.name.replace(
@@ -72,37 +94,36 @@ export default function Header({ btnText, goToLocation, userUUID }) {
           }>
           <i className="fas fa-play"></i>
           My Music
-        </NavLink>
-        <NavLink
+        </TransitionNavLink>
+
+        <TransitionNavLink
           to="/information/aboutus"
           className={({ isActive }) =>
             isActive ? styles["nav__link--active"] : styles["nav__link"]
           }>
           <i className="fas fa-address-card"></i>
           About Us
-        </NavLink>
-        <NavLink
+        </TransitionNavLink>
+        <TransitionNavLink
           to="/information/contactus"
           className={({ isActive }) =>
             isActive ? styles["nav__link--active"] : styles["nav__link"]
           }>
           <i className="fas fa-address-book"></i>
           Contact Us
-        </NavLink>
-        <NavLink
+        </TransitionNavLink>
+        <TransitionNavLink
           to="/information/faq"
           className={({ isActive }) =>
             isActive ? styles["nav__link--active"] : styles["nav__link"]
           }>
           <i className="fas fa-circle-question"></i>
           FAQ
-        </NavLink>
+        </TransitionNavLink>
         <div className={styles["nav__link"]}>
           <button
             className={styles["btn"]}
-            onClick={() => {
-              navigate(goToLocation);
-            }}>
+            onClick={() => handleNavigation(goToLocation)}>
             {btnText === "My Account" ? (
               <i className="fas fa-user"></i>
             ) : (

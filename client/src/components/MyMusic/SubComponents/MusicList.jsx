@@ -7,7 +7,7 @@ import ReactPaginate from "react-paginate";
 import { formatTime } from "../../../utils/formatTime";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router";
 import {
   useAddSongToPlaylist,
   useRemoveSongFromPlaylist,
@@ -45,7 +45,7 @@ export default function MusicList({
     () => new URLSearchParams(location.search),
     [location.search]
   );
-  const currentUserUUID = searchParams.get("userUUID") || user.userUUID;  
+  const currentUserUUID = searchParams.get("userUUID") || user.userUUID;
   const [currentUser] = useGetUserDetails(currentUserUUID);
 
   const savedPage = localStorage.getItem("CP");
@@ -353,7 +353,7 @@ export default function MusicList({
           setCurrentHistoryIndex((prev) => prev + 1);
         }
       }
-    }
+    };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -528,9 +528,11 @@ export default function MusicList({
                       selectedSongs.includes(song.uuid))
                   }
                   onClick={(e) => {
-                    if ((e.ctrlKey || e.shiftKey) && 
-                     activePlaylist && activePlaylist.created_by === currentUser.name
-                    && activePlaylist.name !== 'Liked Songs'
+                    if (
+                      (e.ctrlKey || e.shiftKey) &&
+                      activePlaylist &&
+                      activePlaylist.created_by === currentUser.name &&
+                      activePlaylist.name !== "Liked Songs"
                     ) {
                       handleSongSelect(song, index, e.ctrlKey, e.shiftKey);
                     }
@@ -668,8 +670,8 @@ export default function MusicList({
                         title="Add to playlist"></i>
                       {activePlaylist &&
                         activePlaylist.name !== "Liked Songs" &&
-                        hideRemoveSongButton === false 
-                        && activePlaylist?.created_by === currentUser.name && (
+                        hideRemoveSongButton === false &&
+                        activePlaylist?.created_by === currentUser.name && (
                           <i
                             tabIndex={0}
                             className="fa-solid fa-delete-left"
@@ -681,7 +683,10 @@ export default function MusicList({
                             }
                             onKeyDown={(e) =>
                               handleKeyPressWhenTabbed(e, () => {
-                                handleRemoveSongFromPlaylist(song);
+                                handleRemoveSongFromPlaylist(
+                                  song,
+                                  activePlaylist.name
+                                );
                               })
                             }
                             title="Remove from playlist"></i>

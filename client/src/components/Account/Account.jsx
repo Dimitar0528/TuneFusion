@@ -1,14 +1,14 @@
 import { lazy, Suspense } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router";
 import styles from "./styles/Account.module.css";
 import useTabs from "./hooks/useTabs";
 import useTabEventListeners from "./hooks/useTabEventListeners";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
 import { useRefresh } from "../../hooks/useRefresh";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 
 const EditAccount = lazy(() => import("./SubComponents/EditAccount"));
 const ViewAllUsers = lazy(() => import("./SubComponents/ViewAllUsers"));
@@ -71,6 +71,18 @@ export default function Account() {
     updateUnderline,
     updateUnderlinePosition
   );
+
+  // Add view transition handler
+  const handleTabTransition = (tab) => {
+    if (!document.startViewTransition) {
+      updateUrlWithTab(tab);
+      return;
+    }
+
+    document.startViewTransition(() => {
+      updateUrlWithTab(tab);
+    });
+  };
 
   const renderTabContent = (tab) => {
     switch (tab) {
@@ -169,11 +181,7 @@ export default function Account() {
               className={`${styles.navtab} ${
                 activeTab === tab ? styles.active : ""
               }`}
-              data-target={tab}
-              onClick={() => {
-                setActiveTab(tab);
-                updateUrlWithTab(tab);
-              }}
+              onClick={() => handleTabTransition(tab)}
               ref={(el) => (tabsRef.current[index] = el)}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </div>

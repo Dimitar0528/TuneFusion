@@ -7,7 +7,7 @@ import {
 } from "../../../hooks/CRUD-hooks/usePlaylists";
 import MusicList from "../SubComponents/MusicList";
 import "./styles/Discover.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import ReactPaginate from "react-paginate";
@@ -22,9 +22,13 @@ export default function Discover({ userUUID }) {
     activePlaylist,
     setActivePlaylist,
   } = useMusicPlayer();
-  const [publicPlaylists, isPublicPlaylistLoading] =
-    useGetPublicPlaylists(refreshPlaylistsFlag,userUUID);
-    const newPublicPlaylists = publicPlaylists.filter(playlist => playlist.name !== 'Liked Songs');
+  const [publicPlaylists, isPublicPlaylistLoading] = useGetPublicPlaylists(
+    refreshPlaylistsFlag,
+    userUUID
+  );
+  const newPublicPlaylists = publicPlaylists.filter(
+    (playlist) => playlist.name !== "Liked Songs"
+  );
   const [currentPage, setCurrentPage] = useState(0);
   const playlistsPerPage = 8;
   const [currentUser] = useGetUserDetails(userUUID);
@@ -61,7 +65,7 @@ export default function Discover({ userUUID }) {
     (currentPage + 1) * playlistsPerPage
   );
 
-  const handleLikePlaylist = (e,playlist) => {
+  const handleLikePlaylist = (e, playlist) => {
     e.stopPropagation();
     const isLiked = playlist.liked_by?.includes(currentUser?.name);
     if (isLiked) {

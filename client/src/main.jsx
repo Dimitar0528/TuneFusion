@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./components/App.jsx";
 import "./styles/index.css";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router";
 import { MusicPlayerProvider } from "./contexts/MusicPlayerContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(

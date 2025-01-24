@@ -4,7 +4,7 @@ import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
 import { useRefresh } from "../../hooks/useRefresh";
 import { useLogoutUser } from "../../hooks/CRUD-hooks/useAuth";
 import showToast from "../../utils/showToast";
-import { Link, useNavigate, useParams, Navigate } from "react-router-dom";
+import { Link, useNavigate, useParams, Navigate } from "react-router";
 import extractUUIDPrefix from "../../utils/extractUUIDPrefix";
 import SearchInput from "./SubComponents/SearchInput";
 import Discover from "./Tabs/Discover";
@@ -20,9 +20,9 @@ export default function Sidebar() {
   const [isNavbarActive, setIsNavbarActive] = useState(false);
   const [currentUser] = useGetUserDetails(userUUID, refreshUserFlag);
   const logoutUser = useLogoutUser();
-  
+
   const [activeTab, setActiveTab] = useState("My Library");
-  
+
   if (userUUID !== "") {
     if (currentUserUUID !== userUUID) return <Navigate to="/" replace />;
   }

@@ -12,7 +12,7 @@ import {
   useUnlikePlaylist,
 } from "../../../hooks/CRUD-hooks/usePlaylists";
 import ConfirmDialog from "../../ConfirmDialog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useGetUserDetails } from "../../../hooks/CRUD-hooks/useUsers";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 import { getPlaylistImage } from "../../../utils/getPlaylistImage";
@@ -78,22 +78,32 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
   } = useForm(initialPlaylistValues, onSubmit, validatePlaylist);
 
   const toggleActivePlayList = (playlist) => {
-    const newActivePlaylist =
-      activePlaylist?.name === playlist.name ? null : playlist;
-    setActivePlaylist(newActivePlaylist);
-    setCurrentPage(0);
-    localStorage.setItem("CP", `${1}`);
+    const newActivePlaylist = activePlaylist?.name === playlist.name ? null : playlist;
 
-    if (newActivePlaylist) {
-      navigate(
-        `?playlist=${newActivePlaylist.name.replace(/\s+/g, "")}&page=1`
-      );
-      const playlistWithUuid = { ...playlist };
-      localStorage.setItem("activePlaylist", JSON.stringify(playlistWithUuid));
-    } else {
-      navigate(`?page=1`);
-      localStorage.removeItem("activePlaylist");
+    if (!document.startViewTransition) {
+      setActivePlaylist(newActivePlaylist);
+      setCurrentPage(0);
+      localStorage.setItem("CP", `${1}`);
+
+      if (newActivePlaylist) {
+        navigate(`?playlist=${newActivePlaylist.name.replace(/\s+/g, "")}&page=1`);
+      } else {
+        navigate(`/musicplayer/${userUUID}`);
+      }
+      return;
     }
+
+    document.startViewTransition(() => {
+      setActivePlaylist(newActivePlaylist);
+      setCurrentPage(0);
+      localStorage.setItem("CP", `${1}`);
+
+      if (newActivePlaylist) {
+        navigate(`?playlist=${newActivePlaylist.name.replace(/\s+/g, "")}&page=1`);
+      } else {
+        navigate(`/musicplayer/${userUUID}`);
+      }
+    });
   };
 
   const handleCreatePlaylist = () => {
@@ -167,11 +177,11 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
       localStorage.removeItem("activePlaylist");
       setActivePlaylist(null);
     }
-      unlikePlaylist(
-        playlist.uuid,
-        extractUUIDPrefix(currentUser.uuid),
-        triggerRefreshHandler
-      );
+    unlikePlaylist(
+      playlist.uuid,
+      extractUUIDPrefix(currentUser.uuid),
+      triggerRefreshHandler
+    );
   };
 
   return (

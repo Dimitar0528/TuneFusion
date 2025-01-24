@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export default function SongDetails() {
   const { islyricsLoading, lyrics, currentSong, isCollapsed } =

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import styles from "./styles/SongManagerHandler.module.css";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import showToast from "../../../utils/showToast";
 import {
   useCreateSong,

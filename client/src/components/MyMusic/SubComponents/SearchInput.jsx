@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useState } from "react";
 
 export default function SearchInput({ isNavbarActive, activateNavbar }) {
@@ -15,7 +15,7 @@ export default function SearchInput({ isNavbarActive, activateNavbar }) {
     <>
       <input
         type="search"
-        name="search"
+        name="input"
         placeholder="Search..."
         className="navbar-search"
         id="search"

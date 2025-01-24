@@ -1,7 +1,7 @@
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import styles from "../styles/LandingPage.module.css";
 
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 export default function GenreCard({ imageUrl, genreName, userUUID }) {
   const { activePlaylist, currentPage } = useMusicPlayer();
 

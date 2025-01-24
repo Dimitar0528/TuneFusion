@@ -5,7 +5,7 @@ import styles from "./styles/LandingPage.module.css";
 import GenreCard from "./SubComponents/GenreCard";
 import FeatureCard from "./SubComponents/FeatureCard";
 import ClientCard from "./SubComponents/ClientCard";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 
 export default function LandingPage({ userUUID }) {

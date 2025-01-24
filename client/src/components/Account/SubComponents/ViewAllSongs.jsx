@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import { Fragment } from "react";
 import TableLayout from "../TableLayout";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
@@ -130,8 +130,8 @@ export default function ViewAllSongs({
       />
       {isModalOpen && (
         <ConfirmDeleteModal
-          actionType='Deletion'
-          action='delete'
+          actionType="Deletion"
+          action="delete"
           itemType="song"
           itemName={songToDelete.name}
           onConfirm={confirmDelete}

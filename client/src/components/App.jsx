@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router";
 import { ToastContainer } from "react-toastify";
 import LandingPage from "./LandingPage/LandingPage";
 import AboutUs from "./Navigation/Information/AboutUs";

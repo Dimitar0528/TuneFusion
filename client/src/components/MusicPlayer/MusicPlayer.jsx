@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import PlayerControls from "./SubComponents/PlayerControls";
 import SongDetails from "./SubComponents/SongDetails";
 import ProgressArea from "./SubComponents/ProgressArea";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import showToast from "../../utils/showToast";
 export default function MusicPlayer({
@@ -19,7 +19,7 @@ export default function MusicPlayer({
     isCollapsed,
     handleCollapseToggle,
     handleKeyPressWhenTabbed,
-    showYoutubePlayer
+    showYoutubePlayer,
   } = useMusicPlayer();
   const [pipWindow, setPiPWindow] = useState(documentPictureInPicture.window);
 
@@ -39,11 +39,11 @@ export default function MusicPlayer({
 
   return (
     <div
-      className={`wrapper ${isCollapsed && "collapsed"} ${
-        pipWindow &&
-        applyStylesWhenInPiPModeFlag === true &&
-        "picture-in-picture"
-      } ${showYoutubePlayer && 'more-width'}`}>
+      className={`wrapper ${isCollapsed ? "collapsed" : ""} ${
+        pipWindow && applyStylesWhenInPiPModeFlag === true
+          ? "picture-in-picture"
+          : ""
+      } ${showYoutubePlayer ? "more-width" : ""}`}>
       <div className="top-section">
         {userRole === "admin" && (
           <i

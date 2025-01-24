@@ -7,6 +7,7 @@
 }
 
 :root {
+    view-transition-name: root;
     --primary-clr: hsl(295, 22%, 55%);
     --primary-clr-light-dark: hsl(from var(--primary-clr) h s 23%);
     --primary-clr-dark: hsl(213, 14%, 18%);

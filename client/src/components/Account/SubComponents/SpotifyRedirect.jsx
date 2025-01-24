@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { encodeToBase64 } from "../utils/encodetoBase64";
 export default function SpotifyRedirect() {
   const navigate = useNavigate();
