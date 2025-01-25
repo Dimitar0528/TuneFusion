@@ -39,6 +39,7 @@ label {
 }
 
 .wrapper {
+    view-transition-name: music-player;
     width: clamp(min(350px, 100%), 40vw, 100%);
     transition-duration: .6s;
     transition-property: display opacity;

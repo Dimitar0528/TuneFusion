@@ -1,6 +1,9 @@
 import { useState } from "react";
 import showToast from "../../../utils/showToast";
-import { useAddSongToPlaylist } from "../../../hooks/CRUD-hooks/usePlaylists";
+import {
+  useAddSongToPlaylist,
+  useAddAlbumToPlaylist,
+} from "../../../hooks/CRUD-hooks/usePlaylists";
 import { useGetSong } from "../../../hooks/CRUD-hooks/useSongs";
 export default function AddSongToPlaylistModal({
   playlists,
@@ -8,39 +11,64 @@ export default function AddSongToPlaylistModal({
   showModal,
   handleModalClose,
   selectedSong,
+  selectedSongs = [],
   checkIfSongIsInDBFlag = false,
 }) {
   const [_, fetchSong] = useGetSong(selectedSong?.title);
 
   const [selectedPlaylist, setSelectedPlaylist] = useState("");
   const addSongToPlaylist = useAddSongToPlaylist();
+  const addAlbumToPlaylist = useAddAlbumToPlaylist();
 
   const handlePlaylistSelect = (e) => {
     setSelectedPlaylist(e.target.value);
   };
 
-  const handleAddSongConfirm = async () => {
-    if (selectedPlaylist === "")
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (selectedPlaylist === "") {
       return showToast("Please select a playlist first", "warning");
-    if (checkIfSongIsInDBFlag) {
-      const song = await fetchSong();
-      if (song.name !== selectedSong.title) {
-        handleModalClose();
-        return showToast(song.error, "error", 1500);
-      }
     }
-    const reqObj = {
-      songName: selectedSong.name || selectedSong.title,
-      playlistUUID: selectedPlaylist,
-    };
-    addSongToPlaylist(reqObj, () => handleModalClose(), triggerRefreshHandler);
+
+    if (selectedSongs.length > 0) {
+      // Handle album songs
+      await addAlbumToPlaylist(
+        selectedSongs,
+        selectedPlaylist,
+        triggerRefreshHandler
+      );
+      handleModalClose();
+    } else if (selectedSong) {
+      // Handle single song
+      if (checkIfSongIsInDBFlag) {
+        const song = await fetchSong();
+        if (song.name !== selectedSong.title) {
+          handleModalClose();
+          return showToast(song.error, "error", 1500);
+        }
+      }
+      const reqObj = {
+        songName: selectedSong.name || selectedSong.title,
+        playlistUUID: selectedPlaylist,
+      };
+      addSongToPlaylist(
+        reqObj,
+        () => handleModalClose(),
+        triggerRefreshHandler
+      );
+    }
   };
 
   return (
     showModal && (
       <dialog open className="modal">
         <div className="modal-content">
-          <h2>Add a song to the playlist</h2>
+          <h2>
+            {selectedSongs.length > 0
+              ? `Add ${selectedSongs.length} songs to playlist`
+              : "Add song to playlist"}
+          </h2>
           <div
             style={{
               display: "flex",
@@ -68,7 +96,7 @@ export default function AddSongToPlaylistModal({
             </div>
           </div>
           <div className="modal-actions">
-            <button onClick={handleAddSongConfirm}>Add</button>
+            <button onClick={handleSubmit}>Add</button>
             <button onClick={handleModalClose}>Cancel</button>
           </div>
         </div>

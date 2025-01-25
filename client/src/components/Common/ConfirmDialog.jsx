@@ -1,6 +1,13 @@
 import React, { useState } from "react";
-import "../styles/ConfirmDialog.css";
-const ConfirmDialog = ({ actionType,action,itemType, itemName, onConfirm, onCancel }) => {
+import "../../styles/ConfirmDialog.css";
+const ConfirmDialog = ({
+  actionType,
+  action,
+  itemType,
+  itemName,
+  onConfirm,
+  onCancel,
+}) => {
   const [inputValue, setInputValue] = useState("");
   const [isConfirmed, setIsConfirmed] = useState(false);
 
@@ -11,12 +18,26 @@ const ConfirmDialog = ({ actionType,action,itemType, itemName, onConfirm, onCanc
 
   const handleConfirm = () => {
     if (isConfirmed) {
-      onConfirm();
+      handleClose()
+      onConfirm()
     }
   };
 
+  const handleClose = () => {
+    const dialog = document.querySelector(".confirm-delete-modal");
+    dialog.classList.add("closing");
+    dialog.addEventListener(
+      "animationend",
+      () => {
+        onCancel();
+        dialog.classList.remove("closing");
+      },
+      { once: true }
+    );
+  };
+
   return (
-    <div className="confirm-delete-modal">
+    <dialog open className="confirm-delete-modal">
       <div className="modal-content">
         <h2>Confirm {actionType}</h2>
         <p>
@@ -38,12 +59,12 @@ const ConfirmDialog = ({ actionType,action,itemType, itemName, onConfirm, onCanc
             className="confirm-button">
             Confirm
           </button>
-          <button onClick={onCancel} className="cancel-button">
+          <button onClick={handleClose} className="cancel-button">
             Cancel
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
 

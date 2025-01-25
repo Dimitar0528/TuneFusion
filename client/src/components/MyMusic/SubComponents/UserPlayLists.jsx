@@ -11,7 +11,7 @@ import {
   useDeletePlaylist,
   useUnlikePlaylist,
 } from "../../../hooks/CRUD-hooks/usePlaylists";
-import ConfirmDialog from "../../ConfirmDialog";
+import ConfirmDialog from "../../Common/ConfirmDialog";
 import { useNavigate } from "react-router";
 import { useGetUserDetails } from "../../../hooks/CRUD-hooks/useUsers";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
@@ -66,7 +66,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     } else {
       createPlaylist(reqObj, triggerRefreshHandler);
     }
-    handleCloseDialog();
+    handleDialogClose();
   };
 
   const {
@@ -78,7 +78,8 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
   } = useForm(initialPlaylistValues, onSubmit, validatePlaylist);
 
   const toggleActivePlayList = (playlist) => {
-    const newActivePlaylist = activePlaylist?.name === playlist.name ? null : playlist;
+    const newActivePlaylist =
+      activePlaylist?.name === playlist.name ? null : playlist;
 
     if (!document.startViewTransition) {
       setActivePlaylist(newActivePlaylist);
@@ -86,9 +87,17 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
       localStorage.setItem("CP", `${1}`);
 
       if (newActivePlaylist) {
-        navigate(`?playlist=${newActivePlaylist.name.replace(/\s+/g, "")}&page=1`);
+        navigate(
+          `?playlist=${newActivePlaylist.name.replace(/\s+/g, "")}&page=1`
+        );
+         const playlistWithUuid = { ...playlist };
+         localStorage.setItem(
+           "activePlaylist",
+           JSON.stringify(playlistWithUuid)
+         );
       } else {
-        navigate(`/musicplayer/${userUUID}`);
+        navigate(`?page=1`);
+        localStorage.removeItem("activePlaylist");
       }
       return;
     }
@@ -99,9 +108,17 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
       localStorage.setItem("CP", `${1}`);
 
       if (newActivePlaylist) {
-        navigate(`?playlist=${newActivePlaylist.name.replace(/\s+/g, "")}&page=1`);
+        navigate(
+          `?playlist=${newActivePlaylist.name.replace(/\s+/g, "")}&page=1`
+        );
+         const playlistWithUuid = { ...playlist };
+         localStorage.setItem(
+           "activePlaylist",
+           JSON.stringify(playlistWithUuid)
+         );
       } else {
-        navigate(`/musicplayer/${userUUID}`);
+         navigate(`?page=1`);
+        localStorage.removeItem("activePlaylist");
       }
     });
   };
@@ -122,10 +139,6 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
       visibility: playlist.visibility,
     });
     setShowDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setShowDialog(false);
   };
 
   const handleDeletePlaylist = async (playlist) => {
@@ -182,6 +195,25 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
       extractUUIDPrefix(currentUser.uuid),
       triggerRefreshHandler
     );
+  };
+
+  const handleDialogClose = () => {
+    const dialog = document.querySelector(".modal");
+    dialog.classList.add("closing");
+    dialog.addEventListener(
+      "animationend",
+      () => {
+        dialog.classList.remove("closing");
+        setShowDialog(false);
+      },
+      { once: true }
+    );
+  };
+
+  const cancelHandler = () => {
+    handleDialogClose();
+    setEditingPlaylist(null);
+    setValuesWrapper(initialPlaylistValues);
   };
 
   return (
@@ -348,8 +380,10 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
                 </select>
 
                 <div className="dialog-actions">
-                  <button type="submit">Save</button>
-                  <button type="button" onClick={handleCloseDialog}>
+                  <button type="submit">
+                    {editingPlaylist ? "Save Changes" : "Create"}
+                  </button>
+                  <button type="button" onClick={cancelHandler}>
                     Cancel
                   </button>
                 </div>

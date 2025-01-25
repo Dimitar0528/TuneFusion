@@ -160,6 +160,7 @@ export default function PlayerControls({
         onClick={handleNextSong}
         tabIndex={0}
         onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleNextSong)}></i>
+         {excludeElementsWhenInPiPModeFlag !== true && (
       <i
         id="loop"
         className={`fa-solid ${isLooped ? "fa-rotate-right" : "fa-repeat"}`}
@@ -167,6 +168,7 @@ export default function PlayerControls({
         onClick={handleLoopSong}
         tabIndex={0}
         onKeyDown={(e) => handleKeyPressWhenTabbed(e, handleLoopSong)}></i>
+      )}
       <div
         className={`youtube-player-wrapper | fa-solid ${lyrics && "disabled"} `}
         title={`${

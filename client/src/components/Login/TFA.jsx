@@ -12,14 +12,17 @@ export default function TFAVerification() {
 
     const sendOTP = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/auth/sendOTP", {
-          signal: signal,
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
+        const response = await fetch(
+          "http://localhost:3000/api/auth/send-OTP",
+          {
+            signal: signal,
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();

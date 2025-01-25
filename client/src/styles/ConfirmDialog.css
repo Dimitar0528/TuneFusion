@@ -38,3 +38,55 @@
     background-color: hsl(from var(--secondary-clr-light) h s 95%);
     cursor: not-allowed;
 }
+
+/* Add these animations */
+@keyframes dialog-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes dialog-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+/* Update the dialog styles */
+.confirm-delete-modal,
+.modal-content {
+    &[open] {
+        animation: dialog-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    &.closing {
+        animation: dialog-fade-out 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+    }
+
+    &::backdrop {
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    &[open]::backdrop {
+        opacity: 1;
+    }
+
+    &.closing::backdrop {
+        opacity: 0;
+    }
+}
