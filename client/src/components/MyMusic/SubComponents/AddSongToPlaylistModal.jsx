@@ -38,13 +38,13 @@ export default function AddSongToPlaylistModal({
         selectedPlaylist,
         triggerRefreshHandler
       );
-      handleModalClose();
+      handleClose();
     } else if (selectedSong) {
       // Handle single song
       if (checkIfSongIsInDBFlag) {
         const song = await fetchSong();
         if (song.name !== selectedSong.title) {
-          handleModalClose();
+          handleClose();
           return showToast(song.error, "error", 1500);
         }
       }
@@ -54,12 +54,24 @@ export default function AddSongToPlaylistModal({
       };
       addSongToPlaylist(
         reqObj,
-        () => handleModalClose(),
+        () => handleClose(),
         triggerRefreshHandler
       );
     }
   };
 
+  const handleClose = () => {
+    const dialog = document.querySelector(".modal");
+    dialog.classList.add("closing");
+    dialog.addEventListener(
+      "animationend",
+      () => {
+        handleModalClose();
+        dialog.classList.remove("closing");
+      },
+      { once: true }
+    );
+  };
   return (
     showModal && (
       <dialog open className="modal">
@@ -97,7 +109,7 @@ export default function AddSongToPlaylistModal({
           </div>
           <div className="modal-actions">
             <button onClick={handleSubmit}>Add</button>
-            <button onClick={handleModalClose}>Cancel</button>
+            <button onClick={handleClose}>Cancel</button>
           </div>
         </div>
       </dialog>

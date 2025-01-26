@@ -3,6 +3,7 @@ import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Link } from "react-router";
+import TransitionLink from "../../Common/TransitionLink";
 
 export default function SongDetails() {
   const { islyricsLoading, lyrics, currentSong, isCollapsed } =
@@ -42,13 +43,13 @@ export default function SongDetails() {
         <p className="name" ref={nameRef}>
           <span>{currentSong?.name}</span>
         </p>
-        <Link
+        <TransitionLink
           to={`/artist/${
             currentSong?.artist.split(/, | & |,|&/)[0]
           }/description`}
           className="artist | song-artist">
           {currentSong?.artist.split(/, | & |,|&/)[0]}
-        </Link>
+        </TransitionLink>
       </div>
     </>
   );

@@ -10,15 +10,42 @@ export default function Header({ btnText, goToLocation, userUUID }) {
   const menuBtnIconRef = useRef();
   const navigate = useNavigate();
 
+  
+  const navigationOrder = [
+    "/",
+    `/musicplayer/${userUUID}`,
+    "/information/aboutus",
+    "/information/contactus",
+    "/information/faq",
+    '/sign-in',
+    `/account/${userUUID}`,
+  ];
+
+  function determineNavigationDirection(fromPath, toPath) {
+    const normalizedFromPath = fromPath.split("?")[0];
+    const normalizedToPath = toPath.split("?")[0];
+    if (normalizedFromPath === normalizedToPath) return;
+    const fromIndex = navigationOrder.findIndex(
+      (route) => route === normalizedFromPath
+    );
+    const toIndex = navigationOrder.findIndex(
+      (route) => route === normalizedToPath
+    );
+    return fromIndex < toIndex ? "forwards" : "backwards";
+  }
   // Add view transition handler
   const handleNavigation = (to) => {
+    const direction = determineNavigationDirection(location.pathname, to);
     if (!document.startViewTransition) {
       navigate(to);
       return;
     }
 
-    document.startViewTransition(() => {
-      navigate(to);
+    document.startViewTransition({
+      update: () => {
+       navigate(to);
+      },
+      types: ["slide", direction],
     });
   };
 

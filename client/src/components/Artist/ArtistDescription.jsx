@@ -13,6 +13,7 @@ import AddSongToPlaylistModal from "../MyMusic/SubComponents/AddSongToPlaylistMo
 import { formatTime } from "../../utils/formatTime";
 import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
 import { useTransferSongsToPlaylist } from "../../hooks/CRUD-hooks/usePlaylists";
+import TransitionLink from "../Common/TransitionLink";
 
 export default function ArtistDescription() {
   const [showModal, setShowModal] = useState(false);
@@ -404,9 +405,9 @@ export default function ArtistDescription() {
                 />
                 <div>
                   <p>
-                    <Link to={`/artist/${suggestedArtist.name}/description`}>
+                    <TransitionLink to={`/artist/${suggestedArtist.name}/description`}>
                       {suggestedArtist.name}
-                    </Link>
+                    </TransitionLink>
                   </p>
                 </div>
               </div>

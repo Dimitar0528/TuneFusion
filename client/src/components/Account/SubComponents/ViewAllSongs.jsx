@@ -10,7 +10,8 @@ import {
   useDeleteSong,
   useGetAllSongs,
 } from "../../../hooks/CRUD-hooks/useSongs";
-import ConfirmDeleteModal from "../../ConfirmDialog";
+import ConfirmDeleteModal from "../../Common/ConfirmDialog";
+import TransitionLink from "../../Common/TransitionLink";
 export default function ViewAllSongs({
   triggerRefreshSongsHandler,
   triggerRefreshPlaylistsHandler,
@@ -60,7 +61,17 @@ export default function ViewAllSongs({
     setIsModalOpen(false);
     setSongToDelete(null);
   };
+  
+   function handleOnAddClick(){
+   if (!document.startViewTransition) {
+     navigate("/addsong");
+     return;
+   }
 
+   document.startViewTransition(() => {
+       navigate("/addsong");
+   });
+  }
   return (
     <div>
       <TableLayout
@@ -76,7 +87,7 @@ export default function ViewAllSongs({
         ]}
         title="Songs"
         hasDbSearch={true}
-        onAddClick={() => navigate("/addsong")}
+        onAddClick={handleOnAddClick}
         renderRow={(song) => {
           const artistArray = song.artist
             .split(/, | & |,|&/)
@@ -95,11 +106,11 @@ export default function ViewAllSongs({
               <td data-th="Artist">
                 {artistArray.map((artist, index) => (
                   <Fragment key={artist}>
-                    <Link
+                    <TransitionLink
                       className="song-artist"
                       to={`/artist/${artist}/description`}>
                       {artist}
-                    </Link>
+                    </TransitionLink>
                     {index < artistArray.length - 1 && ", "}
                   </Fragment>
                 ))}
@@ -116,8 +127,10 @@ export default function ViewAllSongs({
               <td data-th="Duration">{formatTime(song.duration)}</td>
               <td data-th="Actions">
                 <div className="cta-admin-buttons">
-                  <button onClick={() => navigate(`/updatesong/${song.name}`)}>
-                    Edit
+                  <button>
+                    <TransitionLink to={`/updatesong/${song.name}`}>
+                      Edit
+                    </TransitionLink>
                   </button>
                   <button onClick={() => handleDeleteClick(song)}>
                     Delete

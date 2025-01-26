@@ -31,7 +31,7 @@
   text-align: center;
 }
 
-.btn {
+.btn.btn {
   padding: 0.75rem 1.5rem;
   outline: none;
   border: none;
@@ -56,6 +56,7 @@
 
 
 .nav {
+  view-transition-name: nav;
   margin-bottom: 1rem;
   border-radius: 1rem;
   background-color: var(--accent-clr-dark);
@@ -414,8 +415,8 @@
   gap: 1rem;
 }
 
-.spotify__btn:where(:hover, :focus-visible) {
-  background-color: hsl(from var(--secondary-clr) h s 60%);
+.spotify__btn:is(:hover, :focus-visible) {
+  background-color: hsl(from var(--secondary-clr) h s 65%);
 }
 
 .client__container {
@@ -477,6 +478,7 @@
 
 
 footer {
+  view-transition-name: footer;
   background-color: var(--accent-clr-dark);
   padding-bottom: 4.5rem;
 }
@@ -516,7 +518,7 @@ footer {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    z-index: 999;
+    z-index: 100;
   }
 
   .nav__header {
@@ -651,4 +653,80 @@ footer {
   &:where(:hover, :focus-visible) {
     color: var(--darkwhite);
   }
+}
+
+/* Slide Out to Left */
+@keyframes slide-out-to-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Slide In from Right */
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Slide Out to Right */
+@keyframes slide-out-to-right {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Slide In from Left */
+@keyframes slide-in-from-left {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Determine what gets captured when the type is forward or backward */
+html:active-view-transition-type(forwards, backwards) {
+  :root {
+    view-transition-name: root;
+  }
+
+}
+
+html:active-view-transition-type(forwards) {
+  &::view-transition-old(root) {
+    animation: slide-out-to-left .65s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &::view-transition-new(root) {
+    animation: slide-in-from-right .65s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+html:active-view-transition-type(backwards) {
+  &::view-transition-old(root) {
+    animation: slide-out-to-right .65s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &::view-transition-new(root) {
+    animation: slide-in-from-left .65s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+::view-transition-group(root) {
+  animation-duration: .35s;
 }

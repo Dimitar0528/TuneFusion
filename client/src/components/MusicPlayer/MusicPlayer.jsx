@@ -7,6 +7,7 @@ import ProgressArea from "./SubComponents/ProgressArea";
 import { useNavigate } from "react-router";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import showToast from "../../utils/showToast";
+import TransitionLink from "../Common/TransitionLink";
 export default function MusicPlayer({
   userRole,
   userUUID,
@@ -46,19 +47,14 @@ export default function MusicPlayer({
       } ${showYoutubePlayer ? "more-width" : ""}`}>
       <div className="top-section">
         {userRole === "admin" && (
-          <i
-            id="edit"
-            className="fa-solid fa-pen-to-square"
-            title="Edit Song"
-            onClick={() => {
-              navigate(`/updatesong/${currentSong.name}`);
-            }}
-            tabIndex={0}
-            onKeyDown={(event) =>
-              handleKeyPressWhenTabbed(event, () =>
-                navigate(`/updatesong/${currentSong.name}`)
-              )
-            }></i>
+          <TransitionLink to={`/updatesong/${currentSong.name}`}>
+            <i
+              id="edit"
+              className="fa-solid fa-pen-to-square"
+              title="Edit Song"
+              tabIndex={0}
+              ></i>
+          </TransitionLink>
         )}
         <h2>{isPlaying ? "Playing" : "TuneFusion"}</h2>
         <i

@@ -12,6 +12,7 @@ import {
   useCreatePlaylist,
 } from "../../../hooks/CRUD-hooks/usePlaylists";
 import { useGetUserDetails } from "../../../hooks/CRUD-hooks/useUsers";
+import TransitionLink from "../../Common/TransitionLink";
 
 export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
   const { userUUID, role } = user;
@@ -356,11 +357,11 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
                       <td>
                         {track.artists.map((artist, index) => (
                           <React.Fragment key={artist.id}>
-                            <Link
+                            <TransitionLink
                               to={`/artist/${artist.name}/description`}
                               className={styles.songArtist}>
                               {artist.name}
-                            </Link>
+                            </TransitionLink>
                             {index < track.artists.length - 1 && ", "}
                           </React.Fragment>
                         ))}

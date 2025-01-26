@@ -76,38 +76,6 @@ body {
     background: var(--bg)
 }
 
-
-.scrollToTop {
-    position: fixed;
-    bottom: 2rem;
-    right: .25rem;
-    z-index: 1000;
-}
-
-.scrollButton {
-    background-color: hsl(from var(--primary-clr-light-dark) h s 18%);
-    border: none;
-    border-radius: 50%;
-    padding: .69rem;
-    color: var(--accent-clr-light);
-    cursor: pointer;
-    transition: .3s;
-    opacity: 0;
-    transform: translateY(100px);
-    visibility: hidden;
-}
-
-.scrollButton.show {
-    opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
-}
-
-.scrollButton:hover {
-    background-color: var(--secondary-clr-light);
-    color: var(--accent-clr-dark);
-}
-
 .action-btns {
     transition: .25s;
     display: flex;
@@ -244,4 +212,89 @@ body {
 .item-count.admin {
     display: inline-block;
     margin-top: .5rem;
+}
+
+/* Slide Out to Left */
+@keyframes slide-out-to-left {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+/* Slide In from Right */
+@keyframes slide-in-from-right {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Slide Out to Right */
+@keyframes slide-out-to-right {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Slide In from Left */
+@keyframes slide-in-from-left {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Determine what gets captured when the type is forward or backward */
+html:active-view-transition-type(forward, backward) {
+    :root {
+        view-transition-name: none;
+    }
+
+    .music-table,
+    .data-table,
+    .discover-playlists {
+        view-transition-name: content;
+    }
+}
+
+html:active-view-transition-type(forward) {
+    &::view-transition-old(content) {
+        animation: slide-out-to-left .4s ease-in-out;
+    }
+
+    &::view-transition-new(content) {
+        animation: slide-in-from-right .4s ease-in-out;
+    }
+}
+
+html:active-view-transition-type(backward) {
+    &::view-transition-old(content) {
+        animation: slide-out-to-right .4s ease-in-out;
+    }
+
+    &::view-transition-new(content) {
+        animation: slide-in-from-left .4s ease-in-out;
+    }
 }

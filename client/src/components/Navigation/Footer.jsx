@@ -8,17 +8,43 @@ export default function Footer({ userUUID }) {
 
   const navigate = useNavigate();
 
-  // Add view transition handler
-  const handleNavigation = (to) => {
-    if (!document.startViewTransition) {
-      navigate(to);
-      return;
-    }
+   const navigationOrder = [
+     "/",
+     `/musicplayer/${userUUID}`,
+     "/information/aboutus",
+     "/information/contactus",
+     "/information/faq",
+     `/account/${userUUID}`,
+   ];
 
-    document.startViewTransition(() => {
-      navigate(to);
-    });
-  };
+   function determineNavigationDirection(fromPath, toPath) {
+     const normalizedFromPath = fromPath.split("?")[0];
+     const normalizedToPath = toPath.split("?")[0];
+     if (normalizedFromPath === normalizedToPath) return;
+     const fromIndex = navigationOrder.findIndex(
+       (route) => route === normalizedFromPath
+     );
+     const toIndex = navigationOrder.findIndex(
+       (route) => route === normalizedToPath
+     );
+     return fromIndex < toIndex ? "forwards" : "backwards";
+   }
+   // Add view transition handler
+   const handleNavigation = (to) => {
+     const direction = determineNavigationDirection(location.pathname, to);
+     if (!document.startViewTransition) {
+       navigate(to);
+       return;
+     }
+
+     document.startViewTransition({
+       update: () => {
+         navigate(to);
+       },
+       types: ["slide", direction],
+     });
+   };
+
   const TransitionNavLink = ({ to, children, className }) => (
     <NavLink
       to={to}

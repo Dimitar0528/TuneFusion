@@ -13,7 +13,6 @@ import Footer from "./Navigation/Footer";
 import Account from "./Account/Account";
 import { useMusicPlayer } from "../contexts/MusicPlayerContext";
 import TFAVerification from "./Login/TFA";
-import ScrollToTopButton from "./ScrollToTopButton";
 import MusicPlayer from "./MusicPlayer/MusicPlayer";
 import SearchSong from "./Navigation/Information/SearchSong";
 import ArtistDescription from "./Artist/ArtistDescription";
@@ -34,7 +33,6 @@ export default function App() {
       />
 
       {userUUID && <MusicPlayer userUUID={userUUID} userRole={role} />}
-      <ScrollToTopButton />
 
       <Routes>
         {userUUID !== null && (

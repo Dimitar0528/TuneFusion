@@ -10,7 +10,7 @@ import SearchInput from "./SubComponents/SearchInput";
 import Discover from "./Tabs/Discover";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import MyLibrary from "./Tabs/MyLibrary";
-
+import TransitionLink from "../Common/TransitionLink";
 export default function Sidebar() {
   const { currentUserUUID } = useParams();
   const { user } = useMusicPlayer();
@@ -64,8 +64,6 @@ export default function Sidebar() {
             <Discover userUUID={userUUID} />
           </div>
         );
-      case "Settings":
-        return <div className="tab-content"></div>;
       default:
         return null;
     }
@@ -120,13 +118,13 @@ export default function Sidebar() {
           <div className="user-info">
             <i className="fas fa-user-secret"></i>
             <div className="user-details">
-              <Link
+              <TransitionLink
                 to={`/account/${extractUUIDPrefix(
                   currentUser.uuid
                 )}?tab=Account`}
                 className="user-name | song-artist">
                 {currentUser.name}
-              </Link>
+              </TransitionLink>
             </div>
           </div>
           <button

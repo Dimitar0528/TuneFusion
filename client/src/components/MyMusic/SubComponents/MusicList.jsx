@@ -4,10 +4,11 @@ import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatDate } from "../../../utils/formatDate";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 import ReactPaginate from "react-paginate";
+import TransitionLink from "../../Common/TransitionLink";
 import { formatTime } from "../../../utils/formatTime";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { Link, useNavigate, useLocation, useParams } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import {
   useAddSongToPlaylist,
   useRemoveSongFromPlaylist,
@@ -163,10 +164,30 @@ export default function MusicList({
     localStorage.setItem("IPP", Number(e.target.value));
     constructNavigatePlayListUrl(0);
   };
+
+  const getPaginationDirection = (newPage, currentPage) => {
+    return newPage > currentPage ? "forward" : "backward";
+  };
+
   const handlePageClick = ({ selected }) => {
-    setCurrentPage(selected);
-    constructNavigatePlayListUrl(selected);
-    localStorage.setItem("CP", selected + 1);
+    const direction = getPaginationDirection(selected, currentPage);
+
+    if (!document.startViewTransition) {
+      setCurrentPage(selected);
+      constructNavigatePlayListUrl(selected);
+      localStorage.setItem("CP", selected + 1);
+      return;
+    }
+
+    document.startViewTransition({
+      update: () => {
+        setCurrentPage(selected);
+        constructNavigatePlayListUrl(selected);
+        localStorage.setItem("CP", selected + 1);
+      },
+      types: ["slide", direction],
+    });
+
   };
 
   const offset = currentPage * itemsPerPage;
@@ -618,11 +639,11 @@ export default function MusicList({
                       <p>
                         {artistArray.map((artist, index) => (
                           <Fragment key={artist}>
-                            <Link
+                            <TransitionLink
                               className="song-artist"
                               to={`/artist/${artist}/description`}>
                               {artist}
-                            </Link>
+                            </TransitionLink>
                             {index < artistArray.length - 1 && ", "}
                           </Fragment>
                         ))}

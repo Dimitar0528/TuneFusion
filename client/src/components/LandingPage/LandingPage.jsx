@@ -7,6 +7,7 @@ import FeatureCard from "./SubComponents/FeatureCard";
 import ClientCard from "./SubComponents/ClientCard";
 import { Link, useNavigate } from "react-router";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
+import TransitionLink from "../Common/TransitionLink";
 
 export default function LandingPage({ userUUID }) {
   const { activePlaylist, currentPage } = useMusicPlayer();
@@ -92,34 +93,28 @@ export default function LandingPage({ userUUID }) {
               the essence of music streaming.
             </p>
             <div className={styles["header__btns"]}>
-              <button
+              <TransitionLink
                 className={styles["btn"]}
-                onClick={() => {
+                to={
                   userUUID
                     ? activePlaylist
-                      ? navigate(
-                          `/musicplayer/${userUUID}?playlist=${activePlaylist?.name.replace(
-                            /\s+/g,
-                            ""
-                          )}&page=${currentPage + 1}`
-                        )
-                      : navigate(
-                          `/musicplayer/${userUUID}?page=${currentPage + 1}`
-                        )
-                    : navigate("/sign-in");
-                }}>
+                      ? `/musicplayer/${userUUID}?playlist=${activePlaylist?.name.replace(
+                            /\s+/g,"")}&page=${currentPage + 1}`
+                      :`/musicplayer/${userUUID}?page=${currentPage + 1}`
+                        
+                    : "/sign-in"}>
                 {" "}
                 Get Started
                 <span>
                   <i className="fas fa-arrow-right"></i>
                 </span>
-              </button>
-              <Link to="/information/aboutus">
+              </TransitionLink>
+              <TransitionLink to="/information/aboutus">
                 See More
                 <span>
                   <i className="fas fa-arrow-right"></i>
                 </span>
-              </Link>
+              </TransitionLink>
             </div>
             <div className={styles["header__stats"]}>
               <div className={styles["header__stats__card"]}>
@@ -165,18 +160,18 @@ export default function LandingPage({ userUUID }) {
               Experience the convenience of having all your favorite music in
               one place.
             </p>
-            <button
+            <TransitionLink
               className={`${styles["btn"]} ${styles["spotify__btn"]}`}
-              onClick={() => {
+              to={
                 userUUID
-                  ? navigate(`/account/${userUUID}?tab=Spotify-Playlists`)
-                  : navigate("/sign-in");
-              }}>
+                  ? `/account/${userUUID}?tab=Spotify-Playlists`
+                  :"/sign-in"
+              }>
               Start Integration &nbsp;
               <span>
                 <i className="fas fa-arrow-right"></i>
               </span>
-            </button>
+            </TransitionLink>
           </div>
         </div>
       </section>
