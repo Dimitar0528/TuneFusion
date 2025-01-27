@@ -4,13 +4,14 @@ import { useGetUserDetails } from "../../hooks/CRUD-hooks/useUsers";
 import { useRefresh } from "../../hooks/useRefresh";
 import { useLogoutUser } from "../../hooks/CRUD-hooks/useAuth";
 import showToast from "../../utils/showToast";
-import { Link, useNavigate, useParams, Navigate } from "react-router";
+import {useNavigate, useParams, Navigate } from "react-router";
 import extractUUIDPrefix from "../../utils/extractUUIDPrefix";
 import SearchInput from "./SubComponents/SearchInput";
 import Discover from "./Tabs/Discover";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import MyLibrary from "./Tabs/MyLibrary";
 import TransitionLink from "../Common/TransitionLink";
+
 export default function Sidebar() {
   const { currentUserUUID } = useParams();
   const { user } = useMusicPlayer();
@@ -26,6 +27,7 @@ export default function Sidebar() {
   if (userUUID !== "") {
     if (currentUserUUID !== userUUID) return <Navigate to="/" replace />;
   }
+
   const toggleNavbar = () => {
     setIsNavbarActive(!isNavbarActive);
   };
@@ -48,6 +50,29 @@ export default function Sidebar() {
         true
       )
     );
+  };
+
+  const getTabDirection = (newTab, currentTab) => {
+    const tabOrder = ["My Library", "Discover"];
+    const newTabIndex = tabOrder.indexOf(newTab);
+    const currentTabIndex = tabOrder.indexOf(currentTab);
+    if (newTabIndex == currentTabIndex) return
+    return newTabIndex > currentTabIndex ? "down" : "up";
+  };
+
+  const handleTabSwitch = (newTab) => {
+    const direction = getTabDirection(newTab, activeTab);
+    if (!document.startViewTransition) {
+      setActiveTab(newTab);
+      return;
+    }
+
+    document.startViewTransition({
+      update: () => {
+        setActiveTab(newTab);
+      },
+      types: ["slide", direction],
+    });
   };
 
   const renderTabContent = () => {
@@ -94,7 +119,7 @@ export default function Sidebar() {
               className={`menu-item ${
                 activeTab === "My Library" ? "active" : ""
               }`}
-              onClick={() => setActiveTab("My Library")}>
+              onClick={() => handleTabSwitch("My Library")}>
               <div className="menu-link">
                 <i className="fas fa-book-open"></i>
                 <span className="menu-link-text">My Library</span>
@@ -105,7 +130,7 @@ export default function Sidebar() {
               className={`menu-item ${
                 activeTab === "Discover" ? "active" : ""
               }`}
-              onClick={() => setActiveTab("Discover")}>
+              onClick={() => handleTabSwitch("Discover")}>
               <div className="menu-link">
                 <i className="fas fa-circle-play"></i>
                 <span className="menu-link-text">Discover</span>

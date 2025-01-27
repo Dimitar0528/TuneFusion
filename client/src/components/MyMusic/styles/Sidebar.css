@@ -38,7 +38,7 @@ li {
 
 
 .navbar {
-    z-index: 999;
+    z-index: 101;
     width: min(2rem, 4rem);
     background: rgba(255, 255, 255, 0.25);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -301,5 +301,74 @@ li {
 
     &:where(:hover, :focus-visible) {
         scale: 1.25;
+    }
+}
+
+@keyframes slide-out-from-top {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-150%);
+    }
+}
+
+@keyframes slide-in-from-bottom {
+    from {
+        transform: translateY(200%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes slide-out-from-bottom {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(200%);
+    }
+}
+
+@keyframes slide-in-from-top {
+    from {
+        transform: translateY(-150%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+html:active-view-transition-type(up,down) {
+    .tab-content {
+        view-transition-name: tab-content;
+    }
+        .navbar{
+            view-transition-name: navbar;
+        }
+}
+
+html:active-view-transition-type(up) {
+    &::view-transition-old(tab-content) {
+        animation: slide-out-from-bottom .5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    &::view-transition-new(tab-content) {
+        animation: slide-in-from-top .5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+html:active-view-transition-type(down) {
+    &::view-transition-old(tab-content) {
+        animation: slide-out-from-top .5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    &::view-transition-new(tab-content) {
+        animation: slide-in-from-bottom .5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 }

@@ -27,8 +27,24 @@ export default function TableLayout({
     setCurrentPage(0);
   };
 
+  const getPaginationDirection = (newPage, currentPage) => {
+    return newPage > currentPage ? "forward" : "backward";
+  };
+
   const handlePageClick = ({ selected }) => {
-    setCurrentPage(selected);
+    const direction = getPaginationDirection(selected, currentPage);
+
+    if (!document.startViewTransition) {
+      setCurrentPage(selected);
+      return;
+    }
+
+    document.startViewTransition({
+      update: () => {
+        setCurrentPage(selected);
+      },
+      types: ["slide", direction],
+    });
   };
 
   const handleSearchResults = (e) => {
@@ -177,7 +193,7 @@ export default function TableLayout({
         </div>
       )}
 
-      <table className="rwd-table">
+      <table className="data-table">
         <tbody>
           <tr>
             {columns.map((column) => (

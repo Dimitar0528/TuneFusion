@@ -30,20 +30,36 @@ export default function Discover({ userUUID }) {
     (playlist) => playlist.name !== "Liked Songs"
   );
   const [currentPage, setCurrentPage] = useState(0);
-  const playlistsPerPage = 8;
+  const playlistsPerPage = 8
   const [currentUser] = useGetUserDetails(userUUID);
   const likePlaylist = useLikePlaylist();
   const unlikePlaylist = useUnlikePlaylist();
 
   const handlePlaylistClick = (playlist) => {
-    setActivePlaylist(playlist);
-    navigate(`?playlist=${playlist?.name.replace(/\s+/g, "")}&page=1`);
-    localStorage.setItem("CP", "1");
+    if (!document.startViewTransition) {
+      setActivePlaylist(playlist);
+      navigate(`?playlist=${playlist?.name.replace(/\s+/g, "")}&page=1`);
+      localStorage.setItem("CP", "1");
+      return;
+    }
+
+    document.startViewTransition(() => {
+      setActivePlaylist(playlist);
+      navigate(`?playlist=${playlist?.name.replace(/\s+/g, "")}&page=1`);
+      localStorage.setItem("CP", "1");
+    });
   };
 
   const handleCloseBtnClick = () => {
-    setActivePlaylist(null);
-    navigate(`/musicplayer/${userUUID}`);
+    if (!document.startViewTransition) {
+      setActivePlaylist(null);
+      navigate(`/musicplayer/${userUUID}`);
+      return;
+    }
+    document.startViewTransition(() => {
+      setActivePlaylist(null);
+      navigate(`/musicplayer/${userUUID}`);
+    });
   };
 
   useEffect(() => {
@@ -56,8 +72,24 @@ export default function Discover({ userUUID }) {
     };
   }, []);
 
-  const handlePageClick = (data) => {
-    setCurrentPage(data.selected);
+  const getPaginationDirection = (newPage, currentPage) => {
+    return newPage > currentPage ? "forward" : "backward";
+  };
+
+  const handlePageClick = ({ selected }) => {
+    const direction = getPaginationDirection(selected, currentPage);
+
+    if (!document.startViewTransition) {
+      setCurrentPage(selected);
+      return;
+    }
+
+    document.startViewTransition({
+      update: () => {
+        setCurrentPage(selected);
+      },
+      types: ["slide", direction],
+    });
   };
 
   const currentPlaylists = newPublicPlaylists.slice(
@@ -113,7 +145,7 @@ export default function Discover({ userUUID }) {
               {currentPlaylists.map((playlist) => (
                 <div
                   key={playlist.uuid}
-                  className="playlist-card "
+                  className="playlist-card"
                   onClick={() => handlePlaylistClick(playlist)}>
                   <img
                     src={getPlaylistImage(playlist)}
@@ -160,17 +192,19 @@ export default function Discover({ userUUID }) {
           hideRemoveSongButton={true}
         />
       )}
-      <ReactPaginate
-        previousLabel={"Previous"}
-        nextLabel={"Next"}
-        breakLabel={"..."}
-        pageCount={Math.ceil(publicPlaylists.length / playlistsPerPage)}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={3}
-        onPageChange={handlePageClick}
-        containerClassName={"pagination"}
-        activeClassName={"active"}
-      />
+      {!activePlaylist && (
+        <ReactPaginate
+          previousLabel={"Previous"}
+          nextLabel={"Next"}
+          breakLabel={"..."}
+          pageCount={Math.ceil(publicPlaylists.length / playlistsPerPage)}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={3}
+          onPageChange={handlePageClick}
+          containerClassName={"pagination"}
+          activeClassName={"active"}
+        />
+      )}
     </div>
   );
 }

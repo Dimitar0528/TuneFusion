@@ -52,8 +52,7 @@ export default function MusicList({
   const savedPage = localStorage.getItem("CP");
   const currentPage = savedPage ? Number(savedPage) - 1 : page;
   useEffect(() => {
-    const page = Number(searchParams.get("page")) || 0;
-    setCurrentPage(page - 1);
+    setCurrentPage(0);
   }, [setCurrentPage, searchParams]);
   const query = searchParams.get("q");
   const navigate = useNavigate();

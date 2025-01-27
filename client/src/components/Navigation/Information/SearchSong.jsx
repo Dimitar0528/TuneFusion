@@ -53,12 +53,9 @@ export default function SearchSong() {
 
     setLoading(false);
     return () => {
-      if (activePlaylist) {
-        setFilteredSongs(activePlaylist.Songs);
-        triggerRefreshPlaylistsHandler();
-      }
-      setFilteredSongs(songs.slice(0, 20));
-      setCurrentPage(1);
+      setFilteredSongs(songs.slice(0, 51));
+      setCurrentPage(0);
+      localStorage.setItem("CP", `${1}`);
     };
   }, [
     searchTerm,

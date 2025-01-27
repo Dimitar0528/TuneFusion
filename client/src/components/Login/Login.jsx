@@ -8,6 +8,7 @@ import {
   useLoginUser,
 } from "../../hooks/CRUD-hooks/useAuth";
 import { useTogglePasswordVisibility } from "../../hooks/useTogglePasswordVisibility";
+import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 const signUpInitialValues = {
   name: "",
   email: "",
@@ -20,6 +21,7 @@ const signInInitialValues = {
 };
 
 export default function Login() {
+  const { handleKeyPressWhenTabbed } = useMusicPlayer();
   const registerUser = useRegisterUser();
   const loginUser = useLoginUser();
   const [signUpMode, setSignUpMode] = useState(false);
@@ -104,7 +106,11 @@ export default function Login() {
                 className={`fas eye ${
                   showPassword ? "fa-eye-slash" : "fa-eye"
                 }`}
-                onClick={() => showPasswordHandler()}></i>
+                tabIndex={0}
+                onClick={() => showPasswordHandler()}
+                onKeyDown={(e) =>
+                  handleKeyPressWhenTabbed(e, showPasswordHandler)
+                }></i>
             </div>
             {signInErrors.password && (
               <p className="error">{signInErrors.password}</p>
@@ -188,7 +194,11 @@ export default function Login() {
                 className={`fas eye ${
                   showPassword ? "fa-eye-slash" : "fa-eye"
                 }`}
-                onClick={() => showPasswordHandler()}></i>
+                tabIndex={0}
+                onClick={() => showPasswordHandler()}
+                onKeyDown={(e) =>
+                  handleKeyPressWhenTabbed(e, showPasswordHandler)
+                }></i>
             </div>
             {signUpErrors.password && (
               <p className="error">{signUpErrors.password}</p>

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import ReactPlayer from "react-player/lazy";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
 import { formatTime } from "../../../utils/formatTime";
-import SkipNotification from "../../SkipNotification";
+import SkipNotification from "./SkipNotification";
 
 export default function ProgressArea() {
   const {

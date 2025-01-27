@@ -21,6 +21,8 @@
 
         &:disabled {
             background-color: hsl(from var(--primary-clr) h s 70%);
+            color: black;
+            opacity: .5;
             cursor: not-allowed !important;
         }
 

@@ -6,57 +6,57 @@
     margin-inline: auto;
 }
 
-.rwd-table {
+.data-table {
     margin-inline: auto;
     width: clamp(280px, 85vw, 100%);
     border-collapse: collapse;
 }
 
-.rwd-table tr:first-child {
+.data-table tr:first-child {
     background: #fff;
     color: black;
     border-bottom: 2px solid black;
 }
 
-.rwd-table tr {
+.data-table tr {
     border: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
     background-color: #fff;
     color: var(--text-dark-clr);
 }
 
-.rwd-table th {
+.data-table th {
     border: 1px solid #ddd;
 
 }
 
-.rwd-table tr:nth-child(odd):not(:first-child) {
+.data-table tr:nth-child(odd):not(:first-child) {
     background-color: hsl(0, 0%, 95%);
 }
 
-.rwd-table th {
+.data-table th {
     display: none;
 }
 
-.rwd-table td {
+.data-table td {
     border-inline: 1px solid hsl(0, 0%, 70%);
 }
 
-.rwd-table td:first-child {
+.data-table td:first-child {
     margin-top: .5em;
 }
 
-.rwd-table td:last-child {
+.data-table td:last-child {
     margin-bottom: .5em;
 }
 
-.rwd-table td {
+.data-table td {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.rwd-table td:before {
+.data-table td:before {
     content: attr(data-th) ": ";
     font-weight: bold;
     width: 200px;
@@ -64,36 +64,36 @@
     color: #000;
 }
 
-.rwd-table th,
-.rwd-table td {
+.data-table th,
+.data-table td {
     text-align: center;
 }
 
 
 
 @media screen and (max-width: 601px) {
-    .rwd-table tr:nth-child(2) {
+    .data-table tr:nth-child(2) {
         border-top: none;
     }
 }
 
 @media screen and (min-width: 900px) {
-    .rwd-table tr:hover:not(:first-child) {
+    .data-table tr:hover:not(:first-child) {
         transition: .25s;
         background-color: var(--darkwhite)
     }
 
-    .rwd-table td:before {
+    .data-table td:before {
         display: none;
     }
 
-    .rwd-table th,
-    .rwd-table td {
+    .data-table th,
+    .data-table td {
         display: table-cell;
     }
 
-    .rwd-table th,
-    .rwd-table td {
+    .data-table th,
+    .data-table td {
         padding: .3em !important;
     }
 }
