@@ -1,22 +1,31 @@
 import { Route, Routes, Navigate } from "react-router";
 import { ToastContainer } from "react-toastify";
-import LandingPage from "./LandingPage/LandingPage";
-import AboutUs from "./Navigation/Information/AboutUs";
-import Login from "./Login/Login";
-import Faq from "./Navigation/Information/Faq";
-import Sidebar from "./MyMusic/Sidebar";
-import SongManagerHandler from "./Account/SubComponents/SongManagerHandler";
-import ProtectedRouteGuard from "./ProtectedRouteGuard";
-import ContactUs from "./Navigation/Information/ContactUs";
-import Header from "./Navigation/Header";
-import Footer from "./Navigation/Footer";
-import Account from "./Account/Account";
+import { lazy } from "react";
 import { useMusicPlayer } from "../contexts/MusicPlayerContext";
-import TFAVerification from "./Login/TFA";
-import MusicPlayer from "./MusicPlayer/MusicPlayer";
-import SearchSong from "./Navigation/Information/SearchSong";
-import ArtistDescription from "./Artist/ArtistDescription";
-import SpotifyRedirect from "./Account/SubComponents/SpotifyRedirect";
+import { Suspense } from "react";
+import './MyMusic/SubComponents/styles/MusicList.css'
+// Dynamically imported components
+const AboutUs = lazy(() => import("./Navigation/Information/AboutUs"));
+const Login = lazy(() => import("./Login/Login"));
+const Faq = lazy(() => import("./Navigation/Information/Faq"));
+const Sidebar = lazy(() => import("./MyMusic/Sidebar"));
+const SongManagerHandler = lazy(() =>
+  import("./Account/SubComponents/SongManagerHandler")
+);
+const ProtectedRouteGuard = lazy(() => import("./ProtectedRouteGuard"));
+const ContactUs = lazy(() => import("./Navigation/Information/ContactUs"));
+const Header = lazy(() => import("./Navigation/Header"));
+const Footer = lazy(() => import("./Navigation/Footer"));
+const Account = lazy(() => import("./Account/Account"));
+const TFAVerification = lazy(() => import("./Login/TFA"));
+const SearchSong = lazy(() => import("./Navigation/Information/SearchSong"));
+const ArtistDescription = lazy(() => import("./Artist/ArtistDescription"));
+const SpotifyRedirect = lazy(() =>
+  import("./Account/SubComponents/SpotifyRedirect")
+);
+const LandingPage = lazy(() => import("./LandingPage/LandingPage"));
+const MusicPlayer = lazy(() => import("./MusicPlayer/MusicPlayer"));
+
 export default function App() {
   const { user } = useMusicPlayer();
   const { userUUID, role } = user;
@@ -41,7 +50,14 @@ export default function App() {
         {userUUID !== null && (
           <Route path={"/callback"} element={<SpotifyRedirect />} />
         )}
-        <Route path="/" element={<LandingPage userUUID={userUUID} />} />
+        <Route
+          path="/"
+          element={
+            <Suspense fallback={<div style={{ height: "100vh" }} />}>
+              <LandingPage userUUID={userUUID} />
+            </Suspense>
+          }
+        />
         <Route
           path={"/musicplayer/:currentUserUUID"}
           element={

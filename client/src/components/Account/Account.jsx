@@ -26,19 +26,16 @@ export default function Account() {
     useMusicPlayer();
   const { userUUID } = user;
 
-  // Redirect if currentUserUUID does not match userUUID
-  if (userUUID !== "" && currentUserUUID !== userUUID)
-    return <Navigate to="/" replace />;
-
+  
   const [refreshUserFlag, triggerRefreshUserHandler] = useRefresh();
   const [refreshUsersFlag, triggerRefreshUsersHandler] = useRefresh();
   const [currentUser] = useGetUserDetails(currentUserUUID, refreshUserFlag);
-
+  
   const updateUnderlinePosition = (element) => {
     underlineRef.current.style.width = `${element.offsetWidth}px`;
     underlineRef.current.style.left = `${element.offsetLeft}px`;
   };
-
+  
   const tabs = [
     "Song-Suggestions",
     "Songs",
@@ -54,7 +51,7 @@ export default function Account() {
     contentsRef,
     updateUnderline,
   } = useTabs();
-
+  
   const updateUrlWithTab = (tab) => {
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("tab", tab.replace(/\s+/g, "-"));
@@ -63,7 +60,7 @@ export default function Account() {
     });
     setActiveTab(tab);
   };
-
+  
   useTabEventListeners(
     tabsRef,
     activeTab,
@@ -71,7 +68,11 @@ export default function Account() {
     updateUnderline,
     updateUnderlinePosition
   );
-
+  // Redirect if currentUserUUID does not match userUUID
+  if (userUUID !== "" && currentUserUUID !== userUUID)
+    return <Navigate to="/" replace />;
+  
+  
   // Add view transition handler
   const handleTabTransition = (tab) => {
     if (!document.startViewTransition) {

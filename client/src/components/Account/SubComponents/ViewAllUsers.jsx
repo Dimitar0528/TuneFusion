@@ -7,7 +7,7 @@ import {
 } from "../../../hooks/CRUD-hooks/useUsers";
 import showToast from "../../../utils/showToast";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
-import ConfirmDialog from "../../ConfirmDialog";
+import ConfirmDialog from "../../Common/ConfirmDialog";
 
 export default function ViewAllUsers({
   refreshFlag,

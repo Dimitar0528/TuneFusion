@@ -47,12 +47,11 @@ export default function MusicPlayer({
       } ${showYoutubePlayer ? "more-width" : ""}`}>
       <div className="top-section">
         {userRole === "admin" && (
-          <TransitionLink to={`/updatesong/${currentSong.name}`}>
+          <TransitionLink to={`/updatesong/${currentSong?.name}`}>
             <i
               id="edit"
               className="fa-solid fa-pen-to-square"
               title="Edit Song"
-              tabIndex={0}
               ></i>
           </TransitionLink>
         )}

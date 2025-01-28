@@ -13,7 +13,7 @@ import {
   useResetPassword,
 } from "../../../hooks/CRUD-hooks/useUsers";
 import { useTogglePasswordVisibility } from "../../../hooks/useTogglePasswordVisibility";
-import ConfirmDialog from "../../ConfirmDialog";
+import ConfirmDialog from "../../Common/ConfirmDialog";
 
 const initialUserData = {
   name: "",
