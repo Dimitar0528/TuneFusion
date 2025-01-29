@@ -16,6 +16,7 @@ import { useNavigate } from "react-router";
 import { useGetUserDetails } from "../../../hooks/CRUD-hooks/useUsers";
 import extractUUIDPrefix from "../../../utils/extractUUIDPrefix";
 import { getPlaylistImage } from "../../../utils/getPlaylistImage";
+
 const initialPlaylistValues = {
   name: "",
   description: "",
@@ -39,13 +40,33 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [playlistToDelete, setPlaylistToDelete] = useState(null);
+  const [deletingPlaylistUUID, setDeletingPlaylistUUID] = useState(null);
 
   const createPlaylist = useCreatePlaylist();
   const editPlaylist = useEditPlaylist();
   const deletePlaylist = useDeletePlaylist();
   const unlikePlaylist = useUnlikePlaylist();
   const [currentUser] = useGetUserDetails(userUUID);
+
   const onSubmit = async (values) => {
+    if (editingPlaylist) {
+      // Directly edit playlist without view transition
+      await handleCreateOrEditPlaylist(values);
+      return;
+    }
+
+    // Only apply view transition for new playlist creation
+    if (!document.startViewTransition) {
+      await handleCreateOrEditPlaylist(values, true);
+      return;
+    }
+
+    document.startViewTransition(async () => {
+      await handleCreateOrEditPlaylist(values, true);
+    });
+  };
+
+  const handleCreateOrEditPlaylist = async (values, isNewPlaylist = false) => {
     const reqObj = {
       ...values,
       created_by: currentUser.name,
@@ -64,8 +85,25 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
         })
       );
     } else {
-      createPlaylist(reqObj, triggerRefreshHandler);
+      await createPlaylist(reqObj, triggerRefreshHandler);
+
+      if (isNewPlaylist) {
+        // Ensure animation after playlist is created
+        setTimeout(() => {
+          const newPlaylistElement = document.querySelector(
+            `.playlist`
+          );
+          if (newPlaylistElement) {
+            newPlaylistElement.classList.add("creating");
+
+            setTimeout(() => {
+              newPlaylistElement.classList.remove("creating");
+            }, 300);
+          }
+        }, 60); // Small delay to ensure the element exists in the DOM
+      }
     }
+
     handleDialogClose();
   };
 
@@ -82,51 +120,66 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
       activePlaylist?.name === playlist.name ? null : playlist;
 
     if (!document.startViewTransition) {
-      setActivePlaylist(newActivePlaylist);
-      setCurrentPage(0);
-      localStorage.setItem("CP", `${1}`);
-
-      if (newActivePlaylist) {
-        navigate(
-          `?playlist=${newActivePlaylist.name.replace(/\s+/g, "")}&page=1`
-        );
-         const playlistWithUuid = { ...playlist };
-         localStorage.setItem(
-           "activePlaylist",
-           JSON.stringify(playlistWithUuid)
-         );
-      } else {
-        navigate(`?page=1`);
-        localStorage.removeItem("activePlaylist");
-      }
+      updateActivePlaylist(newActivePlaylist, playlist);
       return;
     }
 
     document.startViewTransition(() => {
-      setActivePlaylist(newActivePlaylist);
-      setCurrentPage(0);
-      localStorage.setItem("CP", `${1}`);
-
-      if (newActivePlaylist) {
-        navigate(
-          `?playlist=${newActivePlaylist.name.replace(/\s+/g, "")}&page=1`
-        );
-         const playlistWithUuid = { ...playlist };
-         localStorage.setItem(
-           "activePlaylist",
-           JSON.stringify(playlistWithUuid)
-         );
-      } else {
-         navigate(`?page=1`);
-        localStorage.removeItem("activePlaylist");
-      }
+      updateActivePlaylist(newActivePlaylist, playlist);
     });
   };
+
+  const updateActivePlaylist = (newActivePlaylist, playlist) => {
+    setActivePlaylist(newActivePlaylist);
+    setCurrentPage(0);
+    localStorage.setItem("CP", "1");
+
+    if (newActivePlaylist) {
+      navigate(
+        `?playlist=${newActivePlaylist.name.replace(/\s+/g, "")}&page=1`
+      );
+      const playlistWithUuid = { ...playlist };
+      localStorage.setItem("activePlaylist", JSON.stringify(playlistWithUuid));
+    } else {
+      navigate(`?page=1`);
+      localStorage.removeItem("activePlaylist");
+    }
+  };
+
+  
+const handleDeletePlaylist = (playlist) => {
+  setDeletingPlaylistUUID(playlist.uuid);
+
+  if (!document.startViewTransition) {
+    setTimeout(() => {
+      performDelete(playlist);
+    }, 300); 
+    return;
+  }
+
+  document.startViewTransition(() => {
+    setTimeout(() => {
+      performDelete(playlist);
+    }, 300);
+  });
+};
+
+const performDelete = async (playlist) => {
+  const callback = () => {
+    if (playlist.name === activePlaylist?.name) {
+      localStorage.removeItem("activePlaylist");
+      setActivePlaylist(null);
+    }
+  };
+
+  await deletePlaylist(playlist.uuid, callback, triggerRefreshHandler);
+  setDeletingPlaylistUUID(null);
+};
 
   const handleCreatePlaylist = () => {
     setValuesWrapper(initialPlaylistValues);
     setEditingPlaylist(null);
-    setShowDialog(true);
+      setShowDialog(true);
   };
 
   const handleEditPlaylist = (e, playlist) => {
@@ -141,21 +194,10 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
     setShowDialog(true);
   };
 
-  const handleDeletePlaylist = async (playlist) => {
-    const callback = () => {
-      if (playlist.name === activePlaylist?.name) {
-        localStorage.removeItem("activePlaylist");
-        setActivePlaylist(null);
-      }
-    };
-    deletePlaylist(playlist.uuid, callback, triggerRefreshHandler);
-  };
-
   const handleDeleteClick = (e, playlist) => {
     e.stopPropagation();
-
     setPlaylistToDelete(playlist);
-    setIsModalOpen(true);
+      setIsModalOpen(true);
   };
 
   const confirmDelete = () => {
@@ -167,48 +209,69 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
   };
 
   const cancelDelete = () => {
-    setIsModalOpen(false);
-    setPlaylistToDelete(null);
+      setIsModalOpen(false);
+      setPlaylistToDelete(null);
   };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredPlaylists = playlists.filter((playlist) => {
-    const isOwnPlaylist = playlist.created_by === currentUser?.name;
-    const isLikedPlaylist = playlist.liked_by?.includes(currentUser?.name);
-    return (
-      (isOwnPlaylist || isLikedPlaylist) &&
-      playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  const filteredPlaylists = playlists
+    .filter((playlist) => {
+      const isOwnPlaylist = playlist.created_by === currentUser?.name;
+      const isLikedPlaylist = playlist.liked_by?.includes(currentUser?.name);
+      return (
+        (isOwnPlaylist || isLikedPlaylist) &&
+        playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    })
 
-  const handleUnlikePlaylist = (e, playlist) => {
-    e.stopPropagation();
-    if (playlist.name === activePlaylist?.name) {
-      localStorage.removeItem("activePlaylist");
-      setActivePlaylist(null);
-    }
-    unlikePlaylist(
-      playlist.uuid,
-      extractUUIDPrefix(currentUser.uuid),
-      triggerRefreshHandler
-    );
-  };
 
-  const handleDialogClose = () => {
-    const dialog = document.querySelector(".modal");
-    dialog.classList.add("closing");
-    dialog.addEventListener(
-      "animationend",
-      () => {
-        dialog.classList.remove("closing");
-        setShowDialog(false);
-      },
-      { once: true }
-    );
-  };
+
+    const handleUnlikePlaylist = (e,playlist) => {
+      e.stopPropagation();
+      setDeletingPlaylistUUID(playlist.uuid);
+
+      if (!document.startViewTransition) {
+        setTimeout(() => {
+          performUnlike(playlist);
+        }, 300);
+        return;
+      }
+
+      document.startViewTransition(() => {
+        setTimeout(() => {
+          performUnlike(playlist);
+        }, 300);
+      });
+      const performUnlike = async (playlist) => {
+        if (playlist.name === activePlaylist?.name) {
+          localStorage.removeItem("activePlaylist");
+          setActivePlaylist(null);
+        }
+        unlikePlaylist(
+          playlist.uuid,
+          extractUUIDPrefix(currentUser.uuid),
+          triggerRefreshHandler
+        );
+        setDeletingPlaylistUUID(null);
+      };
+    };
+
+   const handleDialogClose = () => {
+     const dialog = document.querySelector(".modal");
+     dialog.classList.add("closing");
+     dialog.addEventListener(
+       "animationend",
+       () => {
+         dialog.classList.remove("closing");
+         setShowDialog(false);
+       },
+       { once: true }
+     );
+   };
+
 
   const cancelHandler = () => {
     handleDialogClose();
@@ -261,7 +324,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
                 key={playlist.uuid}
                 className={`playlist ${
                   activePlaylist?.name === playlist.name && "active"
-                }`}>
+                } ${deletingPlaylistUUID === playlist.uuid ? "deleting" : ""}`}>
                 <div
                   tabIndex={0}
                   className={`playlist-title`}

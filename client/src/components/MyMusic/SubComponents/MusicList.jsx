@@ -187,7 +187,6 @@ export default function MusicList({
       },
       types: ["slide", direction],
     });
-
   };
 
   const offset = currentPage * itemsPerPage;
@@ -228,7 +227,11 @@ export default function MusicList({
     setSelectedSong(null);
   };
 
-  const handleRemoveSongFromPlaylist = (song, playlistName,isLikedSong = false) => {
+  const handleRemoveSongFromPlaylist = (
+    song,
+    playlistName,
+    isLikedSong = false
+  ) => {
     const performRemoveSongFromPlaylist = () => {
       const reqObj = {
         songUUID: song.uuid,
@@ -238,13 +241,13 @@ export default function MusicList({
       removeSongFromPlaylist(reqObj, triggerRefreshHandler);
       setDeletingSongUUID(null);
     };
-    
+
     if (isLikedSong) {
       performRemoveSongFromPlaylist();
       return;
     }
     setDeletingSongUUID(song.uuid);
-    
+
     if (!document.startViewTransition) {
       setTimeout(() => {
         performRemoveSongFromPlaylist();
@@ -259,7 +262,6 @@ export default function MusicList({
     });
   };
 
-
   const handleToggleLikedSong = async (song) => {
     const likedSongsPlaylist = playlists.filter((playlist) => {
       return playlist.name === "Liked Songs";
@@ -271,8 +273,8 @@ export default function MusicList({
       updatedLikedSongs = likedSongs.filter((uuid) => uuid !== songUUID);
       setLikedSongs(updatedLikedSongs);
       localStorage.setItem("likedSongs", JSON.stringify(updatedLikedSongs));
-      handleRemoveSongFromPlaylist(song, likedSongsPlaylist[0].name);
-      return
+      handleRemoveSongFromPlaylist(song, likedSongsPlaylist[0].name, true);
+      return;
     } else {
       const reqObj = {
         songName: song.name,
@@ -416,31 +418,31 @@ export default function MusicList({
     };
   }, [setCurrentFilteredSongs]);
 
-   const [pageRangeDisplayed, setPageRangeDisplayed] = useState(0);
-   const [marginPagesDisplayed, setMarginPagesDisplayed] = useState(0);
+  const [pageRangeDisplayed, setPageRangeDisplayed] = useState(0);
+  const [marginPagesDisplayed, setMarginPagesDisplayed] = useState(0);
 
-   const updatePaginationDisplay = () => {
-     const width = window.innerWidth;
-      if (width > 768) {
-       setPageRangeDisplayed(3);
-       setMarginPagesDisplayed(2);
-     } else if (width > 420) {
-       setPageRangeDisplayed(1);
-       setMarginPagesDisplayed(1);
-     } else{
-        setMarginPagesDisplayed(0);
-     }
-   };
+  const updatePaginationDisplay = () => {
+    const width = window.innerWidth;
+    if (width > 768) {
+      setPageRangeDisplayed(3);
+      setMarginPagesDisplayed(2);
+    } else if (width > 420) {
+      setPageRangeDisplayed(1);
+      setMarginPagesDisplayed(1);
+    } else {
+      setMarginPagesDisplayed(0);
+    }
+  };
 
-   useEffect(() => {
-     updatePaginationDisplay();
+  useEffect(() => {
+    updatePaginationDisplay();
 
-     window.addEventListener("resize", updatePaginationDisplay);
+    window.addEventListener("resize", updatePaginationDisplay);
 
-     return () => {
-       window.removeEventListener("resize", updatePaginationDisplay);
-     };
-   }, []);
+    return () => {
+      window.removeEventListener("resize", updatePaginationDisplay);
+    };
+  }, []);
 
   return (
     <div className="music-list" style={styles}>
