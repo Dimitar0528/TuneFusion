@@ -78,6 +78,7 @@ export default function MusicList({
   const [selectedSongs, setSelectedSongs] = useState([]);
   const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
   const [sortHistory, setSortHistory] = useState([]);
+  const [deletingSongUUID, setDeletingSongUUID] = useState(null);
 
   const [currentHistoryIndex, setCurrentHistoryIndex] = useState(-1);
   if (!activePlaylist && songs.length > 20) {
@@ -227,14 +228,37 @@ export default function MusicList({
     setSelectedSong(null);
   };
 
-  const handleRemoveSongFromPlaylist = async (song, playlistName) => {
-    const reqObj = {
-      songUUID: song.uuid,
-      playlistName: playlistName,
-      userUUID: user.userUUID,
+  const handleRemoveSongFromPlaylist = (song, playlistName,isLikedSong = false) => {
+    const performRemoveSongFromPlaylist = () => {
+      const reqObj = {
+        songUUID: song.uuid,
+        playlistName: playlistName,
+        userUUID: user.userUUID,
+      };
+      removeSongFromPlaylist(reqObj, triggerRefreshHandler);
+      setDeletingSongUUID(null);
     };
-    removeSongFromPlaylist(reqObj, triggerRefreshHandler);
+    
+    if (isLikedSong) {
+      performRemoveSongFromPlaylist();
+      return;
+    }
+    setDeletingSongUUID(song.uuid);
+    
+    if (!document.startViewTransition) {
+      setTimeout(() => {
+        performRemoveSongFromPlaylist();
+      }, 300);
+      return;
+    }
+
+    document.startViewTransition(() => {
+      setTimeout(() => {
+        performRemoveSongFromPlaylist();
+      }, 300);
+    });
   };
+
 
   const handleToggleLikedSong = async (song) => {
     const likedSongsPlaylist = playlists.filter((playlist) => {
@@ -246,8 +270,9 @@ export default function MusicList({
     if (isLiked) {
       updatedLikedSongs = likedSongs.filter((uuid) => uuid !== songUUID);
       setLikedSongs(updatedLikedSongs);
-      handleRemoveSongFromPlaylist(song, likedSongsPlaylist[0].name);
       localStorage.setItem("likedSongs", JSON.stringify(updatedLikedSongs));
+      handleRemoveSongFromPlaylist(song, likedSongsPlaylist[0].name);
+      return
     } else {
       const reqObj = {
         songName: song.name,
@@ -280,7 +305,7 @@ export default function MusicList({
       } else if (shiftKey && lastSelectedIndex !== null) {
         const start = Math.min(lastSelectedIndex, index);
         const end = Math.max(lastSelectedIndex, index);
-        const rangeSelection = currentSongs
+        const rangeSelection = filteredSongs
           .slice(start, end + 1)
           .map((s) => s.uuid);
         setSelectedSongs(rangeSelection);
@@ -289,13 +314,13 @@ export default function MusicList({
         setLastSelectedIndex(index);
       }
     },
-    [lastSelectedIndex, currentSongs, selectedSongs]
+    [lastSelectedIndex, filteredSongs, selectedSongs]
   );
 
   const handleDragAndDrop = async () => {
     if (!dragOverSong || !activePlaylist) return;
 
-    const newSongs = [...currentSongs];
+    const newSongs = [...filteredSongs];
     const draggedSongs =
       selectedSongs.length > 0 ? selectedSongs : [draggedSong];
 
@@ -390,6 +415,32 @@ export default function MusicList({
       setCurrentFilteredSongs([]);
     };
   }, [setCurrentFilteredSongs]);
+
+   const [pageRangeDisplayed, setPageRangeDisplayed] = useState(0);
+   const [marginPagesDisplayed, setMarginPagesDisplayed] = useState(0);
+
+   const updatePaginationDisplay = () => {
+     const width = window.innerWidth;
+      if (width > 768) {
+       setPageRangeDisplayed(3);
+       setMarginPagesDisplayed(2);
+     } else if (width > 420) {
+       setPageRangeDisplayed(1);
+       setMarginPagesDisplayed(1);
+     } else{
+        setMarginPagesDisplayed(0);
+     }
+   };
+
+   useEffect(() => {
+     updatePaginationDisplay();
+
+     window.addEventListener("resize", updatePaginationDisplay);
+
+     return () => {
+       window.removeEventListener("resize", updatePaginationDisplay);
+     };
+   }, []);
 
   return (
     <div className="music-list" style={styles}>
@@ -539,6 +590,7 @@ export default function MusicList({
                         : ""
                     }
                     ${selectedSongs.includes(song.uuid) ? "selected" : ""}
+                    ${deletingSongUUID === song.uuid ? "deleting" : ""}
                   `}
                   draggable={
                     sortOption === "custom" &&
@@ -722,6 +774,8 @@ export default function MusicList({
 
       {pageCount > 1 && (
         <ReactPaginate
+          pageRangeDisplayed={pageRangeDisplayed}
+          marginPagesDisplayed={marginPagesDisplayed}
           forcePage={currentPage}
           previousLabel={<i className="fas fa-arrow-left"></i>}
           nextLabel={<i className="fas fa-arrow-right"></i>}

@@ -114,12 +114,16 @@
         & td:nth-child(5) {
             display: none;
         }
+        & th:nth-child(6),
+        & td:nth-child(6) {
+            display: none;
+        }
     }
 }
 
 .music-table th,
 .music-table td {
-    padding: 8px;
+    padding: 6px 8px;
     text-align: left;
     border-bottom: 1px solid #dddddd;
 }
@@ -269,7 +273,7 @@
     padding: 0.5rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 1rem;
+    font-size: .9rem;
 }
 
 .sort-controls label {

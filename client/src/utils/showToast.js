@@ -2,6 +2,9 @@ import { toast } from "react-toastify";
 
 export default function showToast(message, message_type, autoClose = 2000, triggerRefresh = false, triggerFullReload = false) {
     toast(message, {
+        style:{
+            viewTransitionName: 'toast',
+        },
         type: message_type,
         position: 'top-right',
         autoClose: autoClose,

@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Link } from "react-router";
 import { Fragment } from "react";
 import TableLayout from "../TableLayout";
 import { useMusicPlayer } from "../../../contexts/MusicPlayerContext";
@@ -129,7 +128,7 @@ export default function ViewAllSongs({
                 <div className="cta-admin-buttons">
                   <button>
                     <TransitionLink to={`/updatesong/${song.name}`}>
-                      Edit
+                      <span style={{color: 'black'}}>Edit</span>
                     </TransitionLink>
                   </button>
                   <button onClick={() => handleDeleteClick(song)}>

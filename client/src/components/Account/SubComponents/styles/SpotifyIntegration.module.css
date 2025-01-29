@@ -23,6 +23,7 @@
     color: var(--accent-clr-light);
     padding: .5rem;
     border-radius: .5rem;
+    
 }
 
 .playlistName {
@@ -94,6 +95,9 @@
 }
 
 @media (max-width: 768px) {
+    .playlistHeader img{
+        width: 40px;
+    }
     .spotifyIntegration {
         width: 90%;
         padding: 15px;
@@ -118,12 +122,14 @@
     }
 
     .pagination {
-        flex-direction: column;
         align-items: center;
     }
 
     .pagination button {
         padding: 8px 15px;
+    }
+    .playlistName {
+        font-size: 1em;
     }
 }
 
@@ -134,7 +140,7 @@
     }
 
     .playlistName {
-        font-size: 1em;
+        font-size: .8em;
     }
 
     .playlistTable th,
@@ -165,6 +171,11 @@
     position: relative;
     z-index: 1;
     transition: color 400ms;
+    @media (width < 650px){
+        padding: .1rem;
+        border: transparent;
+        text-transform: none;
+    }
 }
 
 .movePlaylistBtn::before {

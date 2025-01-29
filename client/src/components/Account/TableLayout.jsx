@@ -93,6 +93,32 @@ export default function TableLayout({
     filteredData.length
   );
 
+     const [pageRangeDisplayed, setPageRangeDisplayed] = useState(0);
+     const [marginPagesDisplayed, setMarginPagesDisplayed] = useState(0);
+
+     const updatePaginationDisplay = () => {
+       const width = window.innerWidth;
+       if (width > 768) {
+         setPageRangeDisplayed(3);
+         setMarginPagesDisplayed(2);
+       } else if (width > 420) {
+         setPageRangeDisplayed(1);
+         setMarginPagesDisplayed(1);
+       } else {
+         setMarginPagesDisplayed(0);
+       }
+     };
+
+     useEffect(() => {
+       updatePaginationDisplay();
+
+       window.addEventListener("resize", updatePaginationDisplay);
+
+       return () => {
+         window.removeEventListener("resize", updatePaginationDisplay);
+       };
+     }, []);
+
   return (
     <div className="table-container">
       <div
@@ -213,6 +239,8 @@ export default function TableLayout({
       </table>
       {pageCount > 1 && (
         <ReactPaginate
+          pageRangeDisplayed={pageRangeDisplayed}
+          marginPagesDisplayed={marginPagesDisplayed}
           forcePage={currentPage}
           previousLabel={<i className="fas fa-arrow-left"></i>}
           nextLabel={<i className="fas fa-arrow-right"></i>}

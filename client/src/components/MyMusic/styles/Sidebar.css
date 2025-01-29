@@ -372,3 +372,35 @@ html:active-view-transition-type(down) {
         animation: slide-in-from-bottom .5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 }
+
+@keyframes slideOutUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-80px);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-80px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.deleting {
+    animation: slideOutUp .3s ease-in-out forwards;
+}
+
+.playlist.creating {
+    animation: slideInDown .3s ease-in-out forwards;
+}
