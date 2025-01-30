@@ -58,6 +58,9 @@ label {
     .controls {
         margin: 2rem .3rem;
     }
+         @media (width < 900px) {
+            z-index: 102;
+         }
 }
 
 .wrapper.collapsed {
@@ -99,7 +102,6 @@ label {
         display: grid;
         grid-template-columns: 1fr;
         max-height: 175px;
-
 
         .controls {
             justify-content: center;

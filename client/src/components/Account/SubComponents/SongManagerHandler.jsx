@@ -58,17 +58,6 @@ export default function SongManagerHandler({ action }) {
       </h1>
       <form className={styles.songForm} onSubmit={submitHandler}>
         <div className={styles.formGroup}>
-          <label>Song Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={values.name}
-            onChange={changeHandler}
-            placeholder="Lose Yourself"
-          />
-          {errors.name && <span className="error">{errors.name}</span>}
-        </div>
-        <div className={styles.formGroup}>
           <label>Artist:</label>
           <input
             type="text"
@@ -78,6 +67,17 @@ export default function SongManagerHandler({ action }) {
             placeholder="Eminem"
           />
           {errors.artist && <span className="error">{errors.artist}</span>}
+        </div>
+        <div className={styles.formGroup}>
+          <label>Song Name:</label>
+          <input
+            type="text"
+            name="name"
+            value={values.name}
+            onChange={changeHandler}
+            placeholder="Lose Yourself"
+          />
+          {errors.name && <span className="error">{errors.name}</span>}
         </div>
         <div className={styles.formGroup}>
           <label>Image URL:</label>

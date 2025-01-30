@@ -16,6 +16,7 @@ export function MusicPlayerProvider({ children }) {
   const [user] = useGetUserAuthToken();
 
   const [filteredSongs, setFilteredSongs] = useState([]);
+  const [currentFilteredSongs, setCurrentFilteredSongs] = useState([]);
   const [refreshPlaylistsFlag, triggerRefreshPlaylistsHandler] = useRefresh();
   const [refreshSongsFlag, triggerRefreshSongsHandler] = useRefresh();
 
@@ -210,8 +211,6 @@ export function MusicPlayerProvider({ children }) {
         2800
       );
   };
-
-  const [currentFilteredSongs, setCurrentFilteredSongs] = useState([]);
 
   const contextValue = {
     songs,

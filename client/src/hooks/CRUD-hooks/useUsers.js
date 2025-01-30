@@ -82,7 +82,7 @@ export function useGetUserDetails(userUUID, refreshFlag = false) {
 
         async function getUserDetails() {
             const result = await userAPI.getUser(userUUID);
-            if (result.error) return showToast(`Error: ${result.error}`, "error")
+            if (result?.error) return showToast(`Error: ${result.error}`, "error")
             setUser(result);
         }
         getUserDetails();

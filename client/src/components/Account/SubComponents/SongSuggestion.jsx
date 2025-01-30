@@ -44,9 +44,8 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
         <h2>Song Suggestions</h2>
         <p>
           Use this feature to search for songs by artist or genre. Enter the
-          artist&apos;s name or the genre to find
-          songs. You can then add any song from the search results to the
-          TuneFusion database.
+          artist&apos;s name or the genre to find songs. You can then add any
+          song from the search results to the TuneFusion database.
         </p>
       </div>
       <form
@@ -77,7 +76,7 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
       </form>
       {loading ? (
         <div style={{ marginTop: "2rem" }}>
-          <table className="rwd-table">
+          <table className="data-table">
             <thead>
               <tr>
                 <th>Image</th>
@@ -151,7 +150,9 @@ export default function SongSuggestion({ triggerRefreshHandler }) {
                 <td data-th="Duration">{formatTime(song.duration)}</td>
                 <td data-th="Actions">
                   <div className="cta-admin-buttons">
-                    <button title={`Add ${song.name} to DB`} onClick={() => handleAddToDB(song)}>
+                    <button
+                      title={`Add ${song.name} to DB`}
+                      onClick={() => handleAddToDB(song)}>
                       Add song to DB
                     </button>
                   </div>

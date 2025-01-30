@@ -1,16 +1,17 @@
-import React, { useEffect, lazy, Suspense } from "react";
-
-// Lazy loading components
-const GenreCard = lazy(() => import("./SubComponents/GenreCard"));
-const FeatureCard = lazy(() => import("./SubComponents/FeatureCard"));
-const ClientCard = lazy(() => import("./SubComponents/ClientCard"));
-const Swiper = lazy(() => import("swiper/bundle"));
+import { useEffect } from "react";
 import ScrollReveal from "scrollreveal";
+import Swiper from "swiper/bundle";
 import styles from "./styles/LandingPage.module.css";
+import GenreCard from "./SubComponents/GenreCard";
+import FeatureCard from "./SubComponents/FeatureCard";
+import ClientCard from "./SubComponents/ClientCard";
+import { Link, useNavigate } from "react-router";
 import { useMusicPlayer } from "../../contexts/MusicPlayerContext";
 import TransitionLink from "../Common/TransitionLink";
+
 export default function LandingPage({ userUUID }) {
   const { activePlaylist, currentPage } = useMusicPlayer();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const scrollRevealOption = {
@@ -62,6 +63,15 @@ export default function LandingPage({ userUUID }) {
       delay: 1000,
       interval: 500,
     });
+
+    new Swiper(".swiper", {
+      slidesPerView: 1,
+      spaceBetween: 20,
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
+    });
   }, []);
 
   return (
@@ -102,7 +112,7 @@ export default function LandingPage({ userUUID }) {
                 </span>
               </TransitionLink>
               <TransitionLink to="/information/aboutus">
-                 More About Us
+                See More
                 <span>
                   <i className="fas fa-arrow-right"></i>
                 </span>
@@ -180,38 +190,36 @@ export default function LandingPage({ userUUID }) {
           </p>
         </div>
         <div className={styles["genre__grid"]}>
-          <Suspense fallback={<div>Loading Genres...</div>}>
-            <GenreCard
-              userUUID={userUUID}
-              imageUrl="https://hips.hearstapps.com/hmg-prod/images/usher-raymond-at-the-2023-vanity-fair-oscar-party-held-at-news-photo-1695676021.jpg"
-              genreName="R&B"
-            />
-            <GenreCard
-              userUUID={userUUID}
-              imageUrl="https://media.vogue.co.uk/photos/666022c9f41aa8be428d7eea/2:3/w_2560%2Cc_limit/2150388270"
-              genreName="POP"
-            />
-            <GenreCard
-              userUUID={userUUID}
-              imageUrl="https://hips.hearstapps.com/hmg-prod/images/aap-rocky-from-the-film-monster-poses-for-a-portrait-in-the-youtube-x-getty-images-portrait-studio-at-2018-sundance-film-festival-on-january-22-2018-in-park-city-utah-photo-by-robby-klein_getty-images.jpg?resize=980:*"
-              genreName="HIP HOP"
-            />
-            <GenreCard
-              userUUID={userUUID}
-              imageUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/James_Hetfield_live_in_Amesterdam_29_April_2023.jpg/1200px-James_Hetfield_live_in_Amesterdam_29_April_2023.jpg"
-              genreName="Rock"
-            />
-            <GenreCard
-              userUUID={userUUID}
-              imageUrl="https://pbs.twimg.com/media/DUjJ38cW4AAPBy2.jpg"
-              genreName="EDM"
-            />
-            <GenreCard
-              userUUID={userUUID}
-              imageUrl="https://zdrave.to/media/source/202301/1672989215_316300418_684746499686051_7010121491504181883_n.jpg"
-              genreName="Bulgarian Pop Folk"
-            />
-          </Suspense>
+          <GenreCard
+            userUUID={userUUID}
+            imageUrl="https://hips.hearstapps.com/hmg-prod/images/usher-raymond-at-the-2023-vanity-fair-oscar-party-held-at-news-photo-1695676021.jpg"
+            genreName="R&B"
+          />
+          <GenreCard
+            userUUID={userUUID}
+            imageUrl="https://media.vogue.co.uk/photos/666022c9f41aa8be428d7eea/2:3/w_2560%2Cc_limit/2150388270"
+            genreName="POP"
+          />
+          <GenreCard
+            userUUID={userUUID}
+            imageUrl="https://hips.hearstapps.com/hmg-prod/images/aap-rocky-from-the-film-monster-poses-for-a-portrait-in-the-youtube-x-getty-images-portrait-studio-at-2018-sundance-film-festival-on-january-22-2018-in-park-city-utah-photo-by-robby-klein_getty-images.jpg?resize=980:*"
+            genreName="HIP HOP"
+          />
+          <GenreCard
+            userUUID={userUUID}
+            imageUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/James_Hetfield_live_in_Amesterdam_29_April_2023.jpg/1200px-James_Hetfield_live_in_Amesterdam_29_April_2023.jpg"
+            genreName="Rock"
+          />
+          <GenreCard
+            userUUID={userUUID}
+            imageUrl="https://pbs.twimg.com/media/DUjJ38cW4AAPBy2.jpg"
+            genreName="EDM"
+          />
+          <GenreCard
+            userUUID={userUUID}
+            imageUrl="https://zdrave.to/media/source/202301/1672989215_316300418_684746499686051_7010121491504181883_n.jpg"
+            genreName="Bulgarian Pop Folk"
+          />
         </div>
       </section>
 
@@ -234,23 +242,21 @@ export default function LandingPage({ userUUID }) {
         <div className={styles["feature__content"]}>
           <h2 className={styles["section__header"]}>Top Features</h2>
           <ul className={styles["feature__list"]}>
-            <Suspense fallback={<div>Loading Features...</div>}>
-              <FeatureCard
-                number="01"
-                title="No paying needed"
-                description="Enjoy your favorite music without breaking the bank with our completely free music service."
-              />
-              <FeatureCard
-                number="02"
-                title="No Ads"
-                description="Experience uninterrupted listening with our ad-free streaming."
-              />
-              <FeatureCard
-                number="03"
-                title="High Quality"
-                description="Stream your favorite tracks in premium quality for an immersive listening experience."
-              />
-            </Suspense>
+            <FeatureCard
+              number="01"
+              title="No paying needed"
+              description="Enjoy your favorite music without breaking the bank with our completely free music service."
+            />
+            <FeatureCard
+              number="02"
+              title="No Ads"
+              description="Experience uninterrupted listening with our ad-free streaming."
+            />
+            <FeatureCard
+              number="03"
+              title="High Quality"
+              description="Stream your favorite tracks in premium quality for an immersive listening experience."
+            />
           </ul>
         </div>
       </section>
@@ -265,43 +271,41 @@ export default function LandingPage({ userUUID }) {
         </div>
         <div className="swiper">
           <div className="swiper-wrapper">
-            <Suspense fallback={<div>Loading Clients...</div>}>
-              <ClientCard
-                rating={5}
-                content="My workouts are more intense and fun with the upbeat tracks I find here."
-                imageUrl="/assets/client-1.jpg"
-                name="David"
-                occupation="Fitness Enthusiast"
-              />
-              <ClientCard
-                rating={4}
-                content="This platform provides the perfect background music for my busy workdays."
-                imageUrl="/assets/client-2.jpg"
-                name="Sarah"
-                occupation="Marketing Manager"
-              />
-              <ClientCard
-                rating={5}
-                content="The soothing melodies I discover here help me relax and unwind after a long day."
-                imageUrl="/assets/client-3.jpg"
-                name="Jennifer"
-                occupation="Teacher"
-              />
-              <ClientCard
-                rating={3}
-                content="I'm always inspired by the diversity of music genres available on this platform."
-                imageUrl="/assets/client-4.jpg"
-                name="Michael"
-                occupation="Music Producer"
-              />
-              <ClientCard
-                rating={4}
-                content="This platform provided the perfect soundtrack for our special day."
-                imageUrl="/assets/client-5.jpg"
-                name="Emily"
-                occupation="Event Planner"
-              />
-            </Suspense>
+            <ClientCard
+              rating={5}
+              content="My workouts are more intense and fun with the upbeat tracks I find here."
+              imageUrl="/assets/client-1.jpg"
+              name="David"
+              occupation="Fitness Enthusiast"
+            />
+            <ClientCard
+              rating={4}
+              content="This platform provides the perfect background music for my busy workdays."
+              imageUrl="/assets/client-2.jpg"
+              name="Sarah"
+              occupation="Marketing Manager"
+            />
+            <ClientCard
+              rating={5}
+              content="The soothing melodies I discover here help me relax and unwind after a long day."
+              imageUrl="/assets/client-3.jpg"
+              name="Jennifer"
+              occupation="Teacher"
+            />
+            <ClientCard
+              rating={3}
+              content="I'm always inspired by the diversity of music genres available on this platform."
+              imageUrl="/assets/client-4.jpg"
+              name="Michael"
+              occupation="Music Producer"
+            />
+            <ClientCard
+              rating={4}
+              content="This platform provided the perfect soundtrack for our special day."
+              imageUrl="/assets/client-5.jpg"
+              name="Emily"
+              occupation="Event Planner"
+            />
           </div>
           <div
             className={`swiper-button-next ${styles["swiper-button-next"]}`}></div>
