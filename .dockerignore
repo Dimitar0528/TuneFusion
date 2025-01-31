@@ -1,0 +1,14 @@
+**/node_modules
+**/dist
+**/.env.local
+**/.env.development
+**/.env.production
+**/npm-debug.log
+**/.git
+**/.gitignore
+**/README.md
+**/LICENSE
+**/.vscode
+**/.idea
+**/coverage
+**/.DS_Store

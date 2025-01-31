@@ -1,0 +1,36 @@
+version: '3'
+services:
+  db:
+    image: mysql:latest
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app-network
+    env_file:
+      - ./.env
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: server-container
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - db
+    networks:
+      - app-network
+    env_file:
+      - ./.env
+volumes:
+  db-data:
+
+networks:
+  app-network:
