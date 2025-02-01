@@ -17,7 +17,7 @@ export default function MyLibray() {
    activePlaylist?.visibility?.slice(1)
  } Playlist${
    currentUser.name !== activePlaylist?.created_by
-     ? `: [Created by: "${activePlaylist?.created_by}"]`
+     ? ` [Made by: ${activePlaylist?.created_by}]`
      : ""
  }`;
 

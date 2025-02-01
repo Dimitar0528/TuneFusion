@@ -25,7 +25,7 @@
     }
 
 
-    &:where(:hover, :focus-within) {
+    &:where(:hover, :focus-visible) {
         background-color: var(--primary-clr-dark);
         color: var(--accent-clr-light);
 

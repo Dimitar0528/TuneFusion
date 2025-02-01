@@ -57,7 +57,7 @@ export default function Footer({ userUUID }) {
       {children}
     </NavLink>
   );
-
+  const year = new Date().getFullYear();
   return (
     <footer className={styles["footer"]}>
       <div
@@ -119,7 +119,7 @@ export default function Footer({ userUUID }) {
         </ul>
       </div>
       <div className={styles["footer__bar"]}>
-        Copyright TuneFusion © 2024. All rights reserved.
+        Copyright TuneFusion © {year}. All rights reserved.
       </div>
     </footer>
   );

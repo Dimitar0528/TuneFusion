@@ -49,6 +49,8 @@ export function MusicPlayerProvider({ children }) {
     user?.userUUID,
     refreshPlaylistsFlag
   );
+  const [songHistory, setSongHistory] = useState([]);
+
   const playerRef = useRef();
 
   useStoredActivePlaylist(playlists, setActivePlaylist, user?.userUUID);
@@ -102,6 +104,7 @@ export function MusicPlayerProvider({ children }) {
       } while (
         extractUUIDPrefix(songsToPlay[randomIndex].uuid) === currentSongUUID
       );
+      setSongHistory((prevHistory) => [...prevHistory, currentSongUUID]);
       setCurrentSongUUID(extractUUIDPrefix(songsToPlay[randomIndex].uuid));
       setIsPlaying(true);
       clearLyrics();
@@ -117,6 +120,31 @@ export function MusicPlayerProvider({ children }) {
     setCurrentTime(0);
   };
 
+  
+const handlePreviousSong = () => {
+  if (shuffle) {
+    if (songHistory.length > 0) {
+      const lastPlayedSongUUID = songHistory[songHistory.length - 1];
+      setSongHistory((prevHistory) => prevHistory.slice(0, -1));
+      setCurrentSongUUID(lastPlayedSongUUID);
+    }
+    // If no history exists, loop the current song
+    else {
+      setCurrentSongUUID(currentSongUUID);
+    }
+  } else {
+    const songsToPlay =
+      currentFilteredSongs.length > 0 ? currentFilteredSongs : filteredSongs;
+    const currentIndex = songsToPlay.findIndex(
+      (song) => extractUUIDPrefix(song.uuid) === currentSongUUID);
+    const prevIndex = (currentIndex - 1 + songsToPlay.length) % songsToPlay.length; 
+    setCurrentSongUUID(extractUUIDPrefix(songsToPlay[prevIndex].uuid));
+  }
+  setIsPlaying(true);
+  clearLyrics();
+  setCurrentTime(0);
+};
+
   const handleShufflePlayList = () => {
     setShuffle(!shuffle);
     showToast(
@@ -128,20 +156,6 @@ export function MusicPlayerProvider({ children }) {
   const handleCollapseToggle = () => {
     setIsCollapsed(!isCollapsed);
     localStorage.setItem("isCollapsed", JSON.stringify(!isCollapsed));
-  };
-
-  const handlePreviousSong = () => {
-    const songsToPlay =
-      currentFilteredSongs.length > 0 ? currentFilteredSongs : filteredSongs;
-    const currentIndex = songsToPlay.findIndex(
-      (song) => extractUUIDPrefix(song.uuid) === currentSongUUID
-    );
-    const prevIndex =
-      (currentIndex - 1 + songsToPlay.length) % songsToPlay.length;
-    setCurrentSongUUID(extractUUIDPrefix(songsToPlay[prevIndex].uuid));
-    setIsPlaying(true);
-    clearLyrics();
-    setCurrentTime(0);
   };
 
   const handleVolumeChange = (e) => {

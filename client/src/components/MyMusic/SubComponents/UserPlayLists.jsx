@@ -100,7 +100,7 @@ export default function UserPlayLists({ playlists, triggerRefreshHandler }) {
               newPlaylistElement.classList.remove("creating");
             }, 300);
           }
-        }, 60); // Small delay to ensure the element exists in the DOM
+        }, 130); 
       }
     }
 
@@ -435,8 +435,8 @@ const performDelete = async (playlist) => {
                   value={newPlaylist.visibility}
                   onChange={changeHandler}
                   style={{ marginBottom: "1rem" }}>
-                  <option value="default">
-                    -- Choose playlist visibility --
+                  <option disabled value="default">
+                    --- Choose playlist visibility- --
                   </option>
                   <option value="public">Public</option>
                   <option value="private">Private</option>
