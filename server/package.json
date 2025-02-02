@@ -22,8 +22,10 @@
     "genius-lyrics": "^4.4.7",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.10.1",
+    "node-fetch": "^2.7.0",
     "node-youtube-music": "^0.10.3",
     "sequelize": "^6.37.3",
+    "sharp": "^0.33.5",
     "ytmusic-api": "^5.2.2"
   }
 }

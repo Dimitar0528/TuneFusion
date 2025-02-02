@@ -12,30 +12,37 @@ import YTMusic from "ytmusic-api"
 
 const ytmusic = new YTMusic()
 await ytmusic.initialize()
+import { convertImageToAvif } from '../utils/convertImage.js';
+
 
 router.post('/', async (req, res) => {
     const { name, artist, img_src, audio_src, duration } = req.body;
-    const modifiedArtist = artist.replace(/&/g, ',').replace(/ ,/g, ",");
+    const modifiedArtist = artist.replace(/&/g, ',').replace(/ ,/g, ',');
     const uuid = crypto.randomUUID();
+
     try {
+        // Check if the song already exists
         const song = await Song.findOne({
             where: {
-                name: name,
+                name,
                 artist: {
                     [Op.like]: `%${modifiedArtist}%`,
                 },
             },
-        })
+        });
+
         if (song) {
             return res.status(400).json({ error: 'The song has already been added to the database!' });
         }
+        let convertedImgSrc = await convertImageToAvif(img_src,res);;
+        // Create the new song in the database
         await Song.create({
             uuid,
             name,
             artist: modifiedArtist,
-            img_src,
+            img_src: convertedImgSrc,
             audio_src,
-            duration: duration
+            duration,
         });
 
         res.status(200).json({ message: "Song added to database successfully!" });
@@ -71,18 +78,15 @@ router.post('/add-external-album', async (req, res) => {
                 });
 
                 if (existingSong) {
-                    if (addedSongs.length === 0) {
-                        errorMessage = 'All songs already exist in the database!';
-                        break;
-                    } else {
-                        continue;
-                    }
+                    continue;
                 }
+                let convertedImgSrc = await convertImageToAvif(song?.thumbnails?.[3]?.url, res);;
+
                 const newSong = await Song.create({
                     uuid: crypto.randomUUID(),
                     name: song.name,
                     artist: song.artist.name,
-                    img_src: song.thumbnails?.[3]?.url,
+                    img_src: convertedImgSrc,
                     audio_src: `https://www.youtube.com/watch?v=${firstSong.videoId}`,
                     duration: song.duration
                 });
@@ -92,6 +96,11 @@ router.post('/add-external-album', async (req, res) => {
                 console.error(`Error adding "${song.name}":`, error);
                 errorMessage = 'Failed to add some of the songs!';
             }
+        }
+        if (addedSongs.length === 0) {
+            return res.status(400).json({
+                error: 'All songs already exist in the database!',
+            });
         }
         const responseMessage = addedSongs.length === albumSongs.length
             ? `Added all ${albumSongs.length} songs to the database.`
@@ -295,8 +304,9 @@ router.get('/search/:query', async (req, res) => {
 
 router.get('/add-external-song/:songDetails', async (req, res) => {
     try {
-        const songDetails = req.params.songDetails
+        const songDetails = req.params.songDetails;
         const [firstSong] = await ytmusic.searchVideos(songDetails);
+
         if (!firstSong) {
             return res.status(404).json({ error: 'Song not found' });
         }
@@ -306,24 +316,28 @@ router.get('/add-external-song/:songDetails', async (req, res) => {
         const searchTerm = artist.name + name;
         const [{ url: img_src } = {}] = await gis(searchTerm);
 
+        let convertedImgSrc = await convertImageToAvif(img_src, res);;
         const song = await Song.findOne({
             where: { name: name, artist: artist.name }
         });
+
         if (song) {
             return res.status(400).json({ error: 'The song has already been added to the database!' });
         }
+
         const newSong = await Song.create({
             uuid: crypto.randomUUID(),
             name: name,
             artist: artist.name,
-            img_src: img_src,
+            img_src: convertedImgSrc,
             audio_src,
             duration,
         });
+
         const reqObj = {
             newSong: newSong.dataValues,
             message: "Song added to database successfully!"
-        }
+        };
 
         res.status(200).json(reqObj);
     } catch (error) {
@@ -331,6 +345,7 @@ router.get('/add-external-song/:songDetails', async (req, res) => {
         res.status(500).json({ error: 'There was an error while trying to fetch the selected song!' });
     }
 });
+
 
 router.put('/:name', async (req, res) => {
     const name = req.params.name;

@@ -4,7 +4,6 @@ import { PlayList, PlaylistSong, Song, User } from '../db/models/index.js'
 import { sequelizeInstance } from '../db/connection.js';
 import { Sequelize } from 'sequelize';
 import YTMusic from "ytmusic-api"
-
 const ytmusic = new YTMusic()
 await ytmusic.initialize();
 
@@ -26,7 +25,7 @@ const getPlaylistIncludeOptions = () => {
         },
         order: [
             ['createdAt', 'DESC'],
-            [Song, PlaylistSong, 'createdAt', 'DESC'],
+            [Song, PlaylistSong, 'createdAt'],
         ],
     };
 };
@@ -119,7 +118,6 @@ router.post('/', async (req, res) => {
         if (existingPlaylist) {
             return res.status(400).json({ error: 'You have already created a playlist with the same name!' });
         }
-
         await PlayList.create({
             uuid,
             name,
@@ -136,7 +134,7 @@ router.post('/', async (req, res) => {
 
     }
 })
-
+ 
 router.post('/like-playlist', async (req, res) => {
     const { playlistUUID, userUUID } = req.body;
     try {
@@ -170,7 +168,7 @@ router.post('/like-playlist', async (req, res) => {
         res.status(200).json({ message: 'Playlist liked successfully!' });
     } catch (error) {
         console.error('Error liking playlist:', error);
-        res.status(500).json({ error: 'Failed to like playlist' });
+        res.status(500).json({ error: 'There was an error while like playlist' });
     }
 });
 
@@ -251,7 +249,7 @@ router.post('/transfer-songs', async (req, res) => {
                     return {
                         name,
                         artist: artistNames,
-                        img_src,
+                        img_src: img_src,
                         audio_src: `https://www.youtube.com/watch?v=${videoId}`,
                         duration: duration,
                     };
@@ -487,7 +485,7 @@ router.patch("/:playlistName/song-positions", async (req, res) => {
         res.json({ message: "Positions updated successfully" });
     } catch (error) {
         console.error("Error updating positions:", error);
-        res.status(500).json({ error: "Failed to update positions" });
+        res.status(500).json({ error: "There was an error while updating the song positions!" });
     }
 });
 
@@ -505,7 +503,7 @@ router.delete('/unlike-playlist', async (req, res) => {
         });
 
         if (!playlist) {
-            return res.status(404).json({ error: 'Playlist not found' });
+            return res.status(404).json({ error: 'Playlist not found!' });
         }
 
         const likedBy = playlist.liked_by || [];
@@ -518,7 +516,7 @@ router.delete('/unlike-playlist', async (req, res) => {
         res.status(200).json({ message: 'Playlist unliked successfully!' });
     } catch (error) {
         console.error('Error unliking playlist:', error);
-        res.status(500).json({ error: 'Failed to unlike playlist' });
+        res.status(500).json({ error: 'There was an error while unliking the playlist!' });
     }
 });
 
@@ -562,7 +560,7 @@ router.delete('/:playlistUUID', async (req, res) => {
         await PlayList.destroy({
             where: { uuid: playlistUUID }
         })
-        res.status(200).json({ message: 'Playlistasdcv deleted successfully!' })
+        res.status(200).json({ message: 'Playlist deleted successfully!' })
 
     } catch (error) {
         console.error('Error deleting playlist:', error);
