@@ -29,8 +29,8 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
     playlists: TuneFusionPlaylists,
   } = useMusicPlayer();
 
-  const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
-  const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
+  const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+  const SPOTIFY_CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
   const host = `${window.location.protocol}//${window.location.host}`;
   const REDIRECT_URI = `${host}/callback`;
   const SCOPES = ["playlist-read-private", "playlist-read-collaborative"];
@@ -58,7 +58,7 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
     const state = encodeURIComponent(
       `userUUID=${userUUID}&tab=Spotify-Playlists`
     );
-    return `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(
+    return `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(
       REDIRECT_URI
     )}&scope=${encodeURIComponent(SCOPES.join(" "))}&state=${state}`;
   };
@@ -78,7 +78,7 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
     setPlaylistPage(0);
   };
 
-  const movePlaylistToTuneFusionHandler = (values, playlistTracks) => {
+  const movePlaylistToTuneFusionHandler = async(values, playlistTracks) => {
     const reqObj = {
       ...values,
       created_by: currentUser.name,
@@ -89,7 +89,8 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
       created_by: currentUser.name,
       userRole: role,
     };
-    createPlaylist(reqObj, triggerRefreshHandler);
+    const result = await createPlaylist(reqObj, triggerRefreshHandler);
+    if(result.error) return;
     transferSongsToPlaylist(
       playlistTracksObj,
       triggerRefreshHandler,
@@ -100,8 +101,8 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let token = localStorage.getItem("SP_AT");
-        let refreshToken = localStorage.getItem("SP_RT");
+        let token = sessionStorage.getItem("SP_AT");
+        let refreshToken = sessionStorage.getItem("SP_RT");
 
         if (!token && !refreshToken) {
           window.location.href = getAuthUrl(userUUID);
@@ -126,7 +127,7 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         Authorization: `Basic ${encodeToBase64(
-          `${CLIENT_ID}:${CLIENT_SECRET}`
+          `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
         )}`,
       },
       body: new URLSearchParams({
@@ -148,9 +149,9 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
     });
     if (!response.ok) {
       if (response.status === 401) {
-        const refreshToken = localStorage.getItem("SP_RT");
+        const refreshToken = sessionStorage.getItem("SP_RT");
         const newToken = await refreshAccessToken(refreshToken);
-        localStorage.setItem("SP_AT", newToken.access_token);
+        sessionStorage.setItem("SP_AT", newToken.access_token);
         return fetchUserProfile(newToken.access_token);
       } else {
         throw new Error("Failed to fetch user profile");
@@ -176,9 +177,9 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
 
       if (!playlistTracksResponse.ok) {
         if (playlistTracksResponse.status === 401) {
-          const refreshToken = localStorage.getItem("SP_RT");
+          const refreshToken = sessionStorage.getItem("SP_RT");
           const newToken = await refreshAccessToken(refreshToken);
-          localStorage.setItem("SP_AT", newToken.access_token);
+          sessionStorage.setItem("SP_AT", newToken.access_token);
 
           return fetchPlaylistTracks(newToken.access_token, playlistId);
         } else {
@@ -214,14 +215,13 @@ export default function SpotifyIntegration({ user, triggerRefreshHandler }) {
       );
 
       if (!playlistsResponse.ok) {
-        if (playlistsResponse.status === 429) {
-          setError(await playlistsResponse.text());
-        }
         if (playlistsResponse.status === 401) {
-          const refreshToken = localStorage.getItem("SP_RT");
+          const refreshToken = sessionStorage.getItem("SP_RT");
           const newToken = await refreshAccessToken(refreshToken);
-          localStorage.setItem("SP_AT", newToken.access_token);
+          sessionStorage.setItem("SP_AT", newToken.access_token);
           return fetchPlaylists(newToken.access_token, userId);
+        } else if (playlistsResponse.status === 429) {
+          throw new Error(await playlistsResponse.text());
         } else {
           throw new Error("Failed to fetch playlists");
         }

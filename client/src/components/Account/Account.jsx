@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense,useEffect,useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate, useParams, useLocation } from "react-router";
@@ -14,10 +14,6 @@ const EditAccount = lazy(() => import("./SubComponents/EditAccount"));
 const ViewAllUsers = lazy(() => import("./SubComponents/ViewAllUsers"));
 const SongSuggestion = lazy(() => import("./SubComponents/SongSuggestion"));
 const ViewAllSongs = lazy(() => import("./SubComponents/ViewAllSongs"));
-const SpotifyIntegration = lazy(() =>
-  import("./SubComponents/SpotifyIntegration")
-);
-
 export default function Account() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,11 +22,11 @@ export default function Account() {
     useMusicPlayer();
   const { userUUID } = user;
 
-  
+  const [SpotifyIntegration, setSpotifyIntegration] = useState(null);
   const [refreshUserFlag, triggerRefreshUserHandler] = useRefresh();
   const [refreshUsersFlag, triggerRefreshUsersHandler] = useRefresh();
   const [currentUser] = useGetUserDetails(currentUserUUID, refreshUserFlag);
-  
+
   const updateUnderlinePosition = (element) => {
     underlineRef.current.style.width = `${element.offsetWidth}px`;
     underlineRef.current.style.left = `${element.offsetLeft}px`;
@@ -51,6 +47,14 @@ export default function Account() {
     contentsRef,
     updateUnderline,
   } = useTabs();
+  
+    useEffect(() => {
+      if (activeTab === "Spotify-Playlists" && !SpotifyIntegration) {
+        setSpotifyIntegration(
+          lazy(() => import("./SubComponents/SpotifyIntegration"))
+        );
+      }
+    }, [activeTab, SpotifyIntegration]);
   
   const updateUrlWithTab = (tab) => {
     const queryParams = new URLSearchParams(location.search);
@@ -143,16 +147,18 @@ export default function Account() {
         );
       case "Spotify-Playlists":
         return (
-          <Suspense
-            fallback={
-              <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
-            }>
-            <SpotifyIntegration
-              user={user}
-              triggerRefreshHandler={triggerRefreshPlaylistsHandler}
-              triggerRefreshSongsHandler={triggerRefreshSongsHandler}
-            />
-          </Suspense>
+          SpotifyIntegration && (
+            <Suspense
+              fallback={
+                <Skeleton height={350} width="clamp(300px, 80vw, 100%)" />
+              }>
+              <SpotifyIntegration
+                user={user}
+                triggerRefreshHandler={triggerRefreshPlaylistsHandler}
+                triggerRefreshSongsHandler={triggerRefreshSongsHandler}
+              />
+            </Suspense>
+          )
         );
       default:
         return (

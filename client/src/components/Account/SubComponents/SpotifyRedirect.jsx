@@ -3,8 +3,8 @@ import { useNavigate } from "react-router";
 import { encodeToBase64 } from "../utils/encodetoBase64";
 export default function SpotifyRedirect() {
   const navigate = useNavigate();
-  const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
-  const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
+  const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+  const SPOTIFY_CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
   const host = `${window.location.protocol}//${window.location.host}`;
 
   const REDIRECT_URI = `${host}/callback`;
@@ -22,7 +22,7 @@ export default function SpotifyRedirect() {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           Authorization: `Basic ${encodeToBase64(
-            `${CLIENT_ID}:${CLIENT_SECRET}`
+            `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
           )}`,
         },
         body: body,
@@ -44,8 +44,8 @@ export default function SpotifyRedirect() {
       if (code && state) {
         try {
           const tokens = await exchangeCodeForTokens(code);
-          localStorage.setItem("SP_AT", tokens.access_token);
-          localStorage.setItem("SP_RT", tokens.refresh_token);
+          sessionStorage.setItem("SP_AT", tokens.access_token);
+          sessionStorage.setItem("SP_RT", tokens.refresh_token);
 
           const decodedState = decodeURIComponent(state);
           const stateParams = new URLSearchParams(decodedState);

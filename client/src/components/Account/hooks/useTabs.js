@@ -10,7 +10,7 @@ const useTabs = () => {
 
     const updateUnderline = () => {
         const activeTabElement = tabsRef.current.find(
-            (tab) => tab.dataset.target === activeTab
+            (tab) => tab?.dataset.target === activeTab
         );
         if (activeTabElement && underlineRef.current) {
             underlineRef.current.style.width = `${activeTabElement.offsetWidth}px`;

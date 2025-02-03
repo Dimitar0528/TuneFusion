@@ -29,10 +29,7 @@ export default function SongManagerHandler({ action }) {
     if (action === "updatesong") {
       await updateSong(name, values);
     } else {
-      const callback = (result) => {
-        showToast(result.message, "success", 1500, true);
-      };
-      await createSong(values, callback);
+      await createSong(values);
     }
   };
 
