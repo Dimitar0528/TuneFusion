@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import songsAPI from "../../api/songs-api";
 import showToast from "../../utils/showToast";
+import { toast } from "react-toastify";
 
 export const validateSongData = (values) => {
     const { name, artist, img_src, audio_src, duration } = values;
@@ -18,13 +19,31 @@ export const validateSongData = (values) => {
 };
 
 export function useCreateSong() {
-    const songCreateHandler = async (songData, callback) => {
-        const result = await songsAPI.createSong(songData);
-        if (result.error) showToast(`Error: ${result.error}`, "error")
-        typeof callback === 'function' && callback(result);
-    }
+    const songCreateHandler = async(songData, triggerRefreshHandler = false) => {
+        await toast.promise(
+            songsAPI.createSong(songData),
+            {
+                pending: "Creating song... Please wait!",
+                success: {
+                    render({ data }) {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+                        triggerRefreshHandler();
+                        return data.message;
+                    }
+                },
+                error: {
+                    render({ data }) {
+                        return data.message
+                    }
+                }
+            }
+        );
+    };
     return songCreateHandler;
 }
+
 
 export function useGetAllSongs(refreshFlag) {
     const [songs, setSongs] = useState([]);
@@ -111,17 +130,33 @@ export const useAddFetchedSongToDB = (triggerRefreshSongsHandler) => {
     const [song, setSong] = useState({});
 
     const addExternalSongToDBHandler = useCallback(async (songName, artistName) => {
-        const songDetails = `${songName} , ${artistName}`;
-        showToast("Loading... Please wait!", "info", 3000);
+        const songDetails = `${songName}, ${artistName}`;
         setLoading(true);
         setSong({});
-        const result = await songsAPI.addExternalSong(songDetails);
-        setSong(result.newSong);
+
+        const result = await toast.promise(
+            songsAPI.addExternalSong(songDetails),
+            {
+                pending: "Adding song to database... Please wait!",
+                success: {
+                    render({ data }) {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+                        setSong(data.newSong);
+                        triggerRefreshSongsHandler();
+                        return data.message;
+                    }
+                },
+                error: {
+                    render({ data }) {
+                        return data.message
+                    }
+                }
+            }
+        );
+
         setLoading(false);
-        triggerRefreshSongsHandler();
-        result.error
-            ? showToast(`Error: ${result.error}`, "error")
-            : showToast(result.message, "success");
         return result;
     }, [triggerRefreshSongsHandler]);
 
@@ -171,19 +206,32 @@ export function useAddAlbumToDB(triggerRefreshHandler) {
 
     const addAlbumToDBHandler = async (albumSongs, artistName) => {
         setLoading(true);
-        showToast("Adding songs to database... Please wait!", "info", 3500);
-            const result = await songsAPI.addAlbumToDB({ albumSongs, artistName });
-            if (result.error) {
-                setTimeout(() => {
-                    showToast(result.error, 'warning', 3500);
-                }, 1000);
+
+        const result = await toast.promise(
+            songsAPI.addAlbumToDB({ albumSongs, artistName }),
+            {
+                pending: "Adding songs to database... Please wait!",
+                success: {
+                    render({ data }) {
+                        if (data.addedSongs?.length > 0) {
+                            triggerRefreshHandler();
+                            return data.message;
+                        }
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+                    },
+                },
+                error: {
+                    render({ data }) {
+                        return data.message
+                    },
+                },
             }
-            if (result.addedSongs?.length > 0) {
-                showToast(result.message, 'success', 3500);
-                triggerRefreshHandler();
-            } 
-            setLoading(false);
-            return result.addedSongs;
+        );
+
+        setLoading(false);
+        return result.addedSongs;
     };
 
     return [addAlbumToDBHandler, loading];

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import playlistsAPI from "../../api/playlists-api";
 import showToast from "../../utils/showToast";
-
+import { toast } from "react-toastify";
 export const validatePlaylist = (values) => {
     const errors = {};
     if (values.name.trim() === "") {
@@ -15,6 +15,7 @@ export function useCreatePlaylist() {
         const result = await playlistsAPI.createPlaylist(playlistData);
         result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success',);
         triggerRefreshHandler();
+        return result;
     }
     return createPlaylistHandler
 }
@@ -31,14 +32,34 @@ export function useAddSongToPlaylist() {
 
 export function useTransferSongsToPlaylist() {
     const transferSongsToPlaylistHandler = async (playlistData, triggerRefreshHandler, triggerRefreshSongsHandler) => {
-        const result = await playlistsAPI.transferSongsToPlaylist(playlistData);
-        result.warn && showToast(`Warning: ${result.warn}`, "warning", 2500);
-        result.error ? showToast(`Error: ${result.error}`, "error") : showToast(result.message, 'success', 3000);
-        triggerRefreshHandler();
-        triggerRefreshSongsHandler();
-    }
-    return transferSongsToPlaylistHandler
+        await toast.promise(
+            playlistsAPI.transferSongsToPlaylist(playlistData),
+            {
+                pending: "Transferring songs...",
+                success: {
+                    render({ data }) {
+                        if (data.warn) {
+                            toast.warn(`Warning: ${data.warn}`);
+                        }
+                        if(data.error) {
+                            throw new Error(data.error);
+                        }
+                        triggerRefreshHandler();
+                        triggerRefreshSongsHandler();
+                        return data.message;
+                    }
+                },
+                error: {
+                    render({ data }) {
+                        return data.message
+                    }
+                }
+            }
+        );
+    };
+    return transferSongsToPlaylistHandler;
 }
+
 
 
 export const useGetUserPlaylists = (userUUID, refreshFlag) => {

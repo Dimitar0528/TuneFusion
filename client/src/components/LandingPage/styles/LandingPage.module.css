@@ -480,7 +480,7 @@
 footer {
   view-transition-name: footer;
   background-color: var(--accent-clr-dark);
-  padding-bottom: 4.5rem;
+  padding-bottom: 5.75rem;
 }
 
 .footer__links {
