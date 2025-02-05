@@ -224,7 +224,7 @@
 }
 
 .songCell {
-    padding:2px 10px;
+    padding: 2px 10px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -268,5 +268,24 @@
 
     .addBtns {
         margin-top: 1rem;
+    }
+}
+.single:not(:nth-child(odd)):last-child,
+.suggested-artist:not(:nth-child(odd)):last-child {
+    grid-column: span 3;
+    @media(width < 1250px){
+            grid-column: auto;
+          }
+    @media(width > 1653px) {
+             grid-column: auto;
+         }
+}
+
+@media(2060px > width > 1653px) {
+.single:nth-last-child(-n+2),
+.single:not(:nth-child(odd)):last-child,
+.suggested-artist:nth-last-child(-n+2),
+.suggested-artist:not(:nth-child(odd)):last-child {
+        grid-column: span 2;
     }
 }
